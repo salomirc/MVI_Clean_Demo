@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="AppThemeBase" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+    </style>
 
-    <style name="Theme.MVI_Clean_Demo" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="AppTheme" parent="AppThemeBase">
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
 </resources>
