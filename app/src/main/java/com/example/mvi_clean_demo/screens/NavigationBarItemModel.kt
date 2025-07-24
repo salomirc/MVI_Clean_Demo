@@ -16,18 +16,18 @@ sealed interface NavigationItemModel {
 
     sealed interface Destination {
         @Serializable
-        data class TemperatureDestination(val value: String): Destination
+        data class TemperatureDestination(val initialTempValue: String): Destination
         @Serializable
         data object DistancesDestination : Destination
     }
 
     data object Temperature : NavigationItemModel {
-        override val destination = Destination.TemperatureDestination("300")
+        override val destination = Destination.TemperatureDestination(initialTempValue = "300")
         override val label = R.string.temperature
         override val icon = Icons.Default.Thermostat
     }
 
-    data object Distances : NavigationItemModel {
+    data object Distance : NavigationItemModel {
         override val destination = Destination.DistancesDestination
         override val label = R.string.distances
         override val icon = Icons.Default.SquareFoot

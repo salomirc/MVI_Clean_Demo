@@ -27,6 +27,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -50,6 +52,8 @@ import com.example.mvi_clean_demo.screens.DistancesConverter
 import com.example.mvi_clean_demo.screens.NavigationItemModel
 import com.example.mvi_clean_demo.screens.NavigationItemModel.Destination.DistancesDestination
 import com.example.mvi_clean_demo.screens.NavigationItemModel.Destination.TemperatureDestination
+import com.example.mvi_clean_demo.screens.NavigationItemModel.Distance
+import com.example.mvi_clean_demo.screens.NavigationItemModel.Temperature
 import com.example.mvi_clean_demo.screens.TemperatureConverter
 import com.example.mvi_clean_demo.ui.theme.ComposeUnitConverterTheme
 import com.example.mvi_clean_demo.viewmodels.DistancesViewModel
@@ -78,22 +82,47 @@ fun ComposeUnitConverter(
     onNavigateBack: () -> Unit
 ) {
     val navController = rememberNavController()
-    val menuItems = listOf("Item #1", "Item #2")
-    val snackbarCoroutineScope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val textMenuItems = listOf("Item #1", "Item #2")
+    val snackBarCoroutineScope = rememberCoroutineScope()
+    val snackBarHostState = remember { SnackbarHostState() }
+    var navTitle by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    LaunchedEffect(navController) {
+        navController.currentBackStackEntryFlow.collect { backStackEntry ->
+            val titleResId = backStackEntry.run {
+                when {
+                    isSuccessfulToRoute<TemperatureDestination>() -> Temperature.label
+                    isSuccessfulToRoute<DistancesDestination>() -> Distance.label
+                    else -> null
+                }
+            }
+            titleResId?.let { stringResId ->
+                navTitle = context.getString(stringResId)
+            }
+            Log.d("NavChange", "Navigated to title = $navTitle")
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            ComposeUnitConverterTopBar(menuItems, onNavigateBack) { s ->
-                snackbarCoroutineScope.launch {
-                    snackbarHostState.showSnackbar(s)
+            ComposeUnitConverterTopBar(
+                textMenuItems = textMenuItems,
+                navTitle = navTitle,
+                onBack = onNavigateBack
+            ) { s ->
+                snackBarCoroutineScope.launch {
+                    snackBarHostState.showSnackbar(message = s)
                 }
             }
         },
         bottomBar = {
-            ComposeUnitConverterBottomBar(navController)
+            ComposeUnitConverterBottomBar(
+                navController = navController
+            )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackBarHostState) }
     ) { innerPadding ->
         ComposeUnitConverterNavHost(
             appContainer = appContainer,
@@ -106,13 +135,14 @@ fun ComposeUnitConverter(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ComposeUnitConverterTopBar(
-    menuItems: List<String>,
+    textMenuItems: List<String>,
+    navTitle: String,
     onBack: () -> Unit,
     onClick: (String) -> Unit
 ) {
     var menuOpened by remember { mutableStateOf(false) }
     TopAppBar(
-        title = { Text(text = stringResource(id = R.string.app_name)) },
+        title = { Text(text = navTitle) },
         navigationIcon = {
             IconButton(
                 onClick = onBack
@@ -120,7 +150,7 @@ fun ComposeUnitConverterTopBar(
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
                     "",
-                    tint = MaterialTheme.colorScheme.tertiary
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         },
@@ -135,13 +165,13 @@ fun ComposeUnitConverterTopBar(
                     expanded = menuOpened,
                     onDismissRequest = { menuOpened = false }
                 ) {
-                    menuItems.forEachIndexed { index, s ->
+                    textMenuItems.forEachIndexed { index, textItem ->
                         if (index > 0) HorizontalDivider()
                         DropdownMenuItem(
-                            text = { Text(s) },
+                            text = { Text(textItem) },
                             onClick = {
                                 menuOpened = false
-                                onClick(s)
+                                onClick(textItem)
                             }
                         )
                     }
@@ -152,17 +182,15 @@ fun ComposeUnitConverterTopBar(
 }
 
 @Composable
-fun ComposeUnitConverterBottomBar(navController: NavHostController) {
-    val barItemModels = listOf(
-        NavigationItemModel.Temperature,
-        NavigationItemModel.Distances
-    )
+fun ComposeUnitConverterBottomBar(
+    navController: NavHostController
+) {
+    val barItemModels = remember { listOf(Temperature, Distance) }
     BottomAppBar {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestinationRoute = navBackStackEntry?.destination?.route
         barItemModels.forEach { model ->
             NavigationBarItem(
-//                selected = currentDestinationRoute == model.destination.toString(),
                 selected = currentDestinationRoute?.contains(model.destination.javaClass.simpleName) == true,
                 onClick = {
                     navController.navigate(model.destination) {
@@ -175,9 +203,9 @@ fun ComposeUnitConverterBottomBar(navController: NavHostController) {
                             }
                         }
                         // Avoid multiple copies of the same destination when
-                        // reselecting the same item
+                        // re-selecting the same item
                         launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
+                        // Restore state when re-selecting a previously selected item
                         restoreState = true
                     }
                 },
@@ -204,16 +232,15 @@ fun ComposeUnitConverterNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = NavigationItemModel.Temperature.destination,
+        startDestination = Temperature.destination,
         modifier = modifier
     ) {
         composable<TemperatureDestination> { backStackEntry  ->
-            val initialTempValue = backStackEntry.toRoute<TemperatureDestination>().value
+            val initialTempValue = backStackEntry.toRoute<TemperatureDestination>().initialTempValue
             TemperatureConverter(
                 viewModel = viewModel<TemperatureViewModel>(
                     factory = appContainer.provideTemperatureViewModelFactory(initialTempValue)
-                ).also { Log.d("VM", "NavBackStackEntry = $it") },
-                navController = navController
+                ).also { Log.d("VM", "NavBackStackEntry = $it") }
             )
         }
         composable<DistancesDestination> {
@@ -221,10 +248,18 @@ fun ComposeUnitConverterNavHost(
                 viewModel = viewModel<DistancesViewModel>(
                     factory = appContainer.provideDistancesViewModelFactory()
                 ).also { Log.d("VM", "DistancesViewModel = $it") },
-                navController = navController
+                onNextButton = {
+                    navController.navigate(TemperatureDestination("200"))
+                }
             )
         }
     }
+}
+
+inline fun <reified T: NavigationItemModel.Destination> NavBackStackEntry.isSuccessfulToRoute(): Boolean {
+    return runCatching<T> {
+        this.toRoute<T>()
+    }.isSuccess
 }
 
 @Preview(

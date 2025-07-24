@@ -32,8 +32,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.di.AppContainer
 import com.example.mvi_clean_demo.ui.theme.ComposeUnitConverterTheme
@@ -41,7 +39,7 @@ import com.example.mvi_clean_demo.viewmodels.ITemperatureViewModel
 import com.example.mvi_clean_demo.viewmodels.TemperatureViewModel
 
 @Composable
-fun TemperatureConverter(viewModel: ITemperatureViewModel, navController: NavHostController) {
+fun TemperatureConverter(viewModel: ITemperatureViewModel) {
     val strCelsius = stringResource(id = R.string.celsius)
     val strFahrenheit = stringResource(id = R.string.fahrenheit)
     val temperature by viewModel.temperature.collectAsStateWithLifecycle()
@@ -198,14 +196,12 @@ fun TemperatureRadioButton(
 @Composable
 fun TemperatureConverterPreview() {
     val appContainer = AppContainer(LocalContext.current.applicationContext)
-    val navController = rememberNavController()
     ComposeUnitConverterTheme {
         Surface {
             TemperatureConverter(
                 viewModel = viewModel<TemperatureViewModel>(
                     factory = appContainer.provideTemperatureViewModelFactory("100")
-                ),
-                navController = navController
+                )
             )
         }
     }

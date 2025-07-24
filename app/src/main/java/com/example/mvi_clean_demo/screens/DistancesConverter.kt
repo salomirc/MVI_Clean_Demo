@@ -33,16 +33,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.di.AppContainer
-import com.example.mvi_clean_demo.screens.NavigationItemModel.Destination
 import com.example.mvi_clean_demo.ui.theme.ComposeUnitConverterTheme
 import com.example.mvi_clean_demo.viewmodels.DistancesViewModel
 
 @Composable
-fun DistancesConverter(viewModel: DistancesViewModel, navController: NavHostController) {
+fun DistancesConverter(
+    viewModel: DistancesViewModel,
+    onNextButton: () -> Unit
+) {
     val strMeter = stringResource(id = R.string.meter)
     val strMile = stringResource(id = R.string.mile)
     val distance by viewModel.distance.collectAsStateWithLifecycle()
@@ -104,9 +104,7 @@ fun DistancesConverter(viewModel: DistancesViewModel, navController: NavHostCont
             contentAlignment = Alignment.BottomCenter
         ) {
             Button(
-                onClick = {
-                    navController.navigate(Destination.TemperatureDestination("200"))
-                },
+                onClick = onNextButton,
                 modifier = Modifier.defaultMinSize(128.dp)
             ) {
                 Text(
@@ -208,12 +206,11 @@ fun DistanceRadioButton(
 @Composable
 fun DistancesConverterPreview() {
     val appContainer = AppContainer(LocalContext.current.applicationContext)
-    val navController = rememberNavController()
     ComposeUnitConverterTheme {
         Surface {
             DistancesConverter(
                 viewModel = viewModel<DistancesViewModel>(factory = appContainer.provideDistancesViewModelFactory()),
-                navController = navController
+                onNextButton = {}
             )
         }
     }
