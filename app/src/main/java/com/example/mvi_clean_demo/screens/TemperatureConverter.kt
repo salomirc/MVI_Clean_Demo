@@ -1,6 +1,8 @@
 package com.example.mvi_clean_demo.screens
 
 import android.content.res.Configuration
+import androidx.annotation.StringRes
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +19,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,33 +38,32 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.di.AppContainer
 import com.example.mvi_clean_demo.ui.theme.ComposeUnitConverterTheme
+import com.example.mvi_clean_demo.ui.theme.getDisabledColor
 import com.example.mvi_clean_demo.viewmodels.ITemperatureViewModel
 import com.example.mvi_clean_demo.viewmodels.TemperatureViewModel
 
 @Composable
 fun TemperatureConverter(viewModel: ITemperatureViewModel) {
+    val isDarkTheme = isSystemInDarkTheme()
     val strCelsius = stringResource(id = R.string.celsius)
     val strFahrenheit = stringResource(id = R.string.fahrenheit)
     val temperature by viewModel.temperature.collectAsStateWithLifecycle()
     val convertedValue by viewModel.convertedValue.collectAsStateWithLifecycle()
-    val scale by viewModel.scale.collectAsStateWithLifecycle()
-//    val isButtonEnabled by remember(temperature) {
-//        mutableStateOf(viewModel.isButtonEnabled(temperature))
-//    }
+    val conversionScale by viewModel.scale.collectAsStateWithLifecycle()
+    val inputScale by remember(conversionScale) {
+        mutableIntStateOf(
+            when (conversionScale) {
+                R.string.celsius -> R.string.fahrenheit
+                else -> R.string.celsius
+            }
+        )
+    }
     val isButtonEnabled by remember {
         derivedStateOf { viewModel.isButtonEnabled(temperature) }
     }
     val result by remember(convertedValue) {
-        mutableStateOf(
-            if (convertedValue.isNaN())
-                ""
-            else
-                "$convertedValue ${
-                    if (scale == R.string.celsius)
-                        strCelsius
-                    else strFahrenheit
-                }"
-        )
+        val scaleString = if (conversionScale == R.string.celsius) strCelsius else strFahrenheit
+        mutableStateOf(convertedValue?.let { "$convertedValue $scaleString" })
     }
 
     Column(
@@ -70,28 +72,40 @@ fun TemperatureConverter(viewModel: ITemperatureViewModel) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TemperatureTextField(
-            temperature = temperature,
-            modifier = Modifier.padding(bottom = 16.dp),
-            callback = { viewModel.convert(temperature, scale) },
-            viewModel = viewModel
-        )
+        Row {
+            TemperatureTextField(
+                isDarkTheme = isDarkTheme,
+                temperature = temperature,
+                modifier = Modifier.padding(bottom = 16.dp),
+                onValueChange = { s ->
+                    viewModel.setTemperature(s)
+                },
+                onDone = {
+                    viewModel.convert(temperature, conversionScale)
+                },
+            )
+            Text(
+                text = stringResource(inputScale),
+                modifier = Modifier
+                    .padding(start = 8.dp)
+            )
+        }
         TemperatureScaleButtonGroup(
-            selected = scale,
+            scale = conversionScale,
             modifier = Modifier.padding(bottom = 16.dp),
-            onClick = { resId: Int ->
-                viewModel.setScale(resId)
+            onClick = { stringResId ->
+                viewModel.setScale(stringResId)
             }
         )
         Button(
-            onClick = { viewModel.convert(temperature, scale) },
+            onClick = { viewModel.convert(temperature, conversionScale) },
             enabled = isButtonEnabled
         ) {
             Text(text = stringResource(id = R.string.convert))
         }
-        if (result.isNotEmpty()) {
+        result?.let { s ->
             Text(
-                text = result,
+                text = s,
                 style = MaterialTheme.typography.headlineSmall
             )
         }
@@ -100,24 +114,29 @@ fun TemperatureConverter(viewModel: ITemperatureViewModel) {
 
 @Composable
 fun TemperatureTextField(
+    isDarkTheme: Boolean,
     temperature: String,
     modifier: Modifier = Modifier,
-    callback: () -> Unit,
-    viewModel: ITemperatureViewModel
+    onValueChange: (String) -> Unit,
+    onDone: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     TextField(
         value = temperature,
-        onValueChange = {
-            viewModel.setTemperature(it)
+        onValueChange = onValueChange,
+        label = {
+            Text(text = stringResource(R.string.temperature))
         },
         placeholder = {
-            Text(text = stringResource(id = R.string.placeholder))
+            Text(
+                text = stringResource(id = R.string.placeholder_temperature),
+                color = MaterialTheme.colorScheme.getDisabledColor(isDarkTheme)
+            )
         },
         modifier = modifier,
         keyboardActions = KeyboardActions(
             onDone = {
-                callback()
+                onDone()
                 focusManager.clearFocus()
             }
         ),
@@ -131,18 +150,18 @@ fun TemperatureTextField(
 
 @Composable
 fun TemperatureScaleButtonGroup(
-    selected: Int,
+    scale: Int,
     modifier: Modifier = Modifier,
     onClick: (Int) -> Unit
 ) {
     Row(modifier = modifier) {
         TemperatureRadioButton(
-            selected = selected == R.string.celsius,
+            scale = scale,
             resId = R.string.celsius,
             onClick = onClick
         )
         TemperatureRadioButton(
-            selected = selected == R.string.fahrenheit,
+            scale = scale,
             resId = R.string.fahrenheit,
             onClick = onClick,
             modifier = Modifier.padding(start = 16.dp)
@@ -152,8 +171,8 @@ fun TemperatureScaleButtonGroup(
 
 @Composable
 fun TemperatureRadioButton(
-    selected: Boolean,
-    resId: Int,
+    scale: Int,
+    @StringRes resId: Int,
     onClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -162,7 +181,7 @@ fun TemperatureRadioButton(
         modifier = modifier
     ) {
         RadioButton(
-            selected = selected,
+            selected = scale == resId,
             onClick = {
                 onClick(resId)
             },
