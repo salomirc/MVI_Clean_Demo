@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -237,10 +238,17 @@ fun ComposeUnitConverterNavHost(
     ) {
         composable<TemperatureDestination> { backStackEntry  ->
             val initialTempValue = backStackEntry.toRoute<TemperatureDestination>().initialTempValue
+
+            val viewModel = viewModel<TemperatureViewModel>(
+                factory = appContainer.provideTemperatureViewModelFactory(initialTempValue)
+            ).also { Log.d("VM", "NavBackStackEntry = $it") }
+            val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
+
             TemperatureConverter(
-                viewModel = viewModel<TemperatureViewModel>(
-                    factory = appContainer.provideTemperatureViewModelFactory(initialTempValue)
-                ).also { Log.d("VM", "NavBackStackEntry = $it") }
+                model = model,
+                sendEvent = { event ->
+                    viewModel.sendEvent(event)
+                }
             )
         }
         composable<DistancesDestination> {

@@ -1,7 +1,12 @@
 package com.example.mvi_clean_demo.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-fun ColorScheme.getDisabledColor(isDarkTheme: Boolean): Color =
-    if (isDarkTheme) Gray70 else Gray30
+@get:Composable
+val ColorScheme.disabled: Color
+    get() {
+        return if (isSystemInDarkTheme()) Gray70 else Gray30
+    }

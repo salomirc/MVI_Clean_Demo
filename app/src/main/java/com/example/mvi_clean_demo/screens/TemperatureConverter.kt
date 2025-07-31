@@ -2,30 +2,32 @@ package com.example.mvi_clean_demo.screens
 
 import android.content.res.Configuration
 import androidx.annotation.StringRes
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -33,73 +35,87 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.di.AppContainer
 import com.example.mvi_clean_demo.ui.theme.ComposeUnitConverterTheme
-import com.example.mvi_clean_demo.ui.theme.getDisabledColor
-import com.example.mvi_clean_demo.viewmodels.ITemperatureViewModel
+import com.example.mvi_clean_demo.ui.theme.disabled
 import com.example.mvi_clean_demo.viewmodels.TemperatureViewModel
+import com.example.mvi_clean_demo.viewmodels.TemperatureViewModel.Event.Convert
+import com.example.mvi_clean_demo.viewmodels.TemperatureViewModel.Event.SetScale
+import com.example.mvi_clean_demo.viewmodels.TemperatureViewModel.Event.SetTemperature
+import com.example.mvi_clean_demo.viewmodels.TemperatureViewModel.Event.ValidateButtonEnabled
 
 @Composable
-fun TemperatureConverter(viewModel: ITemperatureViewModel) {
-    val isDarkTheme = isSystemInDarkTheme()
+fun TemperatureConverter(
+    model: TemperatureViewModel.Model,
+    sendEvent: (TemperatureViewModel.Event) -> Unit
+) {
     val strCelsius = stringResource(id = R.string.celsius)
     val strFahrenheit = stringResource(id = R.string.fahrenheit)
-    val temperature by viewModel.temperature.collectAsStateWithLifecycle()
-    val convertedValue by viewModel.convertedValue.collectAsStateWithLifecycle()
-    val conversionScale by viewModel.scale.collectAsStateWithLifecycle()
-    val inputScale by remember(conversionScale) {
+    val inputScale by remember(model.scale) {
         mutableIntStateOf(
-            when (conversionScale) {
+            when (model.scale) {
                 R.string.celsius -> R.string.fahrenheit
                 else -> R.string.celsius
             }
         )
     }
-    val isButtonEnabled by remember {
-        derivedStateOf { viewModel.isButtonEnabled(temperature) }
+
+    val result by remember(model.convertedValue) {
+        val scaleString = if (model.scale == R.string.celsius) strCelsius else strFahrenheit
+        mutableStateOf(model.convertedValue?.let { value ->
+            "$value $scaleString"
+        })
     }
-    val result by remember(convertedValue) {
-        val scaleString = if (conversionScale == R.string.celsius) strCelsius else strFahrenheit
-        mutableStateOf(convertedValue?.let { "$convertedValue $scaleString" })
+
+    LaunchedEffect(model.temperature) {
+        sendEvent(
+            ValidateButtonEnabled(model.temperature)
+        )
     }
+
+    // Remember the scroll state
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row {
+        Row(
+            modifier = Modifier.padding(bottom = 16.dp)
+        ) {
             TemperatureTextField(
-                isDarkTheme = isDarkTheme,
-                temperature = temperature,
-                modifier = Modifier.padding(bottom = 16.dp),
-                onValueChange = { s ->
-                    viewModel.setTemperature(s)
+                temperature = model.temperature,
+                modifier = Modifier.padding(start = 28.dp),
+                onValueChange = { text ->
+                    sendEvent(SetTemperature(temperature = text))
                 },
                 onDone = {
-                    viewModel.convert(temperature, conversionScale)
+                    sendEvent(Convert(model.temperature, model.scale))
                 },
             )
             Text(
                 text = stringResource(inputScale),
                 modifier = Modifier
                     .padding(start = 8.dp)
+                    .width(20.dp)
             )
         }
         TemperatureScaleButtonGroup(
-            scale = conversionScale,
+            scale = model.scale,
             modifier = Modifier.padding(bottom = 16.dp),
             onClick = { stringResId ->
-                viewModel.setScale(stringResId)
+                sendEvent(SetScale(scale = stringResId))
             }
         )
         Button(
-            onClick = { viewModel.convert(temperature, conversionScale) },
-            enabled = isButtonEnabled
+            onClick = { sendEvent(Convert(model.temperature, model.scale)) },
+            enabled = model.isButtonEnabled,
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = 3.0.dp
+            ),
         ) {
             Text(text = stringResource(id = R.string.convert))
         }
@@ -114,7 +130,6 @@ fun TemperatureConverter(viewModel: ITemperatureViewModel) {
 
 @Composable
 fun TemperatureTextField(
-    isDarkTheme: Boolean,
     temperature: String,
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
@@ -129,8 +144,7 @@ fun TemperatureTextField(
         },
         placeholder = {
             Text(
-                text = stringResource(id = R.string.placeholder_temperature),
-                color = MaterialTheme.colorScheme.getDisabledColor(isDarkTheme)
+                text = stringResource(id = R.string.placeholder_temperature)
             )
         },
         modifier = modifier,
@@ -144,7 +158,11 @@ fun TemperatureTextField(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
         ),
-        singleLine = true
+        singleLine = true,
+        colors = TextFieldDefaults.colors().copy(
+            focusedPlaceholderColor = MaterialTheme.colorScheme.disabled,
+            unfocusedPlaceholderColor = MaterialTheme.colorScheme.disabled
+        )
     )
 }
 
@@ -186,7 +204,7 @@ fun TemperatureRadioButton(
                 onClick(resId)
             },
             colors = RadioButtonDefaults.colors(
-                unselectedColor = Color(0xFFC7C7C7)
+                unselectedColor = MaterialTheme.colorScheme.disabled
             )
         )
         Text(
@@ -214,13 +232,16 @@ fun TemperatureRadioButton(
 )
 @Composable
 fun TemperatureConverterPreview() {
-    val appContainer = AppContainer(LocalContext.current.applicationContext)
+    val model = TemperatureViewModel.Model(
+        temperature = "100",
+        scale = R.string.celsius,
+        isButtonEnabled = false
+    )
     ComposeUnitConverterTheme {
         Surface {
             TemperatureConverter(
-                viewModel = viewModel<TemperatureViewModel>(
-                    factory = appContainer.provideTemperatureViewModelFactory("100")
-                )
+                model = model,
+                sendEvent = { }
             )
         }
     }
