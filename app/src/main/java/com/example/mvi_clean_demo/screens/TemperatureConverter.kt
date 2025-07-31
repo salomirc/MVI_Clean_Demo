@@ -59,20 +59,15 @@ fun TemperatureConverter(
             }
         )
     }
-
     val result by remember(model.convertedValue) {
         val scaleString = if (model.scale == R.string.celsius) strCelsius else strFahrenheit
         mutableStateOf(model.convertedValue?.let { value ->
             "$value $scaleString"
         })
     }
-
     LaunchedEffect(model.temperature) {
-        sendEvent(
-            ValidateButtonEnabled(model.temperature)
-        )
+        sendEvent(ValidateButtonEnabled(model.temperature))
     }
-
     // Remember the scroll state
     val scrollState = rememberScrollState()
 
