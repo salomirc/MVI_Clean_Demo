@@ -238,12 +238,10 @@ fun ComposeUnitConverterNavHost(
     ) {
         composable<TemperatureDestination> { backStackEntry  ->
             val initialTempValue = backStackEntry.toRoute<TemperatureDestination>().initialTempValue
-
             val viewModel = viewModel<TemperatureViewModel>(
                 factory = appContainer.provideTemperatureViewModelFactory(initialTempValue)
             ).also { Log.d("VM", "NavBackStackEntry = $it") }
             val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
-
             TemperatureConverter(
                 model = model,
                 sendEvent = { event ->
