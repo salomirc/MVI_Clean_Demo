@@ -1,14 +1,21 @@
 package com.example.mvi_clean_demo.viewmodels
 
+import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.Repository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class TemperatureViewModel(
     initialTempValue: String,
     private val repository: Repository,
 ) : BaseViewModel<TemperatureViewModel.Model, TemperatureViewModel.Event>() {
+
+    private var calculationJob: Job? = null
 
     data class Model(
         val temperature: String,
@@ -54,10 +61,15 @@ class TemperatureViewModel(
     }
 
     private fun convert(temperature: String, scale: Int) {
-        val calculationResult = getTemperatureAsFloat(temperature)?.let {
-            if (scale == R.string.celsius) (it * 1.8F) + 32F else (it - 32F) / 1.8F
+        calculationJob?.cancel()
+        calculationJob = viewModelScope.launch {
+            val calculationResult = withContext(Dispatchers.Default) {
+                getTemperatureAsFloat(temperature)?.let {
+                    if (scale == R.string.celsius) (it * 1.8F) + 32F else (it - 32F) / 1.8F
+                }
+            }
+            modelStateFlow.update { it.copy(convertedValue = calculationResult) }
         }
-        modelStateFlow.update { it.copy(convertedValue = calculationResult) }
     }
 
     private fun setTemperature(value: String) {

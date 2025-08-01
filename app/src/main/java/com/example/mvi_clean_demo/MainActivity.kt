@@ -250,10 +250,15 @@ fun ComposeUnitConverterNavHost(
             )
         }
         composable<DistancesDestination> {
+            val viewModel = viewModel<DistancesViewModel>(
+                factory = appContainer.provideDistancesViewModelFactory()
+            ).also { Log.d("VM", "NavBackStackEntry = $it") }
+            val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
             DistancesConverter(
-                viewModel = viewModel<DistancesViewModel>(
-                    factory = appContainer.provideDistancesViewModelFactory()
-                ).also { Log.d("VM", "DistancesViewModel = $it") },
+                model = model,
+                sendEvent = { event ->
+                    viewModel.sendEvent(event)
+                },
                 onNextButton = {
                     navController.navigate(TemperatureDestination("200"))
                 }

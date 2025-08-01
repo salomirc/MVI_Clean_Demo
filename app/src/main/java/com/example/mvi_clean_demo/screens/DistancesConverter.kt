@@ -1,6 +1,7 @@
 package com.example.mvi_clean_demo.screens
 
 import android.content.res.Configuration
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,88 +11,116 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.di.AppContainer
 import com.example.mvi_clean_demo.ui.theme.ComposeUnitConverterTheme
+import com.example.mvi_clean_demo.ui.theme.disabled
 import com.example.mvi_clean_demo.viewmodels.DistancesViewModel
+import com.example.mvi_clean_demo.viewmodels.DistancesViewModel.Event.Convert
+import com.example.mvi_clean_demo.viewmodels.DistancesViewModel.Event.ValidateButtonEnabled
 
 @Composable
 fun DistancesConverter(
-    viewModel: DistancesViewModel,
+    model: DistancesViewModel.Model,
+    sendEvent: (DistancesViewModel.Event) -> Unit,
     onNextButton: () -> Unit
 ) {
     val strMeter = stringResource(id = R.string.meter)
     val strMile = stringResource(id = R.string.mile)
-    val distance by viewModel.distance.collectAsStateWithLifecycle()
-    val unit by viewModel.unit.collectAsStateWithLifecycle()
-    val convertedValue by viewModel.convertedDistance.collectAsStateWithLifecycle()
-    val result by remember(convertedValue) {
-        mutableStateOf(
-            if (convertedValue.isNaN())
-                ""
-            else
-                "$convertedValue ${
-                    if (unit == R.string.meter)
-                        strMile
-                    else strMeter
-                }"
+    val inputUnit by remember(model.unit) {
+        mutableIntStateOf(
+            when (model.unit) {
+                R.string.meter -> R.string.mile
+                else -> R.string.meter
+            }
         )
     }
-    val calc = {
-        viewModel.convert(distance)
+    val result by remember(model.convertedValue) {
+        val scaleString = if (model.unit == R.string.meter) strMeter else strMile
+        mutableStateOf(model.convertedValue?.let { value ->
+            "$value $scaleString"
+        })
     }
-    val enabled by remember(distance) {
-        mutableStateOf(viewModel.isButtonEnabled(distance))
+    LaunchedEffect(model.distance) {
+        sendEvent(ValidateButtonEnabled(model.distance))
     }
+    // Remember the scroll state
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
+            .padding(16.dp)
+            .verticalScroll(scrollState),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        DistanceTextField(
-            distance = distance,
-            modifier = Modifier.padding(bottom = 16.dp),
-            callback = calc,
-            viewModel = viewModel
-        )
-        DistanceScaleButtonGroup(
-            selected = unit,
+        Row(
             modifier = Modifier.padding(bottom = 16.dp)
-        ) { resId: Int ->
-            viewModel.setUnit(resId)
+        ) {
+            DistanceTextField(
+                temperature = model.distance,
+                modifier = Modifier.padding(start = 28.dp),
+                onValueChange = { text ->
+                    sendEvent(DistancesViewModel.Event.SetDistance(distance = text))
+                },
+                onDone = {
+                    sendEvent(Convert(model.distance, model.unit))
+                },
+            )
+            Text(
+                text = stringResource(inputUnit),
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .width(20.dp)
+            )
         }
+        DistanceUnitButtonGroup(
+            unit = model.unit,
+            modifier = Modifier.padding(bottom = 16.dp),
+            onClick = { stringResId ->
+                sendEvent(DistancesViewModel.Event.SetUnit(unit = stringResId))
+            }
+        )
         Button(
-            onClick = calc,
-            enabled = enabled
+            onClick = { sendEvent(Convert(model.distance, model.unit)) },
+            enabled = model.isButtonEnabled,
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = 3.0.dp
+            ),
         ) {
             Text(text = stringResource(id = R.string.convert))
         }
-        if (result.isNotEmpty()) {
+        result?.let { s ->
             Text(
-                text = result,
+                text = s,
                 style = MaterialTheme.typography.headlineSmall
             )
         }
@@ -112,51 +141,61 @@ fun DistancesConverter(
                 )
             }
         }
-
     }
 }
 
 @Composable
 fun DistanceTextField(
-    distance: String,
+    temperature: String,
     modifier: Modifier = Modifier,
-    callback: () -> Unit,
-    viewModel: DistancesViewModel
+    onValueChange: (String) -> Unit,
+    onDone: () -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
     TextField(
-        value = distance,
-        onValueChange = {
-            viewModel.setDistance(it)
+        value = temperature,
+        onValueChange = onValueChange,
+        label = {
+            Text(text = stringResource(R.string.temperature))
         },
         placeholder = {
-            Text(text = stringResource(id = R.string.placeholder_distance))
+            Text(
+                text = stringResource(id = R.string.placeholder_temperature)
+            )
         },
         modifier = modifier,
-        keyboardActions = KeyboardActions(onAny = {
-            callback()
-        }),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                onDone()
+                focusManager.clearFocus()
+            }
+        ),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
         ),
-        singleLine = true
+        singleLine = true,
+        colors = TextFieldDefaults.colors().copy(
+            focusedPlaceholderColor = MaterialTheme.colorScheme.disabled,
+            unfocusedPlaceholderColor = MaterialTheme.colorScheme.disabled
+        )
     )
 }
 
 @Composable
-fun DistanceScaleButtonGroup(
-    selected: Int,
+fun DistanceUnitButtonGroup(
+    unit: Int,
     modifier: Modifier = Modifier,
     onClick: (Int) -> Unit
 ) {
     Row(modifier = modifier) {
         DistanceRadioButton(
-            selected = selected == R.string.meter,
+            unit = unit,
             resId = R.string.meter,
             onClick = onClick
         )
         DistanceRadioButton(
-            selected = selected == R.string.mile,
+            unit = unit,
             resId = R.string.mile,
             onClick = onClick,
             modifier = Modifier.padding(start = 16.dp)
@@ -166,8 +205,8 @@ fun DistanceScaleButtonGroup(
 
 @Composable
 fun DistanceRadioButton(
-    selected: Boolean,
-    resId: Int,
+    unit: Int,
+    @StringRes resId: Int,
     onClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -176,10 +215,13 @@ fun DistanceRadioButton(
         modifier = modifier
     ) {
         RadioButton(
-            selected = selected,
+            selected = unit == resId,
             onClick = {
                 onClick(resId)
-            }
+            },
+            colors = RadioButtonDefaults.colors(
+                unselectedColor = MaterialTheme.colorScheme.disabled
+            )
         )
         Text(
             text = stringResource(resId),
@@ -188,6 +230,7 @@ fun DistanceRadioButton(
         )
     }
 }
+
 
 @Preview(
     name = "Light Mode",
@@ -204,13 +247,18 @@ fun DistanceRadioButton(
     device = Devices.PIXEL
 )
 @Composable
-fun DistancesConverterPreview() {
-    val appContainer = AppContainer(LocalContext.current.applicationContext)
+fun DistanceConverterPreview() {
+    val model = DistancesViewModel.Model(
+        distance = "100",
+        unit = R.string.meter,
+        isButtonEnabled = false
+    )
     ComposeUnitConverterTheme {
         Surface {
             DistancesConverter(
-                viewModel = viewModel<DistancesViewModel>(factory = appContainer.provideDistancesViewModelFactory()),
-                onNextButton = {}
+                model = model,
+                sendEvent = { },
+                onNextButton = { }
             )
         }
     }
