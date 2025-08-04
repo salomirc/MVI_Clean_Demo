@@ -2,15 +2,18 @@ package com.example.mvi_clean_demo.viewmodels
 
 import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.Repository
+import com.example.mvi_clean_demo.repositories.Repository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class DistancesViewModel(
+@HiltViewModel
+class DistancesViewModel @Inject constructor(
     private val repository: Repository
 ) : BaseViewModel<DistancesViewModel.Model, DistancesViewModel.Event>() {
 

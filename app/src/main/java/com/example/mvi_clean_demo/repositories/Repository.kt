@@ -1,9 +1,10 @@
-package com.example.mvi_clean_demo
+package com.example.mvi_clean_demo.repositories
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import javax.inject.Inject
 
-class Repository(private val sharedPreferences: SharedPreferences) {
+class Repository @Inject constructor(private val sharedPreferences: SharedPreferences) {
 
     fun getInt(key: String, default: Int) = sharedPreferences.getInt(key, default)
 

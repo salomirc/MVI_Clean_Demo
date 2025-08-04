@@ -38,8 +38,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -47,8 +48,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.example.mvi_clean_demo.di.AppContainer
-import com.example.mvi_clean_demo.di.MyApplication
 import com.example.mvi_clean_demo.screens.Destination
 import com.example.mvi_clean_demo.screens.Destination.DistancesDestination
 import com.example.mvi_clean_demo.screens.Destination.TemperatureDestination
@@ -59,17 +58,17 @@ import com.example.mvi_clean_demo.screens.TemperatureConverter
 import com.example.mvi_clean_demo.ui.theme.ComposeUnitConverterTheme
 import com.example.mvi_clean_demo.viewmodels.DistancesViewModel
 import com.example.mvi_clean_demo.viewmodels.TemperatureViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val appContainer = (applicationContext as MyApplication).appContainer
         enableEdgeToEdge()
         setContent {
             ComposeUnitConverterTheme {
                 ComposeUnitConverter(
-                    appContainer = appContainer,
                     onNavigateBack = { onBackPressedDispatcher.onBackPressed() }
                 )
             }
@@ -79,7 +78,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ComposeUnitConverter(
-    appContainer: AppContainer,
     onNavigateBack: () -> Unit
 ) {
     val navController = rememberNavController()
@@ -126,7 +124,6 @@ fun ComposeUnitConverter(
         snackbarHost = { SnackbarHost(snackBarHostState) }
     ) { innerPadding ->
         ComposeUnitConverterNavHost(
-            appContainer = appContainer,
             navController = navController,
             modifier = Modifier.padding(innerPadding)
         )
@@ -227,7 +224,6 @@ fun ComposeUnitConverterBottomBar(
 
 @Composable
 fun ComposeUnitConverterNavHost(
-    appContainer: AppContainer,
     navController: NavHostController,
     modifier: Modifier
 ) {
@@ -238,9 +234,10 @@ fun ComposeUnitConverterNavHost(
     ) {
         composable<TemperatureDestination> { backStackEntry  ->
             val initialTempValue = backStackEntry.toRoute<TemperatureDestination>().initialTempValue
-            val viewModel = viewModel<TemperatureViewModel>(
-                factory = appContainer.provideTemperatureViewModelFactory(initialTempValue)
-            ).also { Log.d("VM", "NavBackStackEntry = $it") }
+            val viewModel: TemperatureViewModel = hiltViewModel(
+            creationCallback = { factory: TemperatureViewModel.Factory ->
+                factory.create(initialTempValue) // Provide the initial temperature
+            })
             val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
             TemperatureConverter(
                 model = model,
@@ -248,11 +245,11 @@ fun ComposeUnitConverterNavHost(
                     viewModel.sendEvent(event)
                 }
             )
+            LogNavigation(backStackEntry, viewModel)
         }
-        composable<DistancesDestination> {
-            val viewModel = viewModel<DistancesViewModel>(
-                factory = appContainer.provideDistancesViewModelFactory()
-            ).also { Log.d("VM", "NavBackStackEntry = $it") }
+
+        composable<DistancesDestination> { backStackEntry ->
+            val viewModel: DistancesViewModel = hiltViewModel()
             val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
             DistancesConverter(
                 model = model,
@@ -263,7 +260,16 @@ fun ComposeUnitConverterNavHost(
                     navController.navigate(TemperatureDestination("200"))
                 }
             )
+            LogNavigation(backStackEntry, viewModel)
         }
+    }
+}
+
+@Composable
+private fun <T: ViewModel> LogNavigation(backStackEntry: NavBackStackEntry, viewModel: T) {
+    LaunchedEffect(backStackEntry) {
+        Log.d("Navigation", "NavBackStackEntry = ${backStackEntry.destination.route}")
+        Log.d("Navigation", "ViewModel = $viewModel")
     }
 }
 
@@ -291,10 +297,8 @@ inline fun <reified T: Destination> NavBackStackEntry.isSuccessfulToRoute(): Boo
 )
 @Composable
 fun ComposeUnitConverterPreview() {
-    val appContainer = AppContainer(LocalContext.current.applicationContext)
     ComposeUnitConverterTheme {
         ComposeUnitConverter(
-            appContainer = appContainer,
             onNavigateBack = { }
         )
     }

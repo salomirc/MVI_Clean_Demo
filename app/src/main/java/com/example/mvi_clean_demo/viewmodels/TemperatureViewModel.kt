@@ -2,7 +2,11 @@ package com.example.mvi_clean_demo.viewmodels
 
 import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.Repository
+import com.example.mvi_clean_demo.repositories.Repository
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,11 +14,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class TemperatureViewModel(
-    initialTempValue: String,
+
+@HiltViewModel(assistedFactory = TemperatureViewModel.Factory::class)
+class TemperatureViewModel @AssistedInject constructor(
+    @Assisted private val initialTempValue: String,
     private val repository: Repository,
 ) : BaseViewModel<TemperatureViewModel.Model, TemperatureViewModel.Event>() {
 
+    @AssistedFactory
+    interface Factory {
+        fun create(initialTempValue: String): TemperatureViewModel
+    }
     private var calculationJob: Job? = null
 
     data class Model(
