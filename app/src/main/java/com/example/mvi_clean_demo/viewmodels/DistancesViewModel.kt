@@ -59,7 +59,7 @@ class DistancesViewModel(
         modelStateFlow.update { it.copy(isButtonEnabled = isEnabled) }
     }
 
-    fun convert(distance: String, unit: Int) {
+    private fun convert(distance: String, unit: Int) {
         calculationJob?.cancel()
         calculationJob = viewModelScope.launch {
             val calculationResult = withContext(Dispatchers.Default) {
@@ -71,12 +71,12 @@ class DistancesViewModel(
         }
     }
 
-    fun setDistance(value: String) {
+    private fun setDistance(value: String) {
         modelStateFlow.update { it.copy(distance = value) }
         repository.putString("distance", value)
     }
 
-    fun setUnit(value: Int) {
+    private fun setUnit(value: Int) {
         modelStateFlow.update { it.copy(unit = value) }
         repository.putInt("unit", value)
     }
