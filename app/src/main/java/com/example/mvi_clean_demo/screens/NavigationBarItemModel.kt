@@ -8,18 +8,19 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.mvi_clean_demo.R
 import kotlinx.serialization.Serializable
 
+sealed interface Destination {
+    @Serializable
+    data class TemperatureDestination(val initialTempValue: String): Destination
+    @Serializable
+    data object DistancesDestination : Destination
+}
+
 sealed interface NavigationItemModel {
     val destination: Destination
     @get:StringRes
     val label: Int
     val icon: ImageVector
 
-    sealed interface Destination {
-        @Serializable
-        data class TemperatureDestination(val initialTempValue: String): Destination
-        @Serializable
-        data object DistancesDestination : Destination
-    }
 
     data object Temperature : NavigationItemModel {
         override val destination = Destination.TemperatureDestination(initialTempValue = "300")

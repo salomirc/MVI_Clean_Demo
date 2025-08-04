@@ -49,10 +49,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.mvi_clean_demo.di.AppContainer
 import com.example.mvi_clean_demo.di.MyApplication
+import com.example.mvi_clean_demo.screens.Destination
+import com.example.mvi_clean_demo.screens.Destination.DistancesDestination
+import com.example.mvi_clean_demo.screens.Destination.TemperatureDestination
 import com.example.mvi_clean_demo.screens.DistancesConverter
-import com.example.mvi_clean_demo.screens.NavigationItemModel
-import com.example.mvi_clean_demo.screens.NavigationItemModel.Destination.DistancesDestination
-import com.example.mvi_clean_demo.screens.NavigationItemModel.Destination.TemperatureDestination
 import com.example.mvi_clean_demo.screens.NavigationItemModel.Distance
 import com.example.mvi_clean_demo.screens.NavigationItemModel.Temperature
 import com.example.mvi_clean_demo.screens.TemperatureConverter
@@ -267,7 +267,7 @@ fun ComposeUnitConverterNavHost(
     }
 }
 
-inline fun <reified T: NavigationItemModel.Destination> NavBackStackEntry.isSuccessfulToRoute(): Boolean {
+inline fun <reified T: Destination> NavBackStackEntry.isSuccessfulToRoute(): Boolean {
     return runCatching<T> {
         this.toRoute<T>()
     }.isSuccess
