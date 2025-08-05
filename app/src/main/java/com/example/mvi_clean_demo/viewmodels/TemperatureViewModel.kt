@@ -9,8 +9,6 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -18,8 +16,14 @@ import kotlinx.coroutines.withContext
 @HiltViewModel(assistedFactory = TemperatureViewModel.Factory::class)
 class TemperatureViewModel @AssistedInject constructor(
     @Assisted private val initialTempValue: String,
-    private val repository: Repository,
-) : BaseViewModel<TemperatureViewModel.Model, TemperatureViewModel.Event>() {
+    private val repository: Repository
+) : BaseViewModel<TemperatureViewModel.Model, TemperatureViewModel.Event>(
+    model = Model(
+        temperature = repository.getString("temperature", initialTempValue),
+        scale = repository.getInt("scale", R.string.celsius),
+        isButtonEnabled = false
+    )
+) {
 
     @AssistedFactory
     interface Factory {
@@ -41,13 +45,6 @@ class TemperatureViewModel @AssistedInject constructor(
         data class Convert(val temperature: String, val scale: Int): Event
     }
 
-    private val model = Model(
-        temperature = repository.getString("temperature", initialTempValue),
-        scale = repository.getInt("scale", R.string.celsius),
-        isButtonEnabled = false
-    )
-    override val modelStateFlow = MutableStateFlow(model)
-
     override fun sendEvent(event: Event) {
         when (event) {
             is Event.SetTemperature -> {
@@ -67,28 +64,30 @@ class TemperatureViewModel @AssistedInject constructor(
 
     private fun isButtonEnabled(temperature: String) {
         val isEnabled = getTemperatureAsFloat(temperature) != null
-        modelStateFlow.update { it.copy(isButtonEnabled = isEnabled) }
+        updateModelState { model -> model.copy(isButtonEnabled = isEnabled) }
     }
 
     private fun convert(temperature: String, scale: Int) {
         calculationJob?.cancel()
         calculationJob = viewModelScope.launch {
+            // move heavy computation on background thread or at least non blocking operation
+            // on the main thread to avoid UI recomposition performance issues
             val calculationResult = withContext(Dispatchers.Default) {
                 getTemperatureAsFloat(temperature)?.let {
                     if (scale == R.string.celsius) (it * 1.8F) + 32F else (it - 32F) / 1.8F
                 }
             }
-            modelStateFlow.update { it.copy(convertedValue = calculationResult) }
+            updateModelState { model -> model.copy(convertedValue = calculationResult) }
         }
     }
 
     private fun setTemperature(value: String) {
-        modelStateFlow.update { it.copy(temperature = value) }
+        updateModelState { model -> model.copy(temperature = value) }
         repository.putString("temperature", value)
     }
 
     private fun setScale(value: Int) {
-        modelStateFlow.update { it.copy(scale = value) }
+        updateModelState { model -> model.copy(scale = value) }
         repository.putInt("scale", value)
     }
 

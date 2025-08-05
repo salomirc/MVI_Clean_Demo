@@ -1,12 +1,22 @@
 package com.example.mvi_clean_demo.viewmodels
 
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 
 
-interface MVI<M, E> {
-    val modelStateFlow: StateFlow<M>
-    fun sendEvent(event: E)
+interface MVI<Model, Event> {
+    val modelStateFlow: StateFlow<Model>
+    fun sendEvent(event: Event)
 }
 
-abstract class BaseViewModel<M, E>: ViewModel(), MVI<M, E>
+abstract class BaseViewModel<Model, Event>(model: Model): ViewModel(), MVI<Model, Event> {
+    private val _modelStateFlow: MutableStateFlow<Model> = MutableStateFlow(model)
+    override val modelStateFlow: StateFlow<Model>
+        get() = _modelStateFlow
+
+    protected fun updateModelState(function: (Model) -> Model) {
+        _modelStateFlow.update(function)
+    }
+}

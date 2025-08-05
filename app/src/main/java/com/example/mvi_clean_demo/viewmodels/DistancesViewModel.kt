@@ -6,8 +6,6 @@ import com.example.mvi_clean_demo.repositories.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -15,8 +13,13 @@ import javax.inject.Inject
 @HiltViewModel
 class DistancesViewModel @Inject constructor(
     private val repository: Repository
-) : BaseViewModel<DistancesViewModel.Model, DistancesViewModel.Event>() {
-
+) : BaseViewModel<DistancesViewModel.Model, DistancesViewModel.Event>(
+    model = Model(
+        distance = repository.getString("distance", ""),
+        unit = repository.getInt("unit", R.string.meter),
+        isButtonEnabled = false
+    )
+) {
     private var calculationJob: Job? = null
 
     data class Model(
@@ -32,13 +35,6 @@ class DistancesViewModel @Inject constructor(
         data class ValidateButtonEnabled(val distance: String): Event
         data class Convert(val distance: String, val unit: Int): Event
     }
-
-    private val model = Model(
-        distance = repository.getString("distance", ""),
-        unit = repository.getInt("unit", R.string.meter),
-        isButtonEnabled = false
-    )
-    override val modelStateFlow = MutableStateFlow(model)
 
     override fun sendEvent(event: Event) {
         when (event) {
@@ -59,7 +55,7 @@ class DistancesViewModel @Inject constructor(
 
     private fun isButtonEnabled(distance: String) {
         val isEnabled = getDistanceAsFloat(distance) != null
-        modelStateFlow.update { it.copy(isButtonEnabled = isEnabled) }
+        updateModelState { model -> model.copy(isButtonEnabled = isEnabled) }
     }
 
     private fun convert(distance: String, unit: Int) {
@@ -70,17 +66,17 @@ class DistancesViewModel @Inject constructor(
                     if (unit == R.string.meter) (it * 0.00062137F) else (it / 0.00062137F)
                 }
             }
-            modelStateFlow.update { it.copy(convertedValue = calculationResult) }
+            updateModelState { model -> model.copy(convertedValue = calculationResult) }
         }
     }
 
     private fun setDistance(value: String) {
-        modelStateFlow.update { it.copy(distance = value) }
+        updateModelState { model -> model.copy(distance = value) }
         repository.putString("distance", value)
     }
 
     private fun setUnit(value: Int) {
-        modelStateFlow.update { it.copy(unit = value) }
+        updateModelState { model -> model.copy(unit = value) }
         repository.putInt("unit", value)
     }
 
