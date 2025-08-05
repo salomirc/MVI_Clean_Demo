@@ -1,7 +1,7 @@
-package com.example.mvi_clean_demo.di
+package com.example.mvi_clean_demo
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class MyApplication : Application()
+class MviApplication : Application()
