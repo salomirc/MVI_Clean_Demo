@@ -2,7 +2,7 @@ package com.example.mvi_clean_demo.viewmodels
 
 import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.repositories.IRepository
+import com.example.mvi_clean_demo.repositories.IDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -12,14 +12,31 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DistancesViewModel @Inject constructor(
-    private val repository: IRepository
+    private val dataRepository: IDataRepository
 ) : BaseViewModel<DistancesViewModel.Model, DistancesViewModel.Event>(
     model = Model(
-        distance = repository.getString("distance", ""),
-        unit = repository.getInt("unit", R.string.meter),
+        distance = "",
+        unit = R.string.meter,
         isButtonEnabled = false
     )
 ) {
+
+    init {
+        getData()
+    }
+
+    private fun getData() {
+        viewModelScope.launch {
+            val distance = dataRepository.getString("distance", "")
+            val unit = dataRepository.getInt("unit", R.string.meter)
+            updateModelState { model ->
+                model.copy(
+                    distance = distance,
+                    unit = unit
+                )
+            }
+        }
+    }
     private var calculationJob: Job? = null
 
     data class Model(
@@ -72,12 +89,12 @@ class DistancesViewModel @Inject constructor(
 
     private fun setDistance(value: String) {
         updateModelState { model -> model.copy(distance = value) }
-        repository.putString("distance", value)
+        dataRepository.putString("distance", value)
     }
 
     private fun setUnit(value: Int) {
         updateModelState { model -> model.copy(unit = value) }
-        repository.putInt("unit", value)
+        dataRepository.putInt("unit", value)
     }
 
     private fun getDistanceAsFloat(distance: String): Float? = distance.toFloatOrNull()

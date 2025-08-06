@@ -2,8 +2,8 @@ package com.example.mvi_clean_demo.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.mvi_clean_demo.repositories.IRepository
-import com.example.mvi_clean_demo.repositories.Repository
+import com.example.mvi_clean_demo.repositories.DataRepository
+import com.example.mvi_clean_demo.repositories.IDataRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -18,7 +18,7 @@ import javax.inject.Singleton
 interface AppModule {
 
     @Binds
-    fun bindIRepository(impl: Repository): IRepository
+    fun bindIRepository(impl: DataRepository): IDataRepository
 
     companion object {
         const val PREF_NAME = "MVIDemoSharedPreferences"

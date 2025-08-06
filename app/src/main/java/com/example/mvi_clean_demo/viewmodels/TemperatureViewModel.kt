@@ -2,7 +2,7 @@ package com.example.mvi_clean_demo.viewmodels
 
 import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.repositories.IRepository
+import com.example.mvi_clean_demo.repositories.IDataRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -16,14 +16,31 @@ import kotlinx.coroutines.withContext
 @HiltViewModel(assistedFactory = TemperatureViewModel.Factory::class)
 class TemperatureViewModel @AssistedInject constructor(
     @Assisted private val initialTempValue: String,
-    private val repository: IRepository
+    private val dataRepository: IDataRepository
 ) : BaseViewModel<TemperatureViewModel.Model, TemperatureViewModel.Event>(
     model = Model(
-        temperature = repository.getString("temperature", initialTempValue),
-        scale = repository.getInt("scale", R.string.celsius),
+        temperature = "",
+        scale = R.string.celsius,
         isButtonEnabled = false
     )
 ) {
+
+    init {
+        getData()
+    }
+
+    private fun getData() {
+        viewModelScope.launch {
+            val temperature = dataRepository.getString("temperature", initialTempValue)
+            val scale = dataRepository.getInt("scale", R.string.celsius)
+            updateModelState { model ->
+                model.copy(
+                    temperature = temperature,
+                    scale = scale
+                )
+            }
+        }
+    }
 
     @AssistedFactory
     interface Factory {
@@ -83,12 +100,12 @@ class TemperatureViewModel @AssistedInject constructor(
 
     private fun setTemperature(value: String) {
         updateModelState { model -> model.copy(temperature = value) }
-        repository.putString("temperature", value)
+        dataRepository.putString("temperature", value)
     }
 
     private fun setScale(value: Int) {
         updateModelState { model -> model.copy(scale = value) }
-        repository.putInt("scale", value)
+        dataRepository.putInt("scale", value)
     }
 
     private fun getTemperatureAsFloat(temperature: String): Float? = temperature.toFloatOrNull()

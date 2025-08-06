@@ -5,7 +5,7 @@ import androidx.core.content.edit
 import javax.inject.Inject
 import javax.inject.Singleton
 
-interface IRepository {
+interface IDataRepository {
     fun getInt(key: String, default: Int): Int
     fun putInt(key: String, value: Int)
     fun getString(key: String, default: String): String
@@ -13,7 +13,7 @@ interface IRepository {
 }
 
 @Singleton
-class Repository @Inject constructor(private val sharedPreferences: SharedPreferences): IRepository {
+class DataRepository @Inject constructor(private val sharedPreferences: SharedPreferences): IDataRepository {
 
     override fun getInt(key: String, default: Int) = sharedPreferences.getInt(key, default)
 
