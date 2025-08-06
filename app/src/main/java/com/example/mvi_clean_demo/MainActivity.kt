@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -68,8 +69,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ComposeUnitConverterTheme {
-                ComposeUnitConverter(
-                    onNavigateBack = { onBackPressedDispatcher.onBackPressed() }
+                ComposeUnitConverterWrapper(
+                    onNavigateBack = { onBackPressedDispatcher.onBackPressed() },
                 )
             }
         }
@@ -77,10 +78,28 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun ComposeUnitConverter(
+fun ComposeUnitConverterWrapper(
     onNavigateBack: () -> Unit
 ) {
     val navController = rememberNavController()
+    ComposeUnitConverter(
+        navController = navController,
+        onNavigateBack = onNavigateBack,
+        content = { innerPadding ->
+            ComposeUnitConverterNavHost(
+                navController = navController,
+                modifier = Modifier.padding(innerPadding)
+            )
+        }
+    )
+}
+
+@Composable
+fun ComposeUnitConverter(
+    navController: NavHostController,
+    onNavigateBack: () -> Unit,
+    content: @Composable (PaddingValues) -> Unit
+) {
     val textMenuItems = listOf("Item #1", "Item #2")
     val snackBarCoroutineScope = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
@@ -121,13 +140,9 @@ fun ComposeUnitConverter(
                 navController = navController
             )
         },
-        snackbarHost = { SnackbarHost(snackBarHostState) }
-    ) { innerPadding ->
-        ComposeUnitConverterNavHost(
-            navController = navController,
-            modifier = Modifier.padding(innerPadding)
-        )
-    }
+        snackbarHost = { SnackbarHost(snackBarHostState) },
+        content = content
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -298,8 +313,45 @@ inline fun <reified T: Destination> NavBackStackEntry.isSuccessfulToRoute(): Boo
 @Composable
 fun ComposeUnitConverterPreview() {
     ComposeUnitConverterTheme {
+        val navController: NavHostController = rememberNavController()
         ComposeUnitConverter(
-            onNavigateBack = { }
+            navController = navController,
+            onNavigateBack = {},
+            content = { innerPadding ->
+                NavHost(
+                    navController = navController,
+                    startDestination = Temperature.destination,
+                    modifier = Modifier.padding(innerPadding)
+                ) {
+                    composable<TemperatureDestination> { backStackEntry  ->
+                        val initialTempValue = backStackEntry.toRoute<TemperatureDestination>().initialTempValue
+                        val model = TemperatureViewModel.Model(
+                            temperature = initialTempValue,
+                            scale = R.string.celsius,
+                            isButtonEnabled = true
+                        )
+                        TemperatureConverter(
+                            model = model,
+                            sendEvent = {}
+                        )
+                    }
+
+                    composable<DistancesDestination> { backStackEntry ->
+                        val model = DistancesViewModel.Model(
+                            distance = "100",
+                            unit = R.string.meter,
+                            isButtonEnabled = false
+                        )
+                        DistancesConverter(
+                            model = model,
+                            sendEvent = {},
+                            onNextButton = {
+                                navController.navigate(TemperatureDestination("200"))
+                            }
+                        )
+                    }
+                }
+            }
         )
     }
 }
