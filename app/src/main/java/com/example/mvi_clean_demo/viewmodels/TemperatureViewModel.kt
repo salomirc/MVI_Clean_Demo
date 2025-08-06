@@ -2,7 +2,7 @@ package com.example.mvi_clean_demo.viewmodels
 
 import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.repositories.Repository
+import com.example.mvi_clean_demo.repositories.IRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 @HiltViewModel(assistedFactory = TemperatureViewModel.Factory::class)
 class TemperatureViewModel @AssistedInject constructor(
     @Assisted private val initialTempValue: String,
-    private val repository: Repository
+    private val repository: IRepository
 ) : BaseViewModel<TemperatureViewModel.Model, TemperatureViewModel.Event>(
     model = Model(
         temperature = repository.getString("temperature", initialTempValue),

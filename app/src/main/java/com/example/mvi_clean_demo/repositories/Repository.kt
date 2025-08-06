@@ -3,18 +3,27 @@ package com.example.mvi_clean_demo.repositories
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class Repository @Inject constructor(private val sharedPreferences: SharedPreferences) {
+interface IRepository {
+    fun getInt(key: String, default: Int): Int
+    fun putInt(key: String, value: Int)
+    fun getString(key: String, default: String): String
+    fun putString(key: String, value: String)
+}
 
-    fun getInt(key: String, default: Int) = sharedPreferences.getInt(key, default)
+@Singleton
+class Repository @Inject constructor(private val sharedPreferences: SharedPreferences): IRepository {
 
-    fun putInt(key: String, value: Int) {
+    override fun getInt(key: String, default: Int) = sharedPreferences.getInt(key, default)
+
+    override fun putInt(key: String, value: Int) {
         sharedPreferences.edit { putInt(key, value) }
     }
 
-    fun getString(key: String, default: String) = sharedPreferences.getString(key, default) ?: default
+    override fun getString(key: String, default: String) = sharedPreferences.getString(key, default) ?: default
 
-    fun putString(key: String, value: String) {
+    override fun putString(key: String, value: String) {
         sharedPreferences.edit { putString(key, value) }
     }
 }

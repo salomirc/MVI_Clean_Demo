@@ -2,7 +2,7 @@ package com.example.mvi_clean_demo.viewmodels
 
 import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.repositories.Repository
+import com.example.mvi_clean_demo.repositories.IRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DistancesViewModel @Inject constructor(
-    private val repository: Repository
+    private val repository: IRepository
 ) : BaseViewModel<DistancesViewModel.Model, DistancesViewModel.Event>(
     model = Model(
         distance = repository.getString("distance", ""),
