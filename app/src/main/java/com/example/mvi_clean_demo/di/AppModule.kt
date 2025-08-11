@@ -17,6 +17,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 interface AppModule {
 
+    @Singleton
     @Binds
     fun bindIRepository(impl: DataRepository): IDataRepository
 

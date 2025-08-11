@@ -23,6 +23,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            isMinifyEnabled = false
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -42,6 +45,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
@@ -63,6 +67,16 @@ dependencies {
     ksp(libs.androidx.hilt.android.compiler)
     implementation(libs.androidx.hilt)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    // Retrofit
+    implementation(libs.androidx.retrofit)
+    implementation(libs.androidx.gson.converter)
+    implementation(libs.androidx.logging.interceptor)
+
+    // Room
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room)
+    implementation(libs.androidx.room.kotlin)
     //added section end
 
     implementation(platform(libs.androidx.compose.bom))
