@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.ui.theme
+package com.example.mvi_clean_demo.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

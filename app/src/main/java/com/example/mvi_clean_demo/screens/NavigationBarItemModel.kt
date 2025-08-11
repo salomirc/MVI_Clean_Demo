@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.ui.screens
+package com.example.mvi_clean_demo.screens
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
