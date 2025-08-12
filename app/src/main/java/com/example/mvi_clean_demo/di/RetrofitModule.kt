@@ -1,7 +1,6 @@
 package com.example.mvi_clean_demo.di
 
 import com.example.mvi_clean_demo.BuildConfig
-import com.example.mvi_clean_demo.added.retrofit.api.BlogApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -55,11 +54,5 @@ object RetrofitModule {
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()
-    }
-
-    @Singleton
-    @Provides
-    fun provideBlogApi(retrofit: Retrofit): BlogApi {
-        return retrofit.create(BlogApi::class.java)
     }
 }

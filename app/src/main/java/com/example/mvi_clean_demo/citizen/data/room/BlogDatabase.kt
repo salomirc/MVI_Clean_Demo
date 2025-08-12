@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.added.room
+package com.example.mvi_clean_demo.citizen.data.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

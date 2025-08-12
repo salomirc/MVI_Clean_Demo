@@ -15,4 +15,13 @@
     <string name="distances">Distances</string>
     <string name="meter">m</string>
     <string name="mile">mi</string>
+
+    <!-- distance -->
+    <string name="users_screen_title">Users</string>
+
+    <!--added -->
+    <string name="error_generic_network_issue" translatable="false">Something went wrong!</string>
+    <string name="error_no_internet_connection" translatable="false">Please check your internet connection.</string>
+    <string name="error_access_denied" translatable="false">HttpCode 401 access denied!</string>
+    <string name="error_invalid_credentials" translatable="false">Invalid credentials</string>
 </resources>

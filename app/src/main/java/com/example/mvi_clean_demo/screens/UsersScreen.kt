@@ -1,0 +1,127 @@
+package com.example.mvi_clean_demo.screens
+
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.mvi_clean_demo.citizen.domain.model.User
+import com.example.mvi_clean_demo.citizen.presentation.UsersViewModel
+import com.example.mvi_clean_demo.citizen.presentation.UsersViewModel.Event
+import com.example.mvi_clean_demo.common.repository.ResponseState
+import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Failure
+import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
+import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
+import com.example.mvi_clean_demo.common.ui_components.LoadingScreen
+import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
+
+@Composable
+fun UsersScreen(
+    model: UsersViewModel.Model,
+    sendEvent: (Event) -> Unit,
+    onNextButton: () -> Unit
+) {
+    LaunchedEffect(model.users) {
+        val shouldGetUsers = ((model.users is Idle) || (model.users is Failure))
+        if (shouldGetUsers) {
+            sendEvent(Event.GetUsers)
+        }
+    }
+    if (model.isLoading) {
+        LoadingScreen()
+    } else {
+        UsersScreenContent(
+            responseState = model.users,
+            onNextButton = onNextButton
+        )
+    }
+}
+
+@Composable
+fun UsersScreenContent(
+    responseState: ResponseState<List<User>>,
+    onNextButton: () -> Unit
+) {
+    if (responseState is Success) {
+        LazyColumn {
+            items(responseState.data) { user ->
+                UserCard(user = user)
+            }
+        }
+    }
+}
+
+@Composable
+fun UserCard(user: User) {
+    Card(
+        modifier = Modifier
+            .padding(16.dp, 8.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 3.dp
+        ),
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = user.username,
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = user.email,
+                style = MaterialTheme.typography.titleSmall
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = user.toString(),
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
+@Preview(
+    name = "Light Mode",
+    group = "FullScreen",
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    showBackground = true,
+    device = Devices.PIXEL
+)
+@Preview(
+    name = "Dark Mode",
+    group = "FullScreen",
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    showBackground = true,
+    device = Devices.PIXEL
+)
+@Composable
+fun UsersPreview() {
+    val model = UsersViewModel.Model(
+        isLoading = false,
+        users = Idle,
+        postEntries = Idle
+    )
+    ComposeUnitConverterTheme {
+        Surface {
+            UsersScreen(
+                model = model,
+                sendEvent = { },
+                onNextButton = { }
+            )
+        }
+    }
+}
+

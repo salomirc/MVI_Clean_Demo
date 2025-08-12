@@ -2,8 +2,8 @@ package com.example.mvi_clean_demo.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.mvi_clean_demo.added.room.BlogDao
-import com.example.mvi_clean_demo.added.room.BlogDatabase
+import com.example.mvi_clean_demo.citizen.data.room.BlogDao
+import com.example.mvi_clean_demo.citizen.data.room.BlogDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
