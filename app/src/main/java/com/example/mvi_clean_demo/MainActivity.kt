@@ -138,12 +138,13 @@ fun ComposeUnitConverter(
             ComposeUnitConverterTopBar(
                 textMenuItems = textMenuItems,
                 navTitle = model.navigationTitle,
-                onBack = onNavigateBack
-            ) { s ->
-                snackBarCoroutineScope.launch {
-                    snackBarHostState.showSnackbar(message = s)
+                onBack = onNavigateBack,
+                onClick = { s ->
+                    snackBarCoroutineScope.launch {
+                        snackBarHostState.showSnackbar(message = s)
+                    }
                 }
-            }
+            )
         },
         bottomBar = {
             ComposeUnitConverterBottomBar(
