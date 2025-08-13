@@ -14,16 +14,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.citizen.presentation.UsersViewModel
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterNavTarget.DistancesNavTarget
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterNavTarget.TemperatureNavTarget
-import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterNavTarget.UsersNavTarget
 import com.example.mvi_clean_demo.screens.DistancesConverter
 import com.example.mvi_clean_demo.screens.NavigationItemModel.Distance
 import com.example.mvi_clean_demo.screens.NavigationItemModel.Temperature
 import com.example.mvi_clean_demo.screens.TemperatureConverter
-import com.example.mvi_clean_demo.screens.UsersScreen
 import com.example.mvi_clean_demo.viewmodels.DistancesViewModel
 import com.example.mvi_clean_demo.viewmodels.MainViewModel.Event
 import com.example.mvi_clean_demo.viewmodels.MainViewModel.Event.SetNavigationTitle
@@ -35,15 +31,14 @@ sealed interface UnitConverterNavTarget {
     data class TemperatureNavTarget(val initialTempValue: String): UnitConverterNavTarget
     @Serializable
     data object DistancesNavTarget : UnitConverterNavTarget
-    @Serializable
-    data object UsersNavTarget: UnitConverterNavTarget
 }
 
 @Composable
 fun ComposeUnitConverterNavHost(
     sendEvent: (Event) -> Unit,
     navController: NavHostController,
-    modifier: Modifier
+    modifier: Modifier,
+    onNextButton: () -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -76,25 +71,7 @@ fun ComposeUnitConverterNavHost(
                 sendEvent = { event ->
                     viewModel.sendEvent(event)
                 },
-                onNextButton = {
-                    navController.navigate(UsersNavTarget)
-                }
-            )
-            LogNavigation(backStackEntry, viewModel)
-        }
-
-        composable<UsersNavTarget> { backStackEntry ->
-            val viewModel: UsersViewModel = hiltViewModel()
-            val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
-            sendEvent(SetNavigationTitle(title = stringResource(id = R.string.users_screen_title)))
-            UsersScreen(
-                model = model,
-                sendEvent = { event ->
-                    viewModel.sendEvent(event)
-                },
-                onNextButton = {
-                    navController.navigate(UsersNavTarget)
-                }
+                onNextButton = onNextButton
             )
             LogNavigation(backStackEntry, viewModel)
         }
@@ -102,7 +79,7 @@ fun ComposeUnitConverterNavHost(
 }
 
 @Composable
-private fun <T: ViewModel> LogNavigation(backStackEntry: NavBackStackEntry, viewModel: T) {
+fun <T: ViewModel> LogNavigation(backStackEntry: NavBackStackEntry, viewModel: T) {
     LaunchedEffect(backStackEntry) {
         Log.d("Navigation", "NavBackStackEntry = ${backStackEntry.destination.route}")
         Log.d("Navigation", "ViewModel = $viewModel")

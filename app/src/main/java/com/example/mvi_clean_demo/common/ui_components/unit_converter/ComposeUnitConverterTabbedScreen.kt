@@ -54,8 +54,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun UnitConverterTabbedScreen(
     model: MainViewModel.Model,
+    sendEvent: (MainViewModel.Event) -> Unit,
     onNavigateBack: () -> Unit,
-    sendEvent: (MainViewModel.Event) -> Unit
+    onNextButton: () -> Unit
 ) {
     val navController = rememberNavController()
     ComposeUnitConverter(
@@ -66,7 +67,8 @@ fun UnitConverterTabbedScreen(
             ComposeUnitConverterNavHost(
                 sendEvent = sendEvent,
                 navController = navController,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(innerPadding),
+                onNextButton = onNextButton
             )
         }
     )

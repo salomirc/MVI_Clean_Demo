@@ -12,7 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterTabbedScreen
+import com.example.mvi_clean_demo.common.ui_components.unit_converter.ComposeMainNavHost
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 import com.example.mvi_clean_demo.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,8 +44,12 @@ fun ComposeUnitConverterWrapper(
     sendEvent: (MainViewModel.Event) -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    GlobalMessageToastSetUp(model)
-    UnitConverterTabbedScreen(model, onNavigateBack, sendEvent)
+    ComposeMainNavHost(
+        mainModel = model,
+        sendEvent = sendEvent,
+        onNavigateBack = onNavigateBack
+    )
+    GlobalMessageToastSetUp(model = model)
 }
 
 @Composable
