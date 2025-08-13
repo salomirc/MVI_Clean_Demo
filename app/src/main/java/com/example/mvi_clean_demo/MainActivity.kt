@@ -93,7 +93,6 @@ fun ComposeUnitConverterWrapper(
     GlobalMessageToastSetUp(model)
     ComposeUnitConverter(
         model = model,
-        sendEvent = sendEvent,
         navController = navController,
         onNavigateBack = onNavigateBack,
         content = { innerPadding ->
@@ -125,7 +124,6 @@ private fun GlobalMessageToastSetUp(model: MainViewModel.Model) {
 @Composable
 fun ComposeUnitConverter(
     model: MainViewModel.Model,
-    sendEvent: (MainViewModel.Event) -> Unit,
     navController: NavHostController,
     onNavigateBack: () -> Unit,
     content: @Composable (PaddingValues) -> Unit
@@ -148,11 +146,9 @@ fun ComposeUnitConverter(
             }
         },
         bottomBar = {
-            if (model.shouldDisplayBottomBar) {
-                ComposeUnitConverterBottomBar(
-                    navController = navController
-                )
-            }
+            ComposeUnitConverterBottomBar(
+                navController = navController
+            )
         },
         snackbarHost = { SnackbarHost(snackBarHostState) },
         content = content
@@ -312,10 +308,8 @@ fun ComposeUnitConverterPreview() {
             },
             model = MainViewModel.Model(
                 messageResourceIdWrapper = null,
-                navigationTitle = stringResource(Temperature.label),
-                shouldDisplayBottomBar = true,
-            ),
-            sendEvent = {}
+                navigationTitle = stringResource(Temperature.label)
+            )
         )
     }
 }

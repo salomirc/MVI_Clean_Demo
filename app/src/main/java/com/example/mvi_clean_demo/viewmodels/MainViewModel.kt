@@ -15,8 +15,7 @@ class MainViewModel @Inject constructor(
 ) : BaseViewModel<MainViewModel.Model, MainViewModel.Event>(
     model = Model(
         messageResourceIdWrapper = null,
-        navigationTitle = "",
-        shouldDisplayBottomBar = true
+        navigationTitle = ""
     )
 ) {
     init {
@@ -45,13 +44,11 @@ class MainViewModel @Inject constructor(
 
     data class Model(
         val messageResourceIdWrapper: MessageResourceIdWrapper?,
-        val navigationTitle: String,
-        val shouldDisplayBottomBar: Boolean
+        val navigationTitle: String
     )
 
     sealed interface Event {
         data class SetNavigationTitle(val title: String) : Event
-        data class SetShouldDisplayBottomBar(val isVisible: Boolean) : Event
     }
 
     override fun sendEvent(event: Event) {
@@ -59,15 +56,6 @@ class MainViewModel @Inject constructor(
             is Event.SetNavigationTitle -> {
                 setNavigationTitle(event.title)
             }
-            is Event.SetShouldDisplayBottomBar -> {
-                setShouldDisplayBottomBar(event.isVisible)
-            }
-        }
-    }
-
-    private fun setShouldDisplayBottomBar(visible: Boolean) {
-        updateModelState { model ->
-            model.copy(shouldDisplayBottomBar = visible)
         }
     }
 
