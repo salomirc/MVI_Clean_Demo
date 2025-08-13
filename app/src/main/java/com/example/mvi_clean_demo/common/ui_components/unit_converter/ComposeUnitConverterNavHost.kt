@@ -14,12 +14,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.mvi_clean_demo.common.ui_components.unit_converter.NavigationItemModel.Distance
+import com.example.mvi_clean_demo.common.ui_components.unit_converter.NavigationItemModel.Temperature
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterNavTarget.DistancesNavTarget
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterNavTarget.TemperatureNavTarget
-import com.example.mvi_clean_demo.screens.DistancesConverter
-import com.example.mvi_clean_demo.screens.NavigationItemModel.Distance
-import com.example.mvi_clean_demo.screens.NavigationItemModel.Temperature
-import com.example.mvi_clean_demo.screens.TemperatureConverter
+import com.example.mvi_clean_demo.screens.ComposeDistances
+import com.example.mvi_clean_demo.screens.ComposeTemperature
 import com.example.mvi_clean_demo.viewmodels.DistancesViewModel
 import com.example.mvi_clean_demo.viewmodels.MainViewModel.Event
 import com.example.mvi_clean_demo.viewmodels.MainViewModel.Event.SetNavigationTitle
@@ -53,7 +53,7 @@ fun ComposeUnitConverterNavHost(
                 })
             val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
             sendEvent(SetNavigationTitle(title = stringResource(id = Temperature.label)))
-            TemperatureConverter(
+            ComposeTemperature(
                 model = model,
                 sendEvent = { event ->
                     viewModel.sendEvent(event)
@@ -66,7 +66,7 @@ fun ComposeUnitConverterNavHost(
             val viewModel: DistancesViewModel = hiltViewModel()
             val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
             sendEvent(SetNavigationTitle(title = stringResource(id = Distance.label)))
-            DistancesConverter(
+            ComposeDistances(
                 model = model,
                 sendEvent = { event ->
                     viewModel.sendEvent(event)

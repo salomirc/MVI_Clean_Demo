@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.common.ui_components.unit_converter
+package com.example.mvi_clean_demo.common.ui_components.blog
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,7 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.citizen.presentation.UsersViewModel
-import com.example.mvi_clean_demo.common.ui_components.unit_converter.BlogNavTarget.UsersNavTarget
+import com.example.mvi_clean_demo.common.ui_components.unit_converter.LogNavigation
 import com.example.mvi_clean_demo.screens.ComposeUsers
 import com.example.mvi_clean_demo.viewmodels.MainViewModel
 import com.example.mvi_clean_demo.viewmodels.MainViewModel.Event.SetNavigationTitle
@@ -32,10 +32,10 @@ fun ComposeBlogNavHost(
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = UsersNavTarget,
+        startDestination = BlogNavTarget.UsersNavTarget,
         modifier = modifier
     ) {
-        composable<UsersNavTarget> { backStackEntry  ->
+        composable<BlogNavTarget.UsersNavTarget> { backStackEntry  ->
             val viewModel: UsersViewModel = hiltViewModel()
             val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
             sendEvent(SetNavigationTitle(title = stringResource(id = R.string.users_screen_title)))

@@ -1,11 +1,13 @@
-package com.example.mvi_clean_demo.common.ui_components.unit_converter
+package com.example.mvi_clean_demo.common.ui_components.main
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mvi_clean_demo.common.ui_components.unit_converter.MainNavTarget.BlogHostNavTarget
-import com.example.mvi_clean_demo.common.ui_components.unit_converter.MainNavTarget.ConverterTabbedNavTarget
+import com.example.mvi_clean_demo.common.ui_components.blog.ComposeBlogScreen
+import com.example.mvi_clean_demo.common.ui_components.main.MainNavTarget.BlogHostNavTarget
+import com.example.mvi_clean_demo.common.ui_components.main.MainNavTarget.ConverterTabbedNavTarget
+import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterTabbedScreen
 import com.example.mvi_clean_demo.viewmodels.MainViewModel
 import kotlinx.serialization.Serializable
 

@@ -48,7 +48,7 @@ import com.example.mvi_clean_demo.viewmodels.DistancesViewModel.Event.Convert
 import com.example.mvi_clean_demo.viewmodels.DistancesViewModel.Event.ValidateButtonEnabled
 
 @Composable
-fun DistancesConverter(
+fun ComposeDistances(
     model: DistancesViewModel.Model,
     sendEvent: (DistancesViewModel.Event) -> Unit,
     onNextButton: () -> Unit
@@ -255,7 +255,7 @@ fun DistanceConverterPreview() {
     )
     ComposeUnitConverterTheme {
         Surface {
-            DistancesConverter(
+            ComposeDistances(
                 model = model,
                 sendEvent = { },
                 onNextButton = { }

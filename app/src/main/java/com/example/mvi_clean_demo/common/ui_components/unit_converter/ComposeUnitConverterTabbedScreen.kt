@@ -39,12 +39,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.mvi_clean_demo.R
+import com.example.mvi_clean_demo.common.ui_components.unit_converter.NavigationItemModel.Distance
+import com.example.mvi_clean_demo.common.ui_components.unit_converter.NavigationItemModel.Temperature
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterNavTarget.DistancesNavTarget
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterNavTarget.TemperatureNavTarget
-import com.example.mvi_clean_demo.screens.DistancesConverter
-import com.example.mvi_clean_demo.screens.NavigationItemModel.Distance
-import com.example.mvi_clean_demo.screens.NavigationItemModel.Temperature
-import com.example.mvi_clean_demo.screens.TemperatureConverter
+import com.example.mvi_clean_demo.screens.ComposeDistances
+import com.example.mvi_clean_demo.screens.ComposeTemperature
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 import com.example.mvi_clean_demo.viewmodels.DistancesViewModel
 import com.example.mvi_clean_demo.viewmodels.MainViewModel
@@ -238,7 +238,7 @@ fun ComposeUnitConverterPreview() {
                             scale = R.string.celsius,
                             isButtonEnabled = true
                         )
-                        TemperatureConverter(
+                        ComposeTemperature(
                             model = model,
                             sendEvent = {}
                         )
@@ -250,7 +250,7 @@ fun ComposeUnitConverterPreview() {
                             unit = R.string.meter,
                             isButtonEnabled = false
                         )
-                        DistancesConverter(
+                        ComposeDistances(
                             model = model,
                             sendEvent = {},
                             onNextButton = {

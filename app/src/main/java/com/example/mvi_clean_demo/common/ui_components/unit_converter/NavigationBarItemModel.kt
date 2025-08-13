@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.screens
+package com.example.mvi_clean_demo.common.ui_components.unit_converter
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
@@ -6,7 +6,6 @@ import androidx.compose.material.icons.filled.SquareFoot
 import androidx.compose.material.icons.filled.Thermostat
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterNavTarget
 
 sealed interface NavigationItemModel {
     val navTarget: UnitConverterNavTarget

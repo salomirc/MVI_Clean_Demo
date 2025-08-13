@@ -45,7 +45,7 @@ import com.example.mvi_clean_demo.viewmodels.TemperatureViewModel.Event.SetTempe
 import com.example.mvi_clean_demo.viewmodels.TemperatureViewModel.Event.ValidateButtonEnabled
 
 @Composable
-fun TemperatureConverter(
+fun ComposeTemperature(
     model: TemperatureViewModel.Model,
     sendEvent: (TemperatureViewModel.Event) -> Unit
 ) {
@@ -234,7 +234,7 @@ fun TemperatureConverterPreview() {
     )
     ComposeUnitConverterTheme {
         Surface {
-            TemperatureConverter(
+            ComposeTemperature(
                 model = model,
                 sendEvent = { }
             )
