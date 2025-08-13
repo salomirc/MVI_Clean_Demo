@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.common.ui_components
+package com.example.mvi_clean_demo.common.ui_components.unit_converter
 
 import android.util.Log
 import androidx.compose.runtime.Composable
@@ -16,9 +16,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.citizen.presentation.UsersViewModel
-import com.example.mvi_clean_demo.common.ui_components.NavTarget.DistancesNavTarget
-import com.example.mvi_clean_demo.common.ui_components.NavTarget.TemperatureNavTarget
-import com.example.mvi_clean_demo.common.ui_components.NavTarget.UsersNavTarget
+import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterNavTarget.DistancesNavTarget
+import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterNavTarget.TemperatureNavTarget
+import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterNavTarget.UsersNavTarget
 import com.example.mvi_clean_demo.screens.DistancesConverter
 import com.example.mvi_clean_demo.screens.NavigationItemModel.Distance
 import com.example.mvi_clean_demo.screens.NavigationItemModel.Temperature
@@ -30,13 +30,13 @@ import com.example.mvi_clean_demo.viewmodels.MainViewModel.Event.SetNavigationTi
 import com.example.mvi_clean_demo.viewmodels.TemperatureViewModel
 import kotlinx.serialization.Serializable
 
-sealed interface NavTarget {
+sealed interface UnitConverterNavTarget {
     @Serializable
-    data class TemperatureNavTarget(val initialTempValue: String): NavTarget
+    data class TemperatureNavTarget(val initialTempValue: String): UnitConverterNavTarget
     @Serializable
-    data object DistancesNavTarget : NavTarget
+    data object DistancesNavTarget : UnitConverterNavTarget
     @Serializable
-    data object UsersNavTarget: NavTarget
+    data object UsersNavTarget: UnitConverterNavTarget
 }
 
 @Composable
