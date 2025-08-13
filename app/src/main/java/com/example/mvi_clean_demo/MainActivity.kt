@@ -89,16 +89,8 @@ fun ComposeUnitConverterWrapper(
     sendEvent: (MainViewModel.Event) -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    val context = LocalContext.current
-    LaunchedEffect(model.messageResourceIdWrapper) {
-        model.messageResourceIdWrapper?.let { wrapper ->
-            Log.d("ToastMessage","MainActivity toast LaunchedEffect have been called with: ${model.messageResourceIdWrapper}")
-            val message = context.getString(wrapper.stringResId)
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            Log.d("ToastMessage","MainActivity Toast have been called with: $message")
-        }
-    }
     val navController = rememberNavController()
+    GlobalMessageToastSetUp(model)
     ComposeUnitConverter(
         model = model,
         sendEvent = sendEvent,
@@ -115,6 +107,22 @@ fun ComposeUnitConverterWrapper(
 }
 
 @Composable
+private fun GlobalMessageToastSetUp(model: MainViewModel.Model) {
+    val context = LocalContext.current
+    LaunchedEffect(model.messageResourceIdWrapper) {
+        model.messageResourceIdWrapper?.let { wrapper ->
+            Log.d(
+                "ToastMessage",
+                "MainActivity toast LaunchedEffect have been called with: ${model.messageResourceIdWrapper}"
+            )
+            val message = context.getString(wrapper.stringResId)
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            Log.d("ToastMessage", "MainActivity Toast have been called with: $message")
+        }
+    }
+}
+
+@Composable
 fun ComposeUnitConverter(
     model: MainViewModel.Model,
     sendEvent: (MainViewModel.Event) -> Unit,
@@ -125,32 +133,6 @@ fun ComposeUnitConverter(
     val textMenuItems = listOf("Item #1", "Item #2")
     val snackBarCoroutineScope = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
-
-//    LaunchedEffect(navController) {
-//        fun isRouteMatching(route: String?, target: String): Boolean {
-//            val isMatching = route?.contains( target) == true
-//            return isMatching
-//        }
-//        navController.currentBackStackEntryFlow.collect { backStackEntry ->
-//            val route = backStackEntry.destination.route
-//            val isVisible = when {
-//                isRouteMatching(
-//                    route,
-//                    Temperature.navTarget.javaClass.simpleName
-//                ) -> true
-//                isRouteMatching(
-//                    route,
-//                    Distance.navTarget.javaClass.simpleName
-//                ) -> true
-//                else -> false
-//            }
-//            sendEvent(MainViewModel.Event.SetShouldDisplayBottomBar(isVisible))
-//            Log.d("Navigation", "Route = $route")
-//            Log.d("Navigation", "IsVisible = $isVisible")
-//            Log.d("Navigation", "Distance.navTarget.javaClass.simpleName = " +
-//                    "${Distance.navTarget.javaClass.simpleName}")
-//        }
-//    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

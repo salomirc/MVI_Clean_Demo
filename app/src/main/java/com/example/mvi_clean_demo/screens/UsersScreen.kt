@@ -40,6 +40,7 @@ fun UsersScreen(
             sendEvent(Event.GetUsers)
         }
     }
+
     if (model.isLoading) {
         LoadingScreen()
     } else {

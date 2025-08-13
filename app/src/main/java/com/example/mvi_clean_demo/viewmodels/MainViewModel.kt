@@ -1,5 +1,6 @@
 package com.example.mvi_clean_demo.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.common.error_handling.IErrorHandlerBroadcastService
 import com.example.mvi_clean_demo.common.error_handling.MessageResourceIdWrapper
@@ -19,22 +20,26 @@ class MainViewModel @Inject constructor(
     )
 ) {
     init {
-        viewModelScope.launch {
-            collectMessageResourceIdWrapper()
-            startProcessNextMessageLoop()
-        }
+        collectMessageResourceIdWrapper()
+        startProcessNextMessageLoop()
     }
-    private suspend fun collectMessageResourceIdWrapper() {
-        broadcastService.messageResourceIdWrapper.collect { messageResourceIdWrapper ->
-            updateModelState { model ->
-                model.copy(messageResourceIdWrapper = messageResourceIdWrapper)
+    private fun collectMessageResourceIdWrapper() {
+        viewModelScope.launch {
+            broadcastService.messageResourceIdWrapper.collect { messageResourceIdWrapper ->
+                updateModelState { model ->
+                    model.copy(messageResourceIdWrapper = messageResourceIdWrapper)
+                }
+                Log.d("ToastMessage", "messageResourceIdWrapper: $messageResourceIdWrapper")
             }
         }
     }
-    private suspend fun startProcessNextMessageLoop() {
-        while (true) {
-            broadcastService.processNextMessage()
-            delay(3000L)
+    private fun startProcessNextMessageLoop() {
+        viewModelScope.launch {
+            while (true) {
+                broadcastService.processNextMessage()
+                Log.d("ToastMessage", "MainViewModel processNextMessage() called")
+                delay(3000L)
+            }
         }
     }
 
