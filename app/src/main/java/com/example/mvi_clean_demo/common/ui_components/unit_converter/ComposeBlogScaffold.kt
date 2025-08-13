@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import kotlinx.coroutines.launch
 
 @Composable
-fun ComposeUsersScaffold(
+fun ComposeBlogScaffold(
     navigationTitle: String,
     onNavigateBack: () -> Unit,
     content: @Composable (PaddingValues) -> Unit

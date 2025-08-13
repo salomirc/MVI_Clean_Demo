@@ -1,7 +1,6 @@
 package com.example.mvi_clean_demo.screens
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,61 +21,32 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mvi_clean_demo.citizen.domain.model.User
 import com.example.mvi_clean_demo.citizen.presentation.UsersViewModel
-import com.example.mvi_clean_demo.citizen.presentation.UsersViewModel.Event
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Failure
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 import com.example.mvi_clean_demo.common.ui_components.LoadingScreen
-import com.example.mvi_clean_demo.common.ui_components.unit_converter.ComposeUsersScaffold
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 
 @Composable
-fun UsersScreen(
+fun ComposeUsers(
     model: UsersViewModel.Model,
-    navigationTitle: String,
-    sendEvent: (Event) -> Unit,
-    onNavigateBack: () -> Unit,
-    onNextButton: () -> Unit
-) {
-    ComposeUsersScaffold(
-        navigationTitle = navigationTitle,
-        onNavigateBack = onNavigateBack,
-        content = { innerPadding ->
-            UsersScreenContent(
-                model = model,
-                sendEvent = sendEvent,
-                modifier = Modifier.padding(innerPadding),
-                onNextButton = onNextButton
-            )
-        }
-    )
-}
-
-@Composable
-fun UsersScreenContent(
-    model: UsersViewModel.Model,
-    sendEvent: (Event) -> Unit,
-    modifier: Modifier = Modifier,
+    sendEvent: (UsersViewModel.Event) -> Unit,
     onNextButton: () -> Unit
 ) {
     val users = model.users
     LaunchedEffect(users) {
         val shouldGetUsers = ((users is Idle) || (users is Failure))
         if (shouldGetUsers) {
-            sendEvent(Event.GetUsers)
+            sendEvent(UsersViewModel.Event.GetUsers)
         }
     }
-    Box(modifier = modifier) {
-        if (model.isLoading) {
-            LoadingScreen()
-        } else {
-            if (users is Success) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(users.data) { user ->
-                        UserCard(user = user)
-                    }
+    if (model.isLoading) {
+        LoadingScreen()
+    } else {
+        if (users is Success) {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(users.data) { user ->
+                    UserCard(user = user)
                 }
             }
         }
@@ -135,11 +105,9 @@ fun UsersPreview() {
     )
     ComposeUnitConverterTheme {
         Surface {
-            UsersScreen(
+            ComposeUsers(
                 model = model,
-                navigationTitle = "Users",
                 sendEvent = { },
-                onNavigateBack = { },
                 onNextButton = { }
             )
         }
