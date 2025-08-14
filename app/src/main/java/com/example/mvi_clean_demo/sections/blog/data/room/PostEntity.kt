@@ -4,19 +4,19 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "posts")
+@Entity(tableName = "posts_table")
 class PostEntity(
 
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    var id: Int,
+    val id: Int = 0,
 
     @ColumnInfo(name = "userId")
-    var userId: Int,
+    val userId: Int,
 
     @ColumnInfo(name = "title")
-    var title: String,
+    val title: String,
 
     @ColumnInfo(name = "body")
-    var body: String
+    val body: String
 )

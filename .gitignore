@@ -135,4 +135,7 @@ fabric.properties
 
 !/gradle/wrapper/gradle-wrapper.jar
 
+# Keep Room database schemas in Git
+!app/schemas/
+
 # End of https://www.toptal.com/developers/gitignore/api/androidstudio

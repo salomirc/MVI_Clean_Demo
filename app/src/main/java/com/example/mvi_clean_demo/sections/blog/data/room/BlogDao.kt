@@ -11,6 +11,6 @@ interface BlogDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPost(postEntity: PostEntity): Long
 
-    @Query("SELECT * FROM posts")
+    @Query("SELECT * FROM posts_table")
     suspend fun getPosts(): List<PostEntity>
 }

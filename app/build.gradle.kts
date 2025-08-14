@@ -48,6 +48,10 @@ android {
         buildConfig = true
         compose = true
     }
+
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+    }
 }
 
 dependencies {
