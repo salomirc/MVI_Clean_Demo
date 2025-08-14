@@ -1,7 +1,8 @@
-package com.example.mvi_clean_demo.viewmodels
+package com.example.mvi_clean_demo
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.example.mvi_clean_demo.base.BaseViewModel
 import com.example.mvi_clean_demo.common.error_handling.IErrorHandlerBroadcastService
 import com.example.mvi_clean_demo.common.error_handling.MessageResourceIdWrapper
 import dagger.hilt.android.lifecycle.HiltViewModel

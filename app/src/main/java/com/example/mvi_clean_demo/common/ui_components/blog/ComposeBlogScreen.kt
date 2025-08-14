@@ -11,7 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.ComposeUnitConverterTopBar
-import com.example.mvi_clean_demo.viewmodels.MainViewModel
+import com.example.mvi_clean_demo.MainViewModel
 import kotlinx.coroutines.launch
 
 @Composable

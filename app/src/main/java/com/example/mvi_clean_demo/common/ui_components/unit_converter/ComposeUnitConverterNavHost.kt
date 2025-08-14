@@ -21,8 +21,8 @@ import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConver
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.ComposeDistances
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.ComposeTemperature
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.DistancesViewModel
-import com.example.mvi_clean_demo.viewmodels.MainViewModel.Event
-import com.example.mvi_clean_demo.viewmodels.MainViewModel.Event.SetNavigationTitle
+import com.example.mvi_clean_demo.MainViewModel.Event
+import com.example.mvi_clean_demo.MainViewModel.Event.SetNavigationTitle
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel
 import kotlinx.serialization.Serializable
 

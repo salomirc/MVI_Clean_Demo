@@ -13,8 +13,8 @@ import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.LogNavigation
 import com.example.mvi_clean_demo.sections.blog.presentation.ComposeUsers
 import com.example.mvi_clean_demo.sections.blog.presentation.UsersViewModel
-import com.example.mvi_clean_demo.viewmodels.MainViewModel
-import com.example.mvi_clean_demo.viewmodels.MainViewModel.Event.SetNavigationTitle
+import com.example.mvi_clean_demo.MainViewModel
+import com.example.mvi_clean_demo.MainViewModel.Event.SetNavigationTitle
 import kotlinx.serialization.Serializable
 
 sealed interface BlogNavTarget {

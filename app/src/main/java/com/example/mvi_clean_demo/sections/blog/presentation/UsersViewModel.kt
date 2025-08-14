@@ -13,7 +13,7 @@ import com.example.mvi_clean_demo.sections.blog.data.network.repository.IBlogRep
 import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntry
 import com.example.mvi_clean_demo.sections.blog.domain.model.User
 import com.example.mvi_clean_demo.sections.blog.domain.useCase.IGetUsersUseCase
-import com.example.mvi_clean_demo.viewmodels.BaseViewModel
+import com.example.mvi_clean_demo.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

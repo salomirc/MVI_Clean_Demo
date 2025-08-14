@@ -47,7 +47,7 @@ import com.example.mvi_clean_demo.sections.unit_converter.presentation.ComposeDi
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.ComposeTemperature
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.DistancesViewModel
-import com.example.mvi_clean_demo.viewmodels.MainViewModel
+import com.example.mvi_clean_demo.MainViewModel
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel
 import kotlinx.coroutines.launch
 

@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.viewmodels
+package com.example.mvi_clean_demo.base
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

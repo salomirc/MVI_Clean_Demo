@@ -8,7 +8,7 @@ import com.example.mvi_clean_demo.common.ui_components.blog.ComposeBlogScreen
 import com.example.mvi_clean_demo.common.ui_components.main.MainNavTarget.BlogHostNavTarget
 import com.example.mvi_clean_demo.common.ui_components.main.MainNavTarget.ConverterTabbedNavTarget
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterTabbedScreen
-import com.example.mvi_clean_demo.viewmodels.MainViewModel
+import com.example.mvi_clean_demo.MainViewModel
 import kotlinx.serialization.Serializable
 
 sealed interface MainNavTarget {
