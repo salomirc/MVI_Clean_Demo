@@ -2,6 +2,7 @@ package com.example.mvi_clean_demo.sections.blog.domain.useCase
 
 
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState
+import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Failure
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.sections.blog.data.network.repository.IBlogRepository
 import com.example.mvi_clean_demo.sections.blog.domain.model.User
@@ -20,16 +21,26 @@ class GetUsersUseCase @Inject constructor(
     override suspend fun getUsers(): Flow<ActiveResponseState<List<User>>> {
         return repository
             .getUsers()
-            .map {
-                when (it) {
-                    is Success -> Success(
-                            it.data.map { user ->
+            .map { responseState ->
+                when (responseState) {
+                    is Success -> {
+                        lateinit var result: ActiveResponseState<List<User>>
+                        runCatching {
+                            responseState.data.map { user ->
                                 user.copy(
                                     name = user.name.uppercase()
                                 )
                             }
-                        )
-                    else -> it
+                        }
+                            .onSuccess { users ->
+                                result = Success(users)
+                            }
+                            .onFailure { throwable ->
+                                result = Failure(throwable)
+                            }
+                        result
+                    }
+                    else -> responseState
                 }
             }
     }
