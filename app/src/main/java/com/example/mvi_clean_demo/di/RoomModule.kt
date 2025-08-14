@@ -1,7 +1,6 @@
 package com.example.mvi_clean_demo.di
 
 import android.content.Context
-import com.example.mvi_clean_demo.sections.blog.data.room.dao.PostEntityDao
 import com.example.mvi_clean_demo.sections.blog.data.room.db.BlogDatabase
 import dagger.Module
 import dagger.Provides
@@ -18,11 +17,5 @@ object RoomModule {
     @Provides
     fun provideBlogDb(@ApplicationContext context: Context): BlogDatabase {
         return BlogDatabase.fromFactory(context)
-    }
-
-    @Singleton
-    @Provides
-    fun providePostEntityDao(blogDatabase: BlogDatabase): PostEntityDao {
-        return blogDatabase.postEntityDao()
     }
 }

@@ -1,16 +1,27 @@
 package com.example.mvi_clean_demo.sections.blog.data.room.db
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.mvi_clean_demo.sections.blog.data.room.dao.PostEntityDao
+import com.example.mvi_clean_demo.sections.blog.data.room.dao.UserEntityDao
 import com.example.mvi_clean_demo.sections.blog.data.room.entities.PostEntity
+import com.example.mvi_clean_demo.sections.blog.data.room.entities.UserEntity
 
-@Database(entities = [PostEntity::class ], version = 1)
+@Database(
+    entities = [PostEntity::class, UserEntity::class],
+    version = 2, // increment version
+    exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2) // tell Room to handle it
+    ]
+)
 abstract class BlogDatabase: RoomDatabase() {
 
     abstract fun postEntityDao(): PostEntityDao
+    abstract fun userEntityDao(): UserEntityDao
 
     companion object{
         const val DATABASE_NAME: String = "blog_db"
