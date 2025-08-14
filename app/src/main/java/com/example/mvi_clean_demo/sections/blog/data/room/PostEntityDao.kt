@@ -6,7 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
-interface BlogDao {
+interface PostEntityDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPost(postEntity: PostEntity): Long

@@ -2,8 +2,8 @@ package com.example.mvi_clean_demo.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.mvi_clean_demo.sections.blog.data.room.BlogDao
 import com.example.mvi_clean_demo.sections.blog.data.room.BlogDatabase
+import com.example.mvi_clean_demo.sections.blog.data.room.PostEntityDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,7 +29,7 @@ object RoomModule {
 
     @Singleton
     @Provides
-    fun provideBlogDao(blogDatabase: BlogDatabase): BlogDao {
-        return blogDatabase.blogDao()
+    fun providePostEntityDao(blogDatabase: BlogDatabase): PostEntityDao {
+        return blogDatabase.postEntityDao()
     }
 }
