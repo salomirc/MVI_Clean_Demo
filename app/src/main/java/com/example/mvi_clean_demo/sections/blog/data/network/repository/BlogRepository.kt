@@ -6,14 +6,20 @@ import com.example.mvi_clean_demo.common.retrofit.IRetrofitApiCaller
 import com.example.mvi_clean_demo.sections.blog.data.network.api.BlogApi
 import com.example.mvi_clean_demo.sections.blog.data.network.models.respoonses.PostEntryResponseDto
 import com.example.mvi_clean_demo.sections.blog.data.network.models.respoonses.UserResponseDto
+import com.example.mvi_clean_demo.sections.blog.data.room.dao.PostEntityDao
+import com.example.mvi_clean_demo.sections.blog.data.room.dao.UserEntityDao
+import com.example.mvi_clean_demo.sections.blog.data.room.entities.UserEntity
 import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntry
 import com.example.mvi_clean_demo.sections.blog.domain.model.User
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 interface IBlogRepository {
-    suspend fun getUsers(): Result<List<User>>
+    suspend fun getUsers(): Flow<ActiveResponseState<List<User>>>
 
     suspend fun getPostEntriesFromUser(
         userId: Int
@@ -24,14 +30,58 @@ interface IBlogRepository {
 @ViewModelScoped
 class BlogRepository @Inject constructor(
     private val api : BlogApi,
+    private val userEntityDao: UserEntityDao,
+    private val postEntityDao : PostEntityDao,
     private val apiCaller: IRetrofitApiCaller
 ): IBlogRepository {
 
-    override suspend fun getUsers(): Result<List<User>> {
-        return apiCaller.invoke {
-            api.getUsers()
-        }.mapCatching {
-            it.map(Mapper::mapToUser)
+    override suspend fun getUsers(): Flow<ActiveResponseState<List<User>>> {
+        return flow {
+            emit(ActiveResponseState.Loading)
+
+            val localResult = runCatching {
+                withContext(Dispatchers.IO) {
+                    userEntityDao.getUsers()
+                }.map { userEntity ->
+                    userEntity.toDomainModel()
+                }
+            }
+
+            localResult
+                .onSuccess {
+                    emit(ActiveResponseState.Success(it))
+                }
+                .onFailure { throwable ->
+                    emit(ActiveResponseState.Failure(throwable))
+                }
+
+            emit(ActiveResponseState.Loading)
+
+            val networkResult = apiCaller.invoke {
+                    api.getUsers()
+                }
+                .mapCatching {
+                    it.map(Mapper::mapToEntityUser)
+                }
+                .onSuccess { userDtoList ->
+                    userDtoList.forEach { userEntity ->
+                        userEntityDao.insertUser(userEntity)
+                    }
+                }
+                .mapCatching {
+                    it.map { userEntity ->
+                        userEntity.toDomainModel()
+                    }
+                }
+
+            networkResult
+                .onSuccess {
+                    emit(ActiveResponseState.Success(it))
+                }
+                .onFailure { throwable ->
+                    emit(ActiveResponseState.Failure(throwable))
+                }
+
         }
     }
 
@@ -46,8 +96,9 @@ class BlogRepository @Inject constructor(
     }
 
     private object Mapper {
-        fun mapToUser(result: UserResponseDto): User {
-            return result.toDomainModel()
+
+        fun mapToEntityUser(result: UserResponseDto): UserEntity {
+            return result.toEntityModel()
         }
         fun mapToPostEntry(result: PostEntryResponseDto): PostEntry {
             return result.toDomainModel()

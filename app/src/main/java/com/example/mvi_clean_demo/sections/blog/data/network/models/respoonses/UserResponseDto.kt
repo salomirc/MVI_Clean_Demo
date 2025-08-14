@@ -1,7 +1,9 @@
 package com.example.mvi_clean_demo.sections.blog.data.network.models.respoonses
 
+import com.example.mvi_clean_demo.common.api.DomainModel
+import com.example.mvi_clean_demo.common.api.EntityModel
+import com.example.mvi_clean_demo.sections.blog.data.room.entities.UserEntity
 import com.example.mvi_clean_demo.sections.blog.domain.model.User
-import com.example.mvi_clean_demo.common.api.DtoResponse
 import com.google.gson.annotations.SerializedName
 
 data class UserResponseDto(
@@ -13,7 +15,7 @@ data class UserResponseDto(
     @SerializedName("phone") val phone: String?,
     @SerializedName("username") val username: String,
     @SerializedName("website") val website: String?
-): DtoResponse<User> {
+): DomainModel<User>, EntityModel<UserEntity> {
     data class Address(
         @SerializedName("city") val city: String?,
         @SerializedName("geo") val geo: Geo?,
@@ -45,6 +47,32 @@ data class UserResponseDto(
                 zipcode = address?.zipcode ?: ""
             ),
             company = User.Company(
+                bs = company?.bs ?: "",
+                catchPhrase = company?.catchPhrase ?: "",
+                name = company?.name ?: ""
+            ),
+            email = email ?: "",
+            id = id,
+            name = name ?: "",
+            phone = phone ?: "",
+            username = username,
+            website = website ?: ""
+        )
+    }
+
+    override fun toEntityModel(): UserEntity {
+        return UserEntity(
+            address = UserEntity.Address(
+                city = address?.city ?: "",
+                geo = UserEntity.Address.Geo(
+                    lat = address?.geo?.lat ?: "",
+                    lng = address?.geo?.lng ?: ""
+                ),
+                street = address?.street ?: "",
+                suite = address?.suite ?: "",
+                zipcode = address?.zipcode ?: ""
+            ),
+            company = UserEntity.Company(
                 bs = company?.bs ?: "",
                 catchPhrase = company?.catchPhrase ?: "",
                 name = company?.name ?: ""
