@@ -31,7 +31,11 @@ data class UserEntity(
     val username: String,
 
     @ColumnInfo(name = "website")
-    val website: String
+    val website: String,
+
+    @ColumnInfo(name = "token")
+    var token: String? = null
+
 ) {
     data class Address(
 

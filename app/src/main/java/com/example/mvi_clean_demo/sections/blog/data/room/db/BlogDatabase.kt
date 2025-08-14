@@ -12,10 +12,11 @@ import com.example.mvi_clean_demo.sections.blog.data.room.entities.UserEntity
 
 @Database(
     entities = [PostEntity::class, UserEntity::class],
-    version = 2, // increment version
+    version = 3, // ✅ increment version
     exportSchema = true,
     autoMigrations = [
-        AutoMigration(from = 1, to = 2) // tell Room to handle it
+        AutoMigration(from = 1, to = 2), // existing
+        AutoMigration(from = 2, to = 3) // ✅ new
     ]
 )
 abstract class BlogDatabase: RoomDatabase() {
