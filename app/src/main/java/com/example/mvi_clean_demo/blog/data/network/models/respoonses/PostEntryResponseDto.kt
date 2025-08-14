@@ -1,6 +1,6 @@
-package com.example.mvi_clean_demo.citizen.data.network.models.respoonses
+package com.example.mvi_clean_demo.blog.data.network.models.respoonses
 
-import com.example.mvi_clean_demo.citizen.domain.model.PostEntry
+import com.example.mvi_clean_demo.blog.domain.model.PostEntry
 import com.example.mvi_clean_demo.common.api.DtoResponse
 import com.google.gson.annotations.SerializedName
 

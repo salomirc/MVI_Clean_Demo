@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.citizen.data.room
+package com.example.mvi_clean_demo.blog.data.room
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

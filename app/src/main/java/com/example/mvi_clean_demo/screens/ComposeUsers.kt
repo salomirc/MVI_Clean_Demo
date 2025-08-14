@@ -19,8 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mvi_clean_demo.citizen.domain.model.User
-import com.example.mvi_clean_demo.citizen.presentation.UsersViewModel
+import com.example.mvi_clean_demo.blog.domain.model.User
+import com.example.mvi_clean_demo.blog.presentation.UsersViewModel
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Failure
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle

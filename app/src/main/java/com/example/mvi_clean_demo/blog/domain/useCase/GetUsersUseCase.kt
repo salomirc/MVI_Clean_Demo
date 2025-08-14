@@ -1,8 +1,8 @@
-package com.example.mvi_clean_demo.citizen.domain.useCase
+package com.example.mvi_clean_demo.blog.domain.useCase
 
 
-import com.example.mvi_clean_demo.citizen.data.network.repository.IBlogRepository
-import com.example.mvi_clean_demo.citizen.domain.model.User
+import com.example.mvi_clean_demo.blog.data.network.repository.IBlogRepository
+import com.example.mvi_clean_demo.blog.domain.model.User
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState
 import com.example.mvi_clean_demo.common.repository.toFlow
 import kotlinx.coroutines.flow.Flow

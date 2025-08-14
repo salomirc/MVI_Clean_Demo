@@ -1,11 +1,11 @@
-package com.example.mvi_clean_demo.citizen.presentation
+package com.example.mvi_clean_demo.blog.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.citizen.data.network.repository.IBlogRepository
-import com.example.mvi_clean_demo.citizen.domain.model.PostEntry
-import com.example.mvi_clean_demo.citizen.domain.model.User
-import com.example.mvi_clean_demo.citizen.domain.useCase.IGetUsersUseCase
+import com.example.mvi_clean_demo.blog.data.network.repository.IBlogRepository
+import com.example.mvi_clean_demo.blog.domain.model.PostEntry
+import com.example.mvi_clean_demo.blog.domain.model.User
+import com.example.mvi_clean_demo.blog.domain.useCase.IGetUsersUseCase
 import com.example.mvi_clean_demo.common.error_handling.ErrorHandler
 import com.example.mvi_clean_demo.common.error_handling.ErrorHandlerFactory
 import com.example.mvi_clean_demo.common.repository.ResponseState

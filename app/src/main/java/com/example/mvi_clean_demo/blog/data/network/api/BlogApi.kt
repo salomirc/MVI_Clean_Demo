@@ -1,7 +1,7 @@
-package com.example.mvi_clean_demo.citizen.data.network.api
+package com.example.mvi_clean_demo.blog.data.network.api
 
-import com.example.mvi_clean_demo.citizen.data.network.models.respoonses.PostEntryResponseDto
-import com.example.mvi_clean_demo.citizen.data.network.models.respoonses.UserResponseDto
+import com.example.mvi_clean_demo.blog.data.network.models.respoonses.PostEntryResponseDto
+import com.example.mvi_clean_demo.blog.data.network.models.respoonses.UserResponseDto
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

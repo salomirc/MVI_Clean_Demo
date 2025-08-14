@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.citizen.domain.model
+package com.example.mvi_clean_demo.blog.domain.model
 
 data class User(
     val address: Address,

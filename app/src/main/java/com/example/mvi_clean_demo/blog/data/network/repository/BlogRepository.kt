@@ -1,10 +1,10 @@
-package com.example.mvi_clean_demo.citizen.data.network.repository
+package com.example.mvi_clean_demo.blog.data.network.repository
 
-import com.example.mvi_clean_demo.citizen.data.network.api.BlogApi
-import com.example.mvi_clean_demo.citizen.data.network.models.respoonses.PostEntryResponseDto
-import com.example.mvi_clean_demo.citizen.data.network.models.respoonses.UserResponseDto
-import com.example.mvi_clean_demo.citizen.domain.model.PostEntry
-import com.example.mvi_clean_demo.citizen.domain.model.User
+import com.example.mvi_clean_demo.blog.data.network.api.BlogApi
+import com.example.mvi_clean_demo.blog.data.network.models.respoonses.PostEntryResponseDto
+import com.example.mvi_clean_demo.blog.data.network.models.respoonses.UserResponseDto
+import com.example.mvi_clean_demo.blog.domain.model.PostEntry
+import com.example.mvi_clean_demo.blog.domain.model.User
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState
 import com.example.mvi_clean_demo.common.repository.toFlow
 import com.example.mvi_clean_demo.common.retrofit.IRetrofitApiCaller
