@@ -1,9 +1,8 @@
 package com.example.mvi_clean_demo.di
 
 import android.content.Context
-import androidx.room.Room
-import com.example.mvi_clean_demo.sections.blog.data.room.BlogDatabase
-import com.example.mvi_clean_demo.sections.blog.data.room.PostEntityDao
+import com.example.mvi_clean_demo.sections.blog.data.room.dao.PostEntityDao
+import com.example.mvi_clean_demo.sections.blog.data.room.db.BlogDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,13 +17,7 @@ object RoomModule {
     @Singleton
     @Provides
     fun provideBlogDb(@ApplicationContext context: Context): BlogDatabase {
-        return Room
-            .databaseBuilder(
-                context,
-                BlogDatabase::class.java,
-                BlogDatabase.DATABASE_NAME)
-            .fallbackToDestructiveMigration()
-            .build()
+        return BlogDatabase.fromFactory(context)
     }
 
     @Singleton

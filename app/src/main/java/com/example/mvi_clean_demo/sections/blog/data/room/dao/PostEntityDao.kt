@@ -1,9 +1,10 @@
-package com.example.mvi_clean_demo.sections.blog.data.room
+package com.example.mvi_clean_demo.sections.blog.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.example.mvi_clean_demo.sections.blog.data.room.entities.PostEntity
 
 @Dao
 interface PostEntityDao {
