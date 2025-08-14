@@ -1,10 +1,10 @@
 package com.example.mvi_clean_demo.sections.blog.domain.useCase
 
 
-import com.example.mvi_clean_demo.blog.data.network.repository.IBlogRepository
-import com.example.mvi_clean_demo.blog.domain.model.User
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState
 import com.example.mvi_clean_demo.common.repository.toFlow
+import com.example.mvi_clean_demo.sections.blog.data.network.repository.IBlogRepository
+import com.example.mvi_clean_demo.sections.blog.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

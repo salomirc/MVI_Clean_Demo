@@ -10,9 +10,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.blog.presentation.UsersViewModel
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.LogNavigation
 import com.example.mvi_clean_demo.screens.ComposeUsers
+import com.example.mvi_clean_demo.sections.blog.presentation.UsersViewModel
 import com.example.mvi_clean_demo.viewmodels.MainViewModel
 import com.example.mvi_clean_demo.viewmodels.MainViewModel.Event.SetNavigationTitle
 import kotlinx.serialization.Serializable

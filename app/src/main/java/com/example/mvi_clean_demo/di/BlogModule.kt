@@ -1,10 +1,10 @@
 package com.example.mvi_clean_demo.di
 
-import com.example.mvi_clean_demo.blog.data.network.api.BlogApi
-import com.example.mvi_clean_demo.blog.data.network.repository.BlogRepository
-import com.example.mvi_clean_demo.blog.data.network.repository.IBlogRepository
-import com.example.mvi_clean_demo.blog.domain.useCase.GetUsersUseCase
-import com.example.mvi_clean_demo.blog.domain.useCase.IGetUsersUseCase
+import com.example.mvi_clean_demo.sections.blog.data.network.api.BlogApi
+import com.example.mvi_clean_demo.sections.blog.data.network.repository.BlogRepository
+import com.example.mvi_clean_demo.sections.blog.data.network.repository.IBlogRepository
+import com.example.mvi_clean_demo.sections.blog.domain.useCase.GetUsersUseCase
+import com.example.mvi_clean_demo.sections.blog.domain.useCase.IGetUsersUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

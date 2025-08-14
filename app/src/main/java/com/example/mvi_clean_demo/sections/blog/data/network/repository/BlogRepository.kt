@@ -1,13 +1,13 @@
 package com.example.mvi_clean_demo.sections.blog.data.network.repository
 
-import com.example.mvi_clean_demo.blog.data.network.api.BlogApi
-import com.example.mvi_clean_demo.blog.data.network.models.respoonses.PostEntryResponseDto
-import com.example.mvi_clean_demo.blog.data.network.models.respoonses.UserResponseDto
-import com.example.mvi_clean_demo.blog.domain.model.PostEntry
-import com.example.mvi_clean_demo.blog.domain.model.User
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState
 import com.example.mvi_clean_demo.common.repository.toFlow
 import com.example.mvi_clean_demo.common.retrofit.IRetrofitApiCaller
+import com.example.mvi_clean_demo.sections.blog.data.network.api.BlogApi
+import com.example.mvi_clean_demo.sections.blog.data.network.models.respoonses.PostEntryResponseDto
+import com.example.mvi_clean_demo.sections.blog.data.network.models.respoonses.UserResponseDto
+import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntry
+import com.example.mvi_clean_demo.sections.blog.domain.model.User
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

@@ -2,10 +2,6 @@ package com.example.mvi_clean_demo.sections.blog.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.blog.data.network.repository.IBlogRepository
-import com.example.mvi_clean_demo.blog.domain.model.PostEntry
-import com.example.mvi_clean_demo.blog.domain.model.User
-import com.example.mvi_clean_demo.blog.domain.useCase.IGetUsersUseCase
 import com.example.mvi_clean_demo.common.error_handling.ErrorHandler
 import com.example.mvi_clean_demo.common.error_handling.ErrorHandlerFactory
 import com.example.mvi_clean_demo.common.repository.ResponseState
@@ -13,6 +9,10 @@ import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponse
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Loading
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
+import com.example.mvi_clean_demo.sections.blog.data.network.repository.IBlogRepository
+import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntry
+import com.example.mvi_clean_demo.sections.blog.domain.model.User
+import com.example.mvi_clean_demo.sections.blog.domain.useCase.IGetUsersUseCase
 import com.example.mvi_clean_demo.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
