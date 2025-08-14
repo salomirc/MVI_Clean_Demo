@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.screens
+package com.example.mvi_clean_demo.sections.blog.presentation
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
@@ -24,7 +24,6 @@ import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponse
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 import com.example.mvi_clean_demo.common.ui_components.LoadingScreen
 import com.example.mvi_clean_demo.sections.blog.domain.model.User
-import com.example.mvi_clean_demo.sections.blog.presentation.UsersViewModel
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 
 @Composable

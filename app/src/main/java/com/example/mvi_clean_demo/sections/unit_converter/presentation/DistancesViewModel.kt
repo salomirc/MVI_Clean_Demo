@@ -1,8 +1,9 @@
-package com.example.mvi_clean_demo.viewmodels
+package com.example.mvi_clean_demo.sections.unit_converter.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.repositories.IDataRepository
+import com.example.mvi_clean_demo.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

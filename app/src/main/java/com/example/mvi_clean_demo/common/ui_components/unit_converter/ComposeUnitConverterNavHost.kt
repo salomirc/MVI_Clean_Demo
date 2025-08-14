@@ -18,12 +18,12 @@ import com.example.mvi_clean_demo.common.ui_components.unit_converter.Navigation
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.NavigationItemModel.Temperature
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterNavTarget.DistancesNavTarget
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterNavTarget.TemperatureNavTarget
-import com.example.mvi_clean_demo.screens.ComposeDistances
-import com.example.mvi_clean_demo.screens.ComposeTemperature
-import com.example.mvi_clean_demo.viewmodels.DistancesViewModel
+import com.example.mvi_clean_demo.sections.unit_converter.presentation.ComposeDistances
+import com.example.mvi_clean_demo.sections.unit_converter.presentation.ComposeTemperature
+import com.example.mvi_clean_demo.sections.unit_converter.presentation.DistancesViewModel
 import com.example.mvi_clean_demo.viewmodels.MainViewModel.Event
 import com.example.mvi_clean_demo.viewmodels.MainViewModel.Event.SetNavigationTitle
-import com.example.mvi_clean_demo.viewmodels.TemperatureViewModel
+import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel
 import kotlinx.serialization.Serializable
 
 sealed interface UnitConverterNavTarget {

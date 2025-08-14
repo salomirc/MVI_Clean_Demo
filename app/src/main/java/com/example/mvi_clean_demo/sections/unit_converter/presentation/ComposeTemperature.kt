@@ -1,15 +1,10 @@
-package com.example.mvi_clean_demo.screens
+package com.example.mvi_clean_demo.sections.unit_converter.presentation
 
 import android.content.res.Configuration
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -43,34 +38,34 @@ import androidx.compose.ui.unit.dp
 import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 import com.example.mvi_clean_demo.theme.disabled
-import com.example.mvi_clean_demo.viewmodels.DistancesViewModel
-import com.example.mvi_clean_demo.viewmodels.DistancesViewModel.Event.Convert
-import com.example.mvi_clean_demo.viewmodels.DistancesViewModel.Event.ValidateButtonEnabled
+import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel.Event.Convert
+import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel.Event.SetScale
+import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel.Event.SetTemperature
+import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel.Event.ValidateButtonEnabled
 
 @Composable
-fun ComposeDistances(
-    model: DistancesViewModel.Model,
-    sendEvent: (DistancesViewModel.Event) -> Unit,
-    onNextButton: () -> Unit
+fun ComposeTemperature(
+    model: TemperatureViewModel.Model,
+    sendEvent: (TemperatureViewModel.Event) -> Unit
 ) {
-    val strMeter = stringResource(id = R.string.meter)
-    val strMile = stringResource(id = R.string.mile)
-    val inputUnit by remember(model.unit) {
+    val strCelsius = stringResource(id = R.string.celsius)
+    val strFahrenheit = stringResource(id = R.string.fahrenheit)
+    val inputScale by remember(model.scale) {
         mutableIntStateOf(
-            when (model.unit) {
-                R.string.meter -> R.string.mile
-                else -> R.string.meter
+            when (model.scale) {
+                R.string.celsius -> R.string.fahrenheit
+                else -> R.string.celsius
             }
         )
     }
     val result by remember(model.convertedValue) {
-        val scaleString = if (model.unit == R.string.meter) strMeter else strMile
+        val scaleString = if (model.scale == R.string.celsius) strCelsius else strFahrenheit
         mutableStateOf(model.convertedValue?.let { value ->
             "$value $scaleString"
         })
     }
-    LaunchedEffect(model.distance) {
-        sendEvent(ValidateButtonEnabled(model.distance))
+    LaunchedEffect(model.temperature) {
+        sendEvent(ValidateButtonEnabled(model.temperature))
     }
     // Remember the scroll state
     val scrollState = rememberScrollState()
@@ -85,32 +80,32 @@ fun ComposeDistances(
         Row(
             modifier = Modifier.padding(bottom = 16.dp)
         ) {
-            DistanceTextField(
-                temperature = model.distance,
+            TemperatureTextField(
+                temperature = model.temperature,
                 modifier = Modifier.padding(start = 28.dp),
                 onValueChange = { text ->
-                    sendEvent(DistancesViewModel.Event.SetDistance(distance = text))
+                    sendEvent(SetTemperature(temperature = text))
                 },
                 onDone = {
-                    sendEvent(Convert(model.distance, model.unit))
+                    sendEvent(Convert(model.temperature, model.scale))
                 },
             )
             Text(
-                text = stringResource(inputUnit),
+                text = stringResource(inputScale),
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .width(20.dp)
             )
         }
-        DistanceUnitButtonGroup(
-            unit = model.unit,
+        TemperatureScaleButtonGroup(
+            scale = model.scale,
             modifier = Modifier.padding(bottom = 16.dp),
             onClick = { stringResId ->
-                sendEvent(DistancesViewModel.Event.SetUnit(unit = stringResId))
+                sendEvent(SetScale(scale = stringResId))
             }
         )
         Button(
-            onClick = { sendEvent(Convert(model.distance, model.unit)) },
+            onClick = { sendEvent(Convert(model.temperature, model.scale)) },
             enabled = model.isButtonEnabled,
             elevation = ButtonDefaults.buttonElevation(
                 defaultElevation = 3.0.dp
@@ -124,28 +119,11 @@ fun ComposeDistances(
                 style = MaterialTheme.typography.headlineSmall
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .padding(16.dp),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            Button(
-                onClick = onNextButton,
-                modifier = Modifier.defaultMinSize(128.dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.next)
-                )
-            }
-        }
     }
 }
 
 @Composable
-fun DistanceTextField(
+fun TemperatureTextField(
     temperature: String,
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
@@ -183,20 +161,20 @@ fun DistanceTextField(
 }
 
 @Composable
-fun DistanceUnitButtonGroup(
-    unit: Int,
+fun TemperatureScaleButtonGroup(
+    scale: Int,
     modifier: Modifier = Modifier,
     onClick: (Int) -> Unit
 ) {
     Row(modifier = modifier) {
-        DistanceRadioButton(
-            unit = unit,
-            resId = R.string.meter,
+        TemperatureRadioButton(
+            scale = scale,
+            resId = R.string.celsius,
             onClick = onClick
         )
-        DistanceRadioButton(
-            unit = unit,
-            resId = R.string.mile,
+        TemperatureRadioButton(
+            scale = scale,
+            resId = R.string.fahrenheit,
             onClick = onClick,
             modifier = Modifier.padding(start = 16.dp)
         )
@@ -204,8 +182,8 @@ fun DistanceUnitButtonGroup(
 }
 
 @Composable
-fun DistanceRadioButton(
-    unit: Int,
+fun TemperatureRadioButton(
+    scale: Int,
     @StringRes resId: Int,
     onClick: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -215,7 +193,7 @@ fun DistanceRadioButton(
         modifier = modifier
     ) {
         RadioButton(
-            selected = unit == resId,
+            selected = scale == resId,
             onClick = {
                 onClick(resId)
             },
@@ -247,20 +225,18 @@ fun DistanceRadioButton(
     device = Devices.PIXEL
 )
 @Composable
-fun DistanceConverterPreview() {
-    val model = DistancesViewModel.Model(
-        distance = "100",
-        unit = R.string.meter,
+fun TemperatureConverterPreview() {
+    val model = TemperatureViewModel.Model(
+        temperature = "100",
+        scale = R.string.celsius,
         isButtonEnabled = false
     )
     ComposeUnitConverterTheme {
         Surface {
-            ComposeDistances(
+            ComposeTemperature(
                 model = model,
-                sendEvent = { },
-                onNextButton = { }
+                sendEvent = { }
             )
         }
     }
 }
-
