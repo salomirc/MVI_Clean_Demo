@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.blog.presentation
+package com.example.mvi_clean_demo.sections.blog.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.R

@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.blog.data.network.repository
+package com.example.mvi_clean_demo.sections.blog.data.network.repository
 
 import com.example.mvi_clean_demo.blog.data.network.api.BlogApi
 import com.example.mvi_clean_demo.blog.data.network.models.respoonses.PostEntryResponseDto

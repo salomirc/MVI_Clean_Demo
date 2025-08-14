@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.blog.domain.useCase
+package com.example.mvi_clean_demo.sections.blog.domain.useCase
 
 
 import com.example.mvi_clean_demo.blog.data.network.repository.IBlogRepository

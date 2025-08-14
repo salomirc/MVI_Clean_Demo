@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.blog.domain.model
+package com.example.mvi_clean_demo.sections.blog.domain.model
 
 data class PostEntry(
    val id: Int,

@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.blog.data.network.models.requests
+package com.example.mvi_clean_demo.sections.blog.data.network.models.requests
 
 
 //request body Dto class

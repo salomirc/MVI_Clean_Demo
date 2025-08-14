@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.blog.data.room
+package com.example.mvi_clean_demo.sections.blog.data.room
 
 import androidx.room.Dao
 import androidx.room.Insert
