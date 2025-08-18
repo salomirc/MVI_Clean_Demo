@@ -2,7 +2,6 @@ package com.example.mvi_clean_demo.sections.blog.data.network.repository
 
 import com.example.mvi_clean_demo.common.repository.DataSourcePattern
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState
-import com.example.mvi_clean_demo.common.repository.toFlow
 import com.example.mvi_clean_demo.common.retrofit.IRetrofitApiCaller
 import com.example.mvi_clean_demo.sections.blog.data.network.api.BlogApi
 import com.example.mvi_clean_demo.sections.blog.data.network.models.respoonses.PostEntryResponseDto
@@ -70,11 +69,17 @@ class BlogRepository @Inject constructor(
     override suspend fun getPostEntriesFromUser(
         userId: Int
     ): Flow<ActiveResponseState<List<PostEntry>>> {
-        return apiCaller.invoke {
-            api.getPostsFromUser(userId = userId)
-        }.mapCatching {
-            it.map(Mapper::mapToPostEntry)
-        }.toFlow()
+        return DataSourcePattern.singlePattern(
+            result = {
+                apiCaller.invoke {
+                    api.getPostsFromUser(userId = userId)
+                }
+                    .mapCatching {
+                        it.map(Mapper::mapToPostEntry)
+                    }
+
+            }
+        )
     }
 
     private object Mapper {
