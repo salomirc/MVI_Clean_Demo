@@ -2,8 +2,7 @@ package com.example.mvi_clean_demo.sections.blog.domain.useCase
 
 
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState
-import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Failure
-import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
+import com.example.mvi_clean_demo.common.repository.activeResponseStateWrapper
 import com.example.mvi_clean_demo.sections.blog.data.network.repository.IBlogRepository
 import com.example.mvi_clean_demo.sections.blog.domain.model.User
 import kotlinx.coroutines.flow.Flow
@@ -22,25 +21,12 @@ class GetUsersUseCase @Inject constructor(
         return repository
             .getUsers()
             .map { responseState ->
-                when (responseState) {
-                    is Success -> {
-                        lateinit var result: ActiveResponseState<List<User>>
-                        runCatching {
-                            responseState.data.map { user ->
-                                user.copy(
-                                    name = user.name.uppercase()
-                                )
-                            }
-                        }
-                            .onSuccess { users ->
-                                result = Success(users)
-                            }
-                            .onFailure { throwable ->
-                                result = Failure(throwable)
-                            }
-                        result
+                responseState.activeResponseStateWrapper { users ->
+                    users.map { user ->
+                        user.copy(
+                            name = user.name.uppercase()
+                        )
                     }
-                    else -> responseState
                 }
             }
     }

@@ -1,5 +1,6 @@
 package com.example.mvi_clean_demo.sections.blog.data.network.repository
 
+import com.example.mvi_clean_demo.common.repository.DataSourcePattern
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState
 import com.example.mvi_clean_demo.common.repository.toFlow
 import com.example.mvi_clean_demo.common.retrofit.IRetrofitApiCaller
@@ -14,7 +15,6 @@ import com.example.mvi_clean_demo.sections.blog.domain.model.User
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -36,53 +36,35 @@ class BlogRepository @Inject constructor(
 ): IBlogRepository {
 
     override suspend fun getUsers(): Flow<ActiveResponseState<List<User>>> {
-        return flow {
-            emit(ActiveResponseState.Loading)
-
-            val localResult = runCatching {
-                withContext(Dispatchers.IO) {
-                    userEntityDao.getUsers()
-                }.map { userEntity ->
-                    userEntity.toDomainModel()
-                }
-            }
-
-            localResult
-                .onSuccess {
-                    emit(ActiveResponseState.Success(it))
-                }
-                .onFailure { throwable ->
-                    emit(ActiveResponseState.Failure(throwable))
-                }
-
-            emit(ActiveResponseState.Loading)
-
-            val networkResult = apiCaller.invoke {
-                    api.getUsers()
-                }
-                .mapCatching {
-                    it.map(Mapper::mapToEntityUser)
-                }
-                .onSuccess { userDtoList ->
-                    userDtoList.forEach { userEntity ->
-                        userEntityDao.insertUser(userEntity)
-                    }
-                }
-                .mapCatching {
-                    it.map { userEntity ->
+        return DataSourcePattern.dualPattern(
+            localResult = {
+                runCatching {
+                    withContext(Dispatchers.IO) {
+                        userEntityDao.getUsers()
+                    }.map { userEntity ->
                         userEntity.toDomainModel()
                     }
                 }
-
-            networkResult
-                .onSuccess {
-                    emit(ActiveResponseState.Success(it))
+            },
+            networkResult = {
+                apiCaller.invoke {
+                    api.getUsers()
                 }
-                .onFailure { throwable ->
-                    emit(ActiveResponseState.Failure(throwable))
-                }
-
-        }
+                    .mapCatching {
+                        it.map(Mapper::mapToEntityUser)
+                    }
+                    .onSuccess { userDtoList ->
+                        userDtoList.forEach { userEntity ->
+                            userEntityDao.insertUser(userEntity)
+                        }
+                    }
+                    .mapCatching {
+                        it.map { userEntity ->
+                            userEntity.toDomainModel()
+                        }
+                    }
+            }
+        )
     }
 
     override suspend fun getPostEntriesFromUser(

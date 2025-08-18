@@ -1,6 +1,8 @@
 package com.example.mvi_clean_demo.common.repository
 
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState
+import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Failure
+import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
@@ -27,4 +29,30 @@ fun <T> Result<T>.toFlow(): Flow<ActiveResponseState<T>> {
     }.onStart {
         emit(ActiveResponseState.Loading)
     }
+}
+
+suspend inline fun <T, R> ActiveResponseState<T>.activeResponseStateWrapper(
+    crossinline transform: suspend (value: T) -> R
+): ActiveResponseState<R> {
+    lateinit var result: ActiveResponseState<R>
+    when (this) {
+        is Success -> {
+            this.runCatching {
+                transform(this.data)
+            }
+                .onSuccess { data ->
+                    result = Success(data)
+                }
+                .onFailure { throwable ->
+                    result = Failure(throwable)
+                }
+        }
+        is Failure -> {
+            result = Failure(this.throwable)
+        }
+        ActiveResponseState.Loading -> {
+            result = ActiveResponseState.Loading
+        }
+    }
+    return result
 }
