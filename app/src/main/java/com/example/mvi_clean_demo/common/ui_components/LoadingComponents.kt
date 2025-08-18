@@ -9,6 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -19,6 +20,16 @@ fun ActivityIndicator() {
     CircularProgressIndicator(
         modifier = Modifier.size(64.dp)
     )
+}
+
+@Composable
+fun LoadingBox() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        ActivityIndicator()
+    }
 }
 
 @Composable
@@ -52,6 +63,28 @@ fun ActivityIndicatorPreview() {
     }
 }
 
+
+@Preview(
+    name = "Light Mode",
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    showBackground = true,
+    device = Devices.PIXEL
+)
+@Preview(
+    name = "Dark Mode",
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    showBackground = true,
+    device = Devices.PIXEL
+)
+@Composable
+fun LoadingBoxPreview() {
+    ComposeUnitConverterTheme {
+        Surface {
+            LoadingBox()
+        }
+    }
+}
+
 @Preview(
     name = "Light Mode",
     uiMode = Configuration.UI_MODE_NIGHT_NO,
@@ -67,6 +100,8 @@ fun ActivityIndicatorPreview() {
 @Composable
 fun LoadingScreenPreview() {
     ComposeUnitConverterTheme {
-        LoadingScreen()
+        Surface(color = Color.Yellow) {
+            LoadingScreen()
+        }
     }
 }
