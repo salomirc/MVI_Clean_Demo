@@ -13,6 +13,7 @@ import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntry
 import com.example.mvi_clean_demo.sections.blog.domain.model.User
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -36,6 +37,32 @@ class BlogRepository @Inject constructor(
 
     override suspend fun getUsers(): Flow<ActiveResponseState<List<User>>> {
         return DataSourcePattern.dualPattern(
+            networkResult = {
+                apiCaller.invoke {
+                    delay(1000)
+                    api.getUsers()
+                }
+                    .mapCatching { userResponseDtos ->
+                        userResponseDtos.map(Mapper::mapToEntityUser)
+                    }
+                    .onSuccess { userEntities ->
+                        runCatching {
+                            withContext(Dispatchers.IO) {
+                                userEntityDao.deleteAllUsers()
+                                userEntities.forEach { userEntity ->
+                                    userEntityDao.insertUser(userEntity)
+                                }
+                            }
+                        }.onFailure {
+                            emit(ActiveResponseState.Failure(it))
+                        }
+                    }
+                    .mapCatching { userEntities ->
+                        userEntities.map { userEntity ->
+                            userEntity.toDomainModel()
+                        }
+                    }
+            },
             localResult = {
                 runCatching {
                     withContext(Dispatchers.IO) {
@@ -44,24 +71,6 @@ class BlogRepository @Inject constructor(
                         userEntity.toDomainModel()
                     }
                 }
-            },
-            networkResult = {
-                apiCaller.invoke {
-                    api.getUsers()
-                }
-                    .mapCatching {
-                        it.map(Mapper::mapToEntityUser)
-                    }
-                    .onSuccess { userDtoList ->
-                        userDtoList.forEach { userEntity ->
-                            userEntityDao.insertUser(userEntity)
-                        }
-                    }
-                    .mapCatching {
-                        it.map { userEntity ->
-                            userEntity.toDomainModel()
-                        }
-                    }
             }
         )
     }

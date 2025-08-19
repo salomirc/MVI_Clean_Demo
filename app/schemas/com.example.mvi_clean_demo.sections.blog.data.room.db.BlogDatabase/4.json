@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "24b0d7e6dc38b0c2fbfa94b893d5cf3e",
+    "identityHash": "24447b97e79d15445419d9e830e18282",
     "entities": [
       {
         "tableName": "posts_table",
@@ -44,7 +44,7 @@
       },
       {
         "tableName": "users_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`email` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `phone` TEXT NOT NULL, `username` TEXT NOT NULL, `website` TEXT NOT NULL, `token` TEXT, `address_city` TEXT NOT NULL, `address_street` TEXT NOT NULL, `address_suite` TEXT NOT NULL, `address_zipcode` TEXT NOT NULL, `address_geo_lat` TEXT NOT NULL, `address_geo_lng` TEXT NOT NULL, `company_bs` TEXT NOT NULL, `company_catchPhrase` TEXT NOT NULL, `company_name` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`email` TEXT NOT NULL, `id` INTEGER NOT NULL, `name` TEXT NOT NULL, `phone` TEXT NOT NULL, `username` TEXT NOT NULL, `website` TEXT NOT NULL, `token` TEXT, `address_city` TEXT NOT NULL, `address_street` TEXT NOT NULL, `address_suite` TEXT NOT NULL, `address_zipcode` TEXT NOT NULL, `address_geo_lat` TEXT NOT NULL, `address_geo_lng` TEXT NOT NULL, `company_bs` TEXT NOT NULL, `company_catchPhrase` TEXT NOT NULL, `company_name` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "email",
@@ -144,7 +144,7 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": true,
+          "autoGenerate": false,
           "columnNames": [
             "id"
           ]
@@ -156,7 +156,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '24b0d7e6dc38b0c2fbfa94b893d5cf3e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '24447b97e79d15445419d9e830e18282')"
     ]
   }
 }

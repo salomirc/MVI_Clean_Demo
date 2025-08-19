@@ -9,9 +9,12 @@ import com.example.mvi_clean_demo.sections.blog.data.room.entities.UserEntity
 @Dao
 interface UserEntityDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertUser(userEntity: UserEntity): Long
 
     @Query("SELECT * FROM users_table")
     suspend fun getUsers(): List<UserEntity>
+
+    @Query("DELETE FROM users_table")
+    fun deleteAllUsers()
 }

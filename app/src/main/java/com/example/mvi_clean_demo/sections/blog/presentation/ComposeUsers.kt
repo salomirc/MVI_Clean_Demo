@@ -65,7 +65,7 @@ fun UserCard(user: User) {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = user.username,
+                text = "${user.username} id=${user.id}",
                 style = MaterialTheme.typography.titleMedium
             )
             Text(

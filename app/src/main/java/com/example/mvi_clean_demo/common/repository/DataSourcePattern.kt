@@ -2,21 +2,14 @@ package com.example.mvi_clean_demo.common.repository
 
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 
 object DataSourcePattern {
     fun <T> dualPattern(
-        localResult: suspend () -> Result<T>,
-        networkResult: suspend () -> Result<T>
+        networkResult: suspend FlowCollector<ActiveResponseState<T>>.() -> Result<T>,
+        localResult: suspend FlowCollector<ActiveResponseState<T>>.() -> Result<T>
     ): Flow<ActiveResponseState<T>> = flow {
-        emit(ActiveResponseState.Loading)
-        localResult()
-            .onSuccess {
-                emit(ActiveResponseState.Success(it))
-            }
-            .onFailure { throwable ->
-                emit(ActiveResponseState.Failure(throwable))
-            }
         emit(ActiveResponseState.Loading)
         networkResult()
             .onSuccess {
@@ -24,14 +17,21 @@ object DataSourcePattern {
             }
             .onFailure { throwable ->
                 emit(ActiveResponseState.Failure(throwable))
+                emitResult(localResult())
             }
     }
 
     fun <T> singlePattern(
         result: suspend () -> Result<T>
     ): Flow<ActiveResponseState<T>> = flow {
+        emitResult(result())
+    }
+
+    private suspend fun <T> FlowCollector<ActiveResponseState<T>>.emitResult(
+        result: Result<T>
+    ) {
         emit(ActiveResponseState.Loading)
-        result()
+        result
             .onSuccess {
                 emit(ActiveResponseState.Success(it))
             }
