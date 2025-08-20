@@ -80,7 +80,7 @@ class BlogRepository @Inject constructor(
             DataSourcePattern.dualPattern(
                 networkResult = {
                     apiCaller.invoke {
-                        api.getPostsFromUser(userId = userId)
+                        api.getPostsFromUser(userId)
                     }
                         .mapCatching { postEntryResponseDtos ->
                             postEntryResponseDtos.map(Mapper::mapToPostEntity)
@@ -88,7 +88,6 @@ class BlogRepository @Inject constructor(
                         .onSuccess { postEntities ->
                             runCatching {
                                 withContext(Dispatchers.IO) {
-                                    postEntityDao.deleteAllPosts()
                                     postEntities.forEach { postEntity ->
                                         postEntityDao.insertPost(postEntity)
                                     }
@@ -106,7 +105,7 @@ class BlogRepository @Inject constructor(
                 localResult = {
                     runCatching {
                         withContext(Dispatchers.IO) {
-                            postEntityDao.getPosts()
+                            postEntityDao.getPostsByUserId(userId)
                         }.map { postEntity ->
                             postEntity.toDomainModel()
                         }
