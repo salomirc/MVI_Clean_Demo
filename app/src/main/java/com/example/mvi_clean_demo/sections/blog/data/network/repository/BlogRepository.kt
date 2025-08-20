@@ -13,7 +13,6 @@ import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntry
 import com.example.mvi_clean_demo.sections.blog.domain.model.User
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -39,7 +38,6 @@ class BlogRepository @Inject constructor(
         return DataSourcePattern.dualPattern(
             networkResult = {
                 apiCaller.invoke {
-                    delay(1000)
                     api.getUsers()
                 }
                     .mapCatching { userResponseDtos ->
@@ -78,25 +76,29 @@ class BlogRepository @Inject constructor(
     override suspend fun getPostEntriesFromUser(
         userId: Int
     ): Flow<ActiveResponseState<List<PostEntry>>> {
-        return DataSourcePattern.singlePattern(
-            result = {
-                apiCaller.invoke {
-                    api.getPostsFromUser(userId = userId)
-                }
-                    .mapCatching {
-                        it.map(Mapper::mapToPostEntry)
+        return withContext(Dispatchers.Default) {
+            DataSourcePattern.singlePattern(
+                result = {
+                    apiCaller.invoke {
+                        api.getPostsFromUser(userId = userId)
                     }
+                        .mapCatching {
+                            it.map(Mapper::mapToPostEntry)
+                        }
 
-            }
-        )
+                }
+            )
+        }
     }
 
     private object Mapper {
 
         fun mapToEntityUser(result: UserResponseDto): UserEntity {
+            // filter results + conversion from dto to entity
             return result.toEntityModel()
         }
         fun mapToPostEntry(result: PostEntryResponseDto): PostEntry {
+            // filter results + conversion from dto to entity
             return result.toDomainModel()
         }
     }
