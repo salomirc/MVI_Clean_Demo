@@ -23,20 +23,20 @@ import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponse
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 import com.example.mvi_clean_demo.common.ui_components.LoadingScreen
-import com.example.mvi_clean_demo.sections.blog.domain.model.User
+import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntry
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 
 @Composable
-fun ComposeUsers(
-    model: UsersViewModel.Model,
-    sendEvent: (UsersViewModel.Event) -> Unit,
-    onNavigateToUserPosts: (Int) -> Unit
+fun ComposePosts(
+    userId: Int,
+    model: PostsViewModel.Model,
+    sendEvent: (PostsViewModel.Event) -> Unit
 ) {
-    val responseState = model.users
+    val responseState = model.postEntries
     LaunchedEffect(responseState) {
         val shouldGetUsers = ((responseState is Idle) || (responseState is Failure))
         if (shouldGetUsers) {
-            sendEvent(UsersViewModel.Event.GetUsers)
+            sendEvent(PostsViewModel.Event.GetPostEntriesFromUser(userId))
         }
     }
     if (model.isLoading) {
@@ -44,11 +44,8 @@ fun ComposeUsers(
     } else {
         if (responseState is Success) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(responseState.data) { user ->
-                    UserCard(
-                        user = user,
-                        onNavigateToUserPosts = onNavigateToUserPosts
-                    )
+                items(responseState.data) { entry ->
+                    PostCard(entry = entry)
                 }
             }
         }
@@ -56,32 +53,36 @@ fun ComposeUsers(
 }
 
 @Composable
-fun UserCard(
-    user: User,
-    onNavigateToUserPosts: (Int) -> Unit
-) {
+fun PostCard(entry: PostEntry) {
     Card(
-        onClick = { onNavigateToUserPosts(user.id) },
         modifier = Modifier
             .padding(16.dp, 8.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 3.dp
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "${user.username} id=${user.id}",
+                text = "userId: ${entry.userId}",
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                text = user.email,
+                text = "id: ${entry.id}",
                 style = MaterialTheme.typography.titleSmall
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = user.toString(),
+                text = entry.title,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = entry.body,
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -103,17 +104,17 @@ fun UserCard(
     device = Devices.PIXEL
 )
 @Composable
-fun UsersPreview() {
-    val model = UsersViewModel.Model(
+fun PostsPreview() {
+    val model = PostsViewModel.Model(
         isLoading = false,
-        users = Idle
+        postEntries = Idle
     )
     ComposeUnitConverterTheme {
         Surface {
-            ComposeUsers(
+            ComposePosts(
+                userId = 1,
                 model = model,
-                sendEvent = { },
-                onNavigateToUserPosts = { }
+                sendEvent = { }
             )
         }
     }

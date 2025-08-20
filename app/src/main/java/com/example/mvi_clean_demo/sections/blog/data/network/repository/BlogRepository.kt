@@ -8,6 +8,7 @@ import com.example.mvi_clean_demo.sections.blog.data.network.models.respoonses.P
 import com.example.mvi_clean_demo.sections.blog.data.network.models.respoonses.UserResponseDto
 import com.example.mvi_clean_demo.sections.blog.data.room.dao.PostEntityDao
 import com.example.mvi_clean_demo.sections.blog.data.room.dao.UserEntityDao
+import com.example.mvi_clean_demo.sections.blog.data.room.entities.PostEntity
 import com.example.mvi_clean_demo.sections.blog.data.room.entities.UserEntity
 import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntry
 import com.example.mvi_clean_demo.sections.blog.domain.model.User
@@ -19,7 +20,6 @@ import javax.inject.Inject
 
 interface IBlogRepository {
     suspend fun getUsers(): Flow<ActiveResponseState<List<User>>>
-
     suspend fun getPostEntriesFromUser(
         userId: Int
     ): Flow<ActiveResponseState<List<PostEntry>>>
@@ -77,15 +77,40 @@ class BlogRepository @Inject constructor(
         userId: Int
     ): Flow<ActiveResponseState<List<PostEntry>>> {
         return withContext(Dispatchers.Default) {
-            DataSourcePattern.singlePattern(
-                result = {
+            DataSourcePattern.dualPattern(
+                networkResult = {
                     apiCaller.invoke {
                         api.getPostsFromUser(userId = userId)
                     }
-                        .mapCatching {
-                            it.map(Mapper::mapToPostEntry)
+                        .mapCatching { postEntryResponseDtos ->
+                            postEntryResponseDtos.map(Mapper::mapToPostEntity)
                         }
-
+                        .onSuccess { postEntities ->
+                            runCatching {
+                                withContext(Dispatchers.IO) {
+                                    postEntityDao.deleteAllPosts()
+                                    postEntities.forEach { postEntity ->
+                                        postEntityDao.insertPost(postEntity)
+                                    }
+                                }
+                            }.onFailure {
+                                emit(ActiveResponseState.Failure(it))
+                            }
+                        }
+                        .mapCatching { postEntities ->
+                            postEntities.map { postEntity ->
+                                postEntity.toDomainModel()
+                            }
+                        }
+                },
+                localResult = {
+                    runCatching {
+                        withContext(Dispatchers.IO) {
+                            postEntityDao.getPosts()
+                        }.map { postEntity ->
+                            postEntity.toDomainModel()
+                        }
+                    }
                 }
             )
         }
@@ -97,9 +122,9 @@ class BlogRepository @Inject constructor(
             // filter results + conversion from dto to entity
             return result.toEntityModel()
         }
-        fun mapToPostEntry(result: PostEntryResponseDto): PostEntry {
+        fun mapToPostEntity(result: PostEntryResponseDto): PostEntity {
             // filter results + conversion from dto to entity
-            return result.toDomainModel()
+            return result.toEntityModel()
         }
     }
 }

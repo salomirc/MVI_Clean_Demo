@@ -9,12 +9,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.common.ui_components.unit_converter.LogNavigation
-import com.example.mvi_clean_demo.sections.blog.presentation.ComposeUsers
-import com.example.mvi_clean_demo.sections.blog.presentation.UsersViewModel
+import androidx.navigation.toRoute
 import com.example.mvi_clean_demo.MainViewModel
 import com.example.mvi_clean_demo.MainViewModel.Event.SetNavigationTitle
+import com.example.mvi_clean_demo.R
+import com.example.mvi_clean_demo.common.ui_components.blog.BlogNavTarget.PostsNavTarget
+import com.example.mvi_clean_demo.common.ui_components.blog.BlogNavTarget.UsersNavTarget
+import com.example.mvi_clean_demo.common.ui_components.unit_converter.LogNavigation
+import com.example.mvi_clean_demo.sections.blog.presentation.ComposePosts
+import com.example.mvi_clean_demo.sections.blog.presentation.ComposeUsers
+import com.example.mvi_clean_demo.sections.blog.presentation.PostsViewModel
+import com.example.mvi_clean_demo.sections.blog.presentation.UsersViewModel
 import kotlinx.serialization.Serializable
 
 sealed interface BlogNavTarget {
@@ -32,10 +37,10 @@ fun ComposeBlogNavHost(
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = BlogNavTarget.UsersNavTarget,
+        startDestination = UsersNavTarget,
         modifier = modifier
     ) {
-        composable<BlogNavTarget.UsersNavTarget> { backStackEntry  ->
+        composable<UsersNavTarget> { backStackEntry  ->
             val viewModel: UsersViewModel = hiltViewModel()
             val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
             sendEvent(SetNavigationTitle(title = stringResource(id = R.string.users_screen_title)))
@@ -44,7 +49,24 @@ fun ComposeBlogNavHost(
                 sendEvent = { event ->
                     viewModel.sendEvent(event)
                 },
-                onNextButton = { },
+                onNavigateToUserPosts = { userId ->
+                    navController.navigate(PostsNavTarget(userId))
+                },
+            )
+            LogNavigation(backStackEntry, viewModel)
+        }
+
+        composable<PostsNavTarget> { backStackEntry  ->
+            val userId = backStackEntry.toRoute<PostsNavTarget>().userId
+            val viewModel: PostsViewModel = hiltViewModel()
+            val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
+            sendEvent(SetNavigationTitle(title = stringResource(id = R.string.posts_screen_title)))
+            ComposePosts(
+                userId = userId,
+                model = model,
+                sendEvent = { event ->
+                    viewModel.sendEvent(event)
+                }
             )
             LogNavigation(backStackEntry, viewModel)
         }

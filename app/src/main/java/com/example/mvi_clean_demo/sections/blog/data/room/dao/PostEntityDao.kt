@@ -9,9 +9,12 @@ import com.example.mvi_clean_demo.sections.blog.data.room.entities.PostEntity
 @Dao
 interface PostEntityDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertPost(postEntity: PostEntity): Long
 
     @Query("SELECT * FROM posts_table")
     suspend fun getPosts(): List<PostEntity>
+
+    @Query("DELETE FROM posts_table")
+    fun deleteAllPosts()
 }

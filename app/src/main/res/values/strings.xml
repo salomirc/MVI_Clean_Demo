@@ -18,6 +18,7 @@
 
     <!-- distance -->
     <string name="users_screen_title">Users</string>
+    <string name="posts_screen_title">Posts</string>
 
     <!--added -->
     <string name="error_generic_network_issue" translatable="false">Something went wrong!</string>
