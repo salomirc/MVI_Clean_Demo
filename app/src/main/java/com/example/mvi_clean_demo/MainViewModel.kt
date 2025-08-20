@@ -50,12 +50,16 @@ class MainViewModel @Inject constructor(
 
     sealed interface Event {
         data class SetNavigationTitle(val title: String) : Event
+        data object LogOut : Event
     }
 
     override fun sendEvent(event: Event) {
         when (event) {
             is Event.SetNavigationTitle -> {
                 setNavigationTitle(event.title)
+            }
+            Event.LogOut -> {
+                Log.d("ToastMessage", "MainViewModel LogOut event called")
             }
         }
     }

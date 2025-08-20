@@ -12,9 +12,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.mvi_clean_demo.common.error_handling.ErrorAction
 import com.example.mvi_clean_demo.common.ui_components.main.ComposeMainNavHost
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
-import com.example.mvi_clean_demo.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -49,11 +49,17 @@ fun ComposeUnitConverterWrapper(
         sendEvent = sendEvent,
         onNavigateBack = onNavigateBack
     )
-    GlobalMessageToastSetUp(model = model)
+    GlobalActionAndMessageToastSetUp(
+        model = model,
+        sendEvent = sendEvent
+    )
 }
 
 @Composable
-private fun GlobalMessageToastSetUp(model: MainViewModel.Model) {
+private fun GlobalActionAndMessageToastSetUp(
+    model: MainViewModel.Model,
+    sendEvent: (MainViewModel.Event) -> Unit
+) {
     val context = LocalContext.current
     LaunchedEffect(model.messageResourceIdWrapper) {
         model.messageResourceIdWrapper?.let { wrapper ->
@@ -64,6 +70,14 @@ private fun GlobalMessageToastSetUp(model: MainViewModel.Model) {
             val message = context.getString(wrapper.stringResId)
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             Log.d("ToastMessage", "MainActivity Toast have been called with: $message")
+
+            wrapper.errorAction?.let { errorAction ->
+                when (errorAction) {
+                    ErrorAction.LOG_OUT -> {
+                        sendEvent(MainViewModel.Event.LogOut)
+                    }
+                }
+            }
         }
     }
 }

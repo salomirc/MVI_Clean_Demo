@@ -31,7 +31,7 @@ open class ErrorHandler @AssistedInject constructor(
         onNetworkException: (NetworkException) -> Unit = defaultNetworkExceptionHandler(),
         onSerializationException: (SerializationException) -> Unit = defaultSerializationExceptionHandler(),
         onIOException: (IOException) -> Unit = defaultIOExceptionHandler(),
-        onOtherException: (Throwable) -> Unit = defaultOtherExceptionHandler(),
+        onOtherException: (Throwable) -> Unit = defaultOtherExceptionHandler()
     ): (Throwable) -> Unit = { throwable ->
 
         Log.d(ERROR_HANDLER_TAG, "ErrorHandler $viewModelName exception: $throwable")
@@ -68,7 +68,7 @@ open class ErrorHandler @AssistedInject constructor(
     }
 
     open fun defaultApiExceptionHandler(
-        on401: (ApiException) -> Unit = defaultHttp4xxHandler(),
+        on401: (ApiException) -> Unit = defaultHttp401Handler(),
         on403Forbidden: (ApiException) -> Unit = defaultHttp403ForbiddenHandler(),
         on409: (ApiException) -> Unit = defaultHttp4xxHandler(),
         on4xx: (ApiException) -> Unit = defaultHttp4xxHandler(),
@@ -82,6 +82,13 @@ open class ErrorHandler @AssistedInject constructor(
             400, 402, in (404..499) -> on4xx(apiException)
             else -> on5xx(apiException)
         }
+    }
+
+    private fun defaultHttp401Handler(): (ApiException) -> Unit = {
+        broadcastService.setErrorMessage(
+            stringResInt = R.string.error_unauthorized_text,
+            errorAction = ErrorAction.LOG_OUT
+        )
     }
 
     private fun defaultHttp403ForbiddenHandler(): (ApiException) -> Unit = {

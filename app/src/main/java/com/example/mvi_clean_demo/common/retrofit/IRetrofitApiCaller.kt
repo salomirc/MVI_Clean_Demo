@@ -23,7 +23,7 @@ interface IRetrofitApiCaller {
     /**
      * Converts a [Response] to [Result] containing the body of type [T].
      */
-    suspend operator fun <T: Any> invoke(
+    suspend operator fun <T : Any> invoke(
         callBlock: suspend () -> Response<T>
     ): Result<T>
 
@@ -44,7 +44,7 @@ interface IRetrofitApiCaller {
     /**
      * Converts a Retrofit [Response] to [ApiSuccess] containing the body of type [T] and the HTTP status code.
      */
-    suspend fun <T: Any> raw(
+    suspend fun <T : Any> raw(
         callBlock: suspend () -> Response<T>
     ): Result<ApiSuccess<T>>
 
@@ -70,98 +70,103 @@ interface IRetrofitApiCaller {
 @Singleton
 class RetrofitApiCaller @Inject constructor(
     private val connectivity: IConnectivityChecker,
-): IRetrofitApiCaller {
-        /**
-         * Converts a [Response] to [Result] while catching all exceptions.
-         *
-         * @throws NoNetworkException in case of no connectivity
-         */
-        override suspend fun <T: Any> invoke(callBlock: suspend () -> Response<T>): Result<T> =
-            raw(callBlock).mapCatching { it.body }
+) : IRetrofitApiCaller {
+    /**
+     * Converts a [Response] to [Result] while catching all exceptions.
+     *
+     * @throws NoNetworkException in case of no connectivity
+     */
+    override suspend fun <T : Any> invoke(callBlock: suspend () -> Response<T>): Result<T> =
+        raw(callBlock).mapCatching { it.body }
 
-        /**
-         * Converts a [Response] to [Result] while catching all exceptions.
-         *
-         * @throws NoNetworkException in case of no connectivity
-         */
-        override suspend fun invokeUnit(callBlock: suspend () -> Response<Unit>): Result<Unit> =
-            rawUnit(callBlock).mapCatching { it.body }
+    /**
+     * Converts a [Response] to [Result] while catching all exceptions.
+     *
+     * @throws NoNetworkException in case of no connectivity
+     */
+    override suspend fun invokeUnit(callBlock: suspend () -> Response<Unit>): Result<Unit> =
+        rawUnit(callBlock).mapCatching { it.body }
 
-        /**
-         * Converts a [Response] to [Result] while catching all exceptions.
-         *
-         * @throws NoNetworkException in case of no connectivity
-         */
-        override suspend fun <T> invokeNullable(callBlock: suspend () -> Response<T?>): Result<T?> =
-            rawNullable(callBlock).mapCatching { it.body }
+    /**
+     * Converts a [Response] to [Result] while catching all exceptions.
+     *
+     * @throws NoNetworkException in case of no connectivity
+     */
+    override suspend fun <T> invokeNullable(callBlock: suspend () -> Response<T?>): Result<T?> =
+        rawNullable(callBlock).mapCatching { it.body }
 
-        /**
-         * Converts a [Response] to [Result] while catching all exceptions. The response body is wrapped in [ApiSuccess]
-         * wrapper. Use this method when raw HTTP status code, headers, etc. are needed along with the typed body.
-         *
-         * @throws NoNetworkException in case of no connectivity
-         */
-        override suspend fun <T: Any> raw(callBlock: suspend () -> Response<T>): Result<ApiSuccess<T>> {
-            return networkCallHandling(callBlock = callBlock) {
-                it ?: throw NoResponseBodyException(NOT_NULL_BODY_EXPECTED_MESSAGE) }
+    /**
+     * Converts a [Response] to [Result] while catching all exceptions. The response body is wrapped in [ApiSuccess]
+     * wrapper. Use this method when raw HTTP status code, headers, etc. are needed along with the typed body.
+     *
+     * @throws NoNetworkException in case of no connectivity
+     */
+    override suspend fun <T : Any> raw(callBlock: suspend () -> Response<T>): Result<ApiSuccess<T>> {
+        return networkCallHandling(callBlock = callBlock) {
+            it ?: throw NoResponseBodyException(NOT_NULL_BODY_EXPECTED_MESSAGE)
         }
+    }
 
-        /**
-         * Converts a [Response] to [Result] while catching all exceptions. The response body is wrapped in [ApiSuccess]
-         * wrapper. Use this method when raw HTTP status code, headers, etc. are needed along with the typed body.
-         *
-         * @throws NoNetworkException in case of no connectivity
-         */
-        override suspend fun rawUnit(callBlock: suspend () -> Response<Unit>): Result<ApiSuccess<Unit>> {
-            return networkCallHandling(callBlock = callBlock) { it ?: Unit }
-        }
+    /**
+     * Converts a [Response] to [Result] while catching all exceptions. The response body is wrapped in [ApiSuccess]
+     * wrapper. Use this method when raw HTTP status code, headers, etc. are needed along with the typed body.
+     *
+     * @throws NoNetworkException in case of no connectivity
+     */
+    override suspend fun rawUnit(callBlock: suspend () -> Response<Unit>): Result<ApiSuccess<Unit>> {
+        return networkCallHandling(callBlock = callBlock) { it ?: Unit }
+    }
 
-        /**
-         * Converts a [Response] to [Result] while catching all exceptions. The response body is wrapped in [ApiSuccess]
-         * wrapper. Use this method when raw HTTP status code, headers, etc. are needed along with the typed body.
-         *
-         * @throws NoNetworkException in case of no connectivity
-         */
-        override suspend fun <T> rawNullable(callBlock: suspend () -> Response<T?>): Result<ApiSuccess<T?>> {
-            return networkCallHandling(callBlock = callBlock) { it }
-        }
+    /**
+     * Converts a [Response] to [Result] while catching all exceptions. The response body is wrapped in [ApiSuccess]
+     * wrapper. Use this method when raw HTTP status code, headers, etc. are needed along with the typed body.
+     *
+     * @throws NoNetworkException in case of no connectivity
+     */
+    override suspend fun <T> rawNullable(callBlock: suspend () -> Response<T?>): Result<ApiSuccess<T?>> {
+        return networkCallHandling(callBlock = callBlock) { it }
+    }
 
-        /**
-         * Reuse the code
-         */
-        private suspend fun <T> networkCallHandling(
-            callBlock: suspend () -> Response<T>,
-            handleResponseBody: (responseBody: T?) -> T
-        ): Result<ApiSuccess<T>> {
-            return runCatching {
-                if (!connectivity.isConnected) {
-                    throw NoNetworkException(NO_INTERNET_CONNECTION_MESSAGE)
-                }
-                val response = try {
-                    withContext(Dispatchers.IO) {
-                        callBlock()
-                    }
-                } catch (e: JsonParseException) {
-                    throw SerializationException(e)
-                } catch (e: MalformedJsonException) {
-                    throw SerializationException(e)
-                } catch (e: IOException) {
-                    throw NetworkException(e)
-                }
-                if (response.isSuccessful) {
-                    ApiSuccess(
-                        code = response.code(),
-                        message = response.message(),
-                        headers = response.headers().names().associateWith(response.headers()::values),
-                        body = handleResponseBody(response.body())
-                    )
-                } else {
-                    throw ApiException(response.code(), response.message(), response.errorBody()?.string())
-                }
-            }.onFailure { t ->
-                Log.d(API_CALLER_TAG, "Exception on API call: $t")
+    /**
+     * Reuse the code
+     */
+    private suspend fun <T> networkCallHandling(
+        callBlock: suspend () -> Response<T>,
+        handleResponseBody: (responseBody: T?) -> T
+    ): Result<ApiSuccess<T>> {
+        return runCatching {
+            if (!connectivity.isConnected) {
+                throw NoNetworkException(NO_INTERNET_CONNECTION_MESSAGE)
             }
+            val response = try {
+                withContext(Dispatchers.IO) {
+                    callBlock()
+                }
+            } catch (e: JsonParseException) {
+                throw SerializationException(e)
+            } catch (e: MalformedJsonException) {
+                throw SerializationException(e)
+            } catch (e: IOException) {
+                throw NetworkException(e)
+            }
+            if (response.isSuccessful) {
+                ApiSuccess(
+                    code = response.code(),
+                    message = response.message(),
+                    headers = response.headers(),
+                    body = handleResponseBody(response.body())
+                )
+            } else {
+                throw ApiException(
+                    response.code(),
+                    response.message(),
+                    response.errorBody()?.string()
+                )
+            }
+        }.onFailure { t ->
+            Log.d(API_CALLER_TAG, "Exception on API call: $t")
         }
+    }
 
     companion object {
         const val NOT_NULL_BODY_EXPECTED_MESSAGE = "Not null body response was expected!"

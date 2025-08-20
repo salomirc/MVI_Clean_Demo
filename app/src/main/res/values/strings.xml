@@ -21,6 +21,7 @@
 
     <!--added -->
     <string name="error_generic_network_issue" translatable="false">Something went wrong!</string>
+    <string name="error_unauthorized_text">An authentication error occurred. Please try again.</string>
     <string name="error_no_internet_connection" translatable="false">Please check your internet connection.</string>
     <string name="error_access_denied" translatable="false">HttpCode 401 access denied!</string>
     <string name="error_invalid_credentials" translatable="false">Invalid credentials</string>
