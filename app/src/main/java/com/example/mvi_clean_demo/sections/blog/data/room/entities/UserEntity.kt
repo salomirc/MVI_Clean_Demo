@@ -104,3 +104,29 @@ data class UserEntity(
         )
     }
 }
+
+// Optional Create a relationship wrapper (POJO)
+// Room supports one-to-many via @Relation.
+// Define a new data class:
+
+//data class UserWithPosts(
+//    @Embedded val user: UserEntity,
+//    @Relation(
+//        parentColumn = "id",
+//        entityColumn = "userId"
+//    )
+//    val posts: List<PostEntity>
+//)
+
+
+// Optional Update your DAO
+//@Dao
+//interface UserDao {
+//    @Transaction
+//    @Query("SELECT * FROM users_table WHERE id = :userId")
+//    suspend fun getUserWithPosts(userId: Int): UserWithPosts
+//
+//    @Transaction
+//    @Query("SELECT * FROM users_table")
+//    suspend fun getAllUsersWithPosts(): List<UserWithPosts>
+//}
