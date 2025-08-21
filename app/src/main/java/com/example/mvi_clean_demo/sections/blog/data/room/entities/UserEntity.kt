@@ -112,8 +112,8 @@ data class UserEntity(
 //data class UserWithPosts(
 //    @Embedded val user: UserEntity,
 //    @Relation(
-//        parentColumn = "id",
-//        entityColumn = "userId"
+//        parentColumn = "id", // PK in UserEntity
+//        entityColumn = "userId" // FK in PostEntity
 //    )
 //    val posts: List<PostEntity>
 //)
@@ -130,3 +130,70 @@ data class UserEntity(
 //    @Query("SELECT * FROM users_table")
 //    suspend fun getAllUsersWithPosts(): List<UserWithPosts>
 //}
+
+
+// Usage
+//val userWithPosts = userDao.getUserWithPosts(1)
+//
+//println("User: ${userWithPosts.user.name}")
+//userWithPosts.posts.forEach { post ->
+//    println("  - Post: ${post.title}")
+//}
+
+
+
+//Your UserEntity and PostEntity stay unchanged — the relationship is modeled in a separate
+// data class, not inside the entity itself.
+//Why? Because entities should only represent tables. Relations belong in DTOs / POJOs.
+
+//✅ With this setup:
+//UserEntity still maps to the users_table.
+//PostEntity maps to posts_table.
+//UserWithPosts is not a table → it’s a Room relation DTO.
+//When you query, Room populates the List<PostEntity> automatically.
+
+
+// Optional Create a relationship wrapper (POJO)
+// Room supports one-to-one via @Relation.
+// Define a new data class:
+
+//data class PostWithUser(
+//    @Embedded val post: PostEntity,
+//
+//    @Relation(
+//        parentColumn = "userId",   // FK in PostEntity
+//        entityColumn = "id"        // PK in UserEntity
+//    )
+//    val user: UserEntity
+//)
+
+// DAO Example
+//@Dao
+//interface PostDao {
+//
+//    @Insert
+//    suspend fun insert(post: PostEntity)
+//
+//    @Query("SELECT * FROM posts_table")
+//    suspend fun getAllPosts(): List<PostEntity>
+//
+//    @Transaction
+//    @Query("SELECT * FROM posts_table WHERE id = :postId")
+//    suspend fun getPostWithUser(postId: Int): PostWithUser
+//
+//    @Transaction
+//    @Query("SELECT * FROM posts_table")
+//    suspend fun getAllPostsWithUsers(): List<PostWithUser>
+//}
+
+// Usage Example
+//val postWithUser = postDao.getPostWithUser(1)
+//
+//println("Post: ${postWithUser.post.title}")
+//println("Written by: ${postWithUser.user.name}")
+
+//✅ Now you have both directions:
+//UserWithPosts → a user and all their posts.
+//PostWithUser → a post and its author.
+
+
