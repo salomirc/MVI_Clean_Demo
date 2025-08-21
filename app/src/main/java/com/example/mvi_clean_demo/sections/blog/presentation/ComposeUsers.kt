@@ -65,6 +65,9 @@ fun UserCard(
         onClick = { onNavigateToUserPosts(user.id) },
         modifier = Modifier
             .padding(16.dp, 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 3.dp
         )
@@ -75,16 +78,33 @@ fun UserCard(
                 .padding(16.dp)
         ) {
             Text(
-                text = "${user.username} id=${user.id}",
+                text = "Name: ${user.name}, id: ${user.id}",
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                text = user.email,
+                text = "Username: ${user.username}",
+                style = MaterialTheme.typography.titleSmall
+            )
+            Text(
+                text = "Email: ${user.email}",
                 style = MaterialTheme.typography.titleSmall
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = user.toString(),
+                text = "Address: \n" +
+                        "\tStreet: ${user.address.street}\n" +
+                        "\tSuite: ${user.address.suite}\n" +
+                        "\tCity ${user.address.city}\n" +
+                        "\tZipcode: ${user.address.zipcode}\n" +
+                        "\tGeo: \n" +
+                        "\t\tLat: ${user.address.geo.lat}\n" +
+                        "\t\tLongitude: ${user.address.geo.lng}\n" +
+                        "\tPhone: ${user.phone}\n" +
+                        "\tWebsite: ${user.website}\n" +
+                        "\tCompany: \n" +
+                        "\t\tName: ${user.company.name}\n" +
+                        "\t\tCatchPhrase: ${user.company.catchPhrase}\n" +
+                        "\t\tBS: ${user.company.bs}",
                 style = MaterialTheme.typography.bodyMedium
             )
         }
