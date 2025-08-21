@@ -16,5 +16,5 @@ interface UserEntityDao {
     suspend fun getUsers(): List<UserEntity>
 
     @Query("DELETE FROM users_table")
-    fun deleteAllUsers()
+    suspend fun deleteAllUsers()
 }

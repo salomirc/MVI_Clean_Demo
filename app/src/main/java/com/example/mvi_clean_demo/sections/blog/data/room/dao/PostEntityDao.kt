@@ -16,8 +16,8 @@ interface PostEntityDao {
     suspend fun getPosts(): List<PostEntity>
 
     @Query("SELECT * FROM posts_table WHERE userId LIKE :userId")
-    fun getPostsByUserId(userId: Int): List<PostEntity>
+    suspend fun getPostsByUserId(userId: Int): List<PostEntity>
 
     @Query("DELETE FROM posts_table")
-    fun deleteAllPosts()
+    suspend fun deleteAllPosts()
 }
