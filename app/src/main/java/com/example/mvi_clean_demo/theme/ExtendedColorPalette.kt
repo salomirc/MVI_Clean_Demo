@@ -7,6 +7,12 @@ import androidx.compose.ui.graphics.Color
 
 @get:Composable
 val ColorScheme.disabled: Color
-    get() {
-        return if (isSystemInDarkTheme()) Gray70 else Gray30
-    }
+    get() = if (isSystemInDarkTheme()) Gray70 else Gray30
+
+val ColorScheme.clientTierCardSurface: Color
+    @Composable
+    get() = if (isSystemInDarkTheme()) BlackSurface else WhiteSurface
+
+val ColorScheme.clientTierInitialsSurface: Color
+    @Composable
+    get() = if (isSystemInDarkTheme()) InitialsBgSurfaceDark else InitialsBgSurfaceLight

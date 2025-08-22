@@ -10,8 +10,9 @@ import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponse
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Loading
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
-import com.example.mvi_clean_demo.sections.blog.domain.model.User
+import com.example.mvi_clean_demo.common.repository.activeResponseStateWrapper
 import com.example.mvi_clean_demo.sections.blog.domain.useCase.IGetUsersUseCase
+import com.example.mvi_clean_demo.sections.blog.presentation.model.UserCardModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,7 +33,7 @@ class UsersViewModel @Inject constructor(
 
     data class Model(
         val isLoading: Boolean,
-        val users: ResponseState<List<User>>
+        val users: ResponseState<List<UserCardModel>>
     )
 
     sealed interface Event {
@@ -74,10 +75,15 @@ class UsersViewModel @Inject constructor(
                             }
                         }
                         is Success -> {
+                            val stateUIModel = state.activeResponseStateWrapper { users ->
+                                users.map { user ->
+                                    user.toUserInterfaceModel()
+                                }
+                            }
                             updateModelState { model ->
                                 model.copy(
                                     isLoading = false,
-                                    users = state
+                                    users = stateUIModel
                                 )
                             }
                         }
