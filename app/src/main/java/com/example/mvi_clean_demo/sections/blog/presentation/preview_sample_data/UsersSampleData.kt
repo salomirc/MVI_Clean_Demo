@@ -1,14 +1,14 @@
-package com.example.mvi_clean_demo.sections.blog.presentation
+package com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data
 
-import com.example.mvi_clean_demo.sections.blog.domain.model.User
+import com.example.mvi_clean_demo.sections.blog.domain.model.UserModel
 import com.example.mvi_clean_demo.sections.blog.presentation.model.TierModel
 import com.example.mvi_clean_demo.sections.blog.presentation.model.UserCardModel
 
 object UsersSampleData {
-    val user = User(
-        address = User.Address(
+    val userModel = UserModel(
+        address = UserModel.Address(
             city = "Gwenborough",
-            geo = User.Address.Geo(
+            geo = UserModel.Address.Geo(
                 lat = "-37.3159",
                 lng = "81.1496"
             ),
@@ -16,7 +16,7 @@ object UsersSampleData {
             suite = "Apt. 556",
             zipcode = "92998-3874"
         ),
-        company = User.Company(
+        company = UserModel.Company(
             bs = "harness real-time e-markets",
             catchPhrase = "Multi-layered client-server neural-net",
             name = "Deckow-Crist"
@@ -30,27 +30,27 @@ object UsersSampleData {
     )
     val models = listOf(
         UserCardModel(
-            user = user,
+            userModel = userModel,
             userInitials = "LG",
             tierModel = TierModel.Bronze
         ),
         UserCardModel(
-            user = user,
+            userModel = userModel,
             userInitials = "LG",
             tierModel = TierModel.Silver
         ),
         UserCardModel(
-            user = user,
+            userModel = userModel,
             userInitials = "LG",
             tierModel = TierModel.Gold
         ),
         UserCardModel(
-            user = user,
+            userModel = userModel,
             userInitials = "LG",
             tierModel = TierModel.Platinum
         ),
         UserCardModel(
-            user = user,
+            userModel = userModel,
             userInitials = "LG",
             tierModel = TierModel.OnePercentClub
         )

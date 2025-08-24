@@ -1,4 +1,4 @@
-package com.example.mvi_clean_demo.sections.blog.presentation
+package com.example.mvi_clean_demo.sections.blog.presentation.components
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateContentSize
@@ -46,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.sections.blog.presentation.model.UserCardModel
+import com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data.UsersSampleData
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 import com.example.mvi_clean_demo.theme.clientTierCardSurface
 import com.example.mvi_clean_demo.theme.clientTierInitialsSurface
@@ -66,7 +67,7 @@ fun UserTierCard(
     val tierTextIconModel = cardModel.tierModel.tierTextIconColor
 
     Card(
-        onClick = { onNavigateToUserPosts(cardModel.user.id) },
+        onClick = { onNavigateToUserPosts(cardModel.userModel.id) },
         modifier = Modifier.padding(bottom = 16.dp),
         shape = RectangleShape,
         colors = CardDefaults.cardColors(
@@ -89,7 +90,7 @@ fun UserTierCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = cardModel.user.name,
+                    text = cardModel.userModel.name,
                     maxLines = 1,
                     style = MaterialTheme.typography.titleMedium
                 )
@@ -105,11 +106,11 @@ fun UserTierCard(
                 )
             }
             Text(
-                text = "Username: ${cardModel.user.username}, id: ${cardModel.user.id}",
+                text = "Username: ${cardModel.userModel.username}, id: ${cardModel.userModel.id}",
                 style = MaterialTheme.typography.titleSmall
             )
             Text(
-                text = "Email: ${cardModel.user.email}",
+                text = "Email: ${cardModel.userModel.email}",
                 style = MaterialTheme.typography.titleSmall
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -177,7 +178,7 @@ fun UserTierCard(
                                         .size(32.dp)
                                         .rotate(90f)
                                         .clickable {
-                                            onInfoLinkAction(cardModel.user.website)
+                                            onInfoLinkAction(cardModel.userModel.website)
                                         },
                                     tint = tierTextIconModel
                                 )
@@ -217,14 +218,14 @@ fun UserTierCard(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
-                                text = cardModel.user.name,
+                                text = cardModel.userModel.name,
                                 maxLines = 1,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = cardModel.user.phone,
+                                text = cardModel.userModel.phone,
                                 maxLines = 1,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Normal
@@ -238,7 +239,7 @@ fun UserTierCard(
                         ) {
                             IconButton(
                                 onClick = {
-                                    onCallButtonAction(cardModel.user.phone)
+                                    onCallButtonAction(cardModel.userModel.phone)
                                 },
                                 modifier = Modifier
                                     .size(48.dp)
@@ -289,36 +290,6 @@ fun AllUserCardsPreview() {
                         onNavigateToUserPosts = {}
                     )
                 }
-            }
-        }
-    }
-}
-
-@Preview(
-    name = "Light Mode",
-    group = "Single",
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    showBackground = true,
-    device = "spec:width=420dp,height=330dp,dpi=240"
-)
-@Preview(
-    name = "Dark Mode",
-    group = "Single",
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    showBackground = true,
-    device = "spec:width=420dp,height=330dp,dpi=240"
-)
-@Composable
-fun UserCardPreview() {
-    ComposeUnitConverterTheme {
-        Surface(color = MaterialTheme.colorScheme.background) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                UserTierCard(
-                    cardModel = UsersSampleData.models.first(),
-                    onInfoLinkAction = {},
-                    onCallButtonAction = {},
-                    onNavigateToUserPosts = {}
-                )
             }
         }
     }

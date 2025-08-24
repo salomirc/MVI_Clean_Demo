@@ -14,7 +14,9 @@ import com.example.mvi_clean_demo.common.repository.activeResponseStateWrapper
 import com.example.mvi_clean_demo.sections.blog.domain.useCase.IGetUsersUseCase
 import com.example.mvi_clean_demo.sections.blog.presentation.model.UserCardModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -75,9 +77,11 @@ class UsersViewModel @Inject constructor(
                             }
                         }
                         is Success -> {
-                            val stateUIModel = state.activeResponseStateWrapper { users ->
-                                users.map { user ->
-                                    user.toUserInterfaceModel()
+                            val stateUIModel = withContext(Dispatchers.Default) {
+                                state.activeResponseStateWrapper { users ->
+                                    users.map { user ->
+                                        user.toUserInterfaceModel()
+                                    }
                                 }
                             }
                             updateModelState { model ->

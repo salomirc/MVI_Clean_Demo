@@ -3,7 +3,7 @@ package com.example.mvi_clean_demo.sections.blog.domain.model
 import com.example.mvi_clean_demo.common.api.UserInterfaceModel
 import com.example.mvi_clean_demo.sections.blog.presentation.model.UserCardModel
 
-data class User(
+data class UserModel(
     val address: Address,
     val company: Company,
     val email: String,
@@ -33,7 +33,7 @@ data class User(
 
     override fun toUserInterfaceModel(): UserCardModel {
         return UserCardModel(
-            user = this,
+            userModel = this,
             userInitials = name.take(2).uppercase()
         )
     }

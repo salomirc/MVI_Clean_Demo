@@ -3,7 +3,7 @@ package com.example.mvi_clean_demo.sections.blog.presentation.model
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.sections.blog.domain.model.User
+import com.example.mvi_clean_demo.sections.blog.domain.model.UserModel
 import com.example.mvi_clean_demo.theme.BlackSurface
 import com.example.mvi_clean_demo.theme.BronzeSurface
 import com.example.mvi_clean_demo.theme.GoldSurface
@@ -13,7 +13,7 @@ import com.example.mvi_clean_demo.theme.PlatinumSurface
 import com.example.mvi_clean_demo.theme.SilverSurface
 
 data class UserCardModel(
-    val user: User,
+    val userModel: UserModel,
     val userInitials : String,
     val tierModel: TierModel = TierModel.Gold
 )

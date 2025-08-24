@@ -1,6 +1,6 @@
 @file:JvmName("ComposeUserCardKt")
 
-package com.example.mvi_clean_demo.sections.blog.presentation
+package com.example.mvi_clean_demo.sections.blog.presentation.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import com.example.mvi_clean_demo.sections.blog.presentation.model.UserCardModel
 
@@ -21,11 +22,11 @@ fun UserCard(
     cardModel: UserCardModel,
     onNavigateToUserPosts: (Int) -> Unit
 ) {
-    val user = cardModel.user
+    val user = cardModel.userModel
     Card(
         onClick = { onNavigateToUserPosts(user.id) },
-        modifier = Modifier
-            .padding(16.dp, 8.dp),
+        modifier = Modifier.padding(bottom = 16.dp),
+        shape = RectangleShape,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),

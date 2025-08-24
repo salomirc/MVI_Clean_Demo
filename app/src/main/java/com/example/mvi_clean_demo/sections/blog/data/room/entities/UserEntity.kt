@@ -5,7 +5,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.mvi_clean_demo.common.api.DomainModel
-import com.example.mvi_clean_demo.sections.blog.domain.model.User
+import com.example.mvi_clean_demo.sections.blog.domain.model.UserModel
 
 @Entity(tableName = "users_table")
 data class UserEntity(
@@ -38,7 +38,7 @@ data class UserEntity(
     @ColumnInfo(name = "token")
     var token: String? = null
 
-): DomainModel<User> {
+): DomainModel<UserModel> {
     data class Address(
 
         @ColumnInfo(name = "city")
@@ -78,11 +78,11 @@ data class UserEntity(
         val name: String
     )
 
-    override fun toDomainModel(): User {
-        return User(
-            address = User.Address(
+    override fun toDomainModel(): UserModel {
+        return UserModel(
+            address = UserModel.Address(
                 city = address.city,
-                geo = User.Address.Geo(
+                geo = UserModel.Address.Geo(
                     lat = address.geo.lat,
                     lng = address.geo.lng
                 ),
@@ -90,7 +90,7 @@ data class UserEntity(
                 suite = address.suite,
                 zipcode = address.zipcode
             ),
-            company = User.Company(
+            company = UserModel.Company(
                 bs = company.bs,
                 catchPhrase = company.catchPhrase,
                 name = company.name

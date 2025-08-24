@@ -14,6 +14,8 @@ import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponse
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 import com.example.mvi_clean_demo.common.ui_components.LoadingScreen
+import com.example.mvi_clean_demo.sections.blog.presentation.components.UserCard
+import com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data.UsersSampleData
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 
 @Composable
@@ -35,11 +37,15 @@ fun ComposeUsers(
         if (usersResponseState is Success) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(usersResponseState.data) { cardModel ->
-                    UserTierCard(
+//                    UserTierCard(
+//                        cardModel = cardModel,
+//                        onInfoLinkAction = {},
+//                        onCallButtonAction = {},
+//                        onNavigateToUserPosts = onNavigateToUserPosts,
+//                    )
+                    UserCard(
                         cardModel = cardModel,
-                        onInfoLinkAction = {},
-                        onCallButtonAction = {},
-                        onNavigateToUserPosts = onNavigateToUserPosts,
+                        onNavigateToUserPosts = onNavigateToUserPosts
                     )
                 }
             }

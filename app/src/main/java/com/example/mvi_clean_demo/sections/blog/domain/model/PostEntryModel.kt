@@ -1,6 +1,6 @@
 package com.example.mvi_clean_demo.sections.blog.domain.model
 
-data class PostEntry(
+data class PostEntryModel(
    val id: Int,
    val userId: Int,
    val title: String,

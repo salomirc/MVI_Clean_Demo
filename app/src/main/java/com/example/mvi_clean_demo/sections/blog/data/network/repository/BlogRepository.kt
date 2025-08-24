@@ -10,8 +10,8 @@ import com.example.mvi_clean_demo.sections.blog.data.room.dao.PostEntityDao
 import com.example.mvi_clean_demo.sections.blog.data.room.dao.UserEntityDao
 import com.example.mvi_clean_demo.sections.blog.data.room.entities.PostEntity
 import com.example.mvi_clean_demo.sections.blog.data.room.entities.UserEntity
-import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntry
-import com.example.mvi_clean_demo.sections.blog.domain.model.User
+import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntryModel
+import com.example.mvi_clean_demo.sections.blog.domain.model.UserModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -19,10 +19,10 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 interface IBlogRepository {
-    suspend fun getUsers(): Flow<ActiveResponseState<List<User>>>
+    suspend fun getUsers(): Flow<ActiveResponseState<List<UserModel>>>
     suspend fun getPostEntriesFromUser(
         userId: Int
-    ): Flow<ActiveResponseState<List<PostEntry>>>
+    ): Flow<ActiveResponseState<List<PostEntryModel>>>
 
 }
 
@@ -34,7 +34,7 @@ class BlogRepository @Inject constructor(
     private val apiCaller: IRetrofitApiCaller
 ): IBlogRepository {
 
-    override suspend fun getUsers(): Flow<ActiveResponseState<List<User>>> {
+    override suspend fun getUsers(): Flow<ActiveResponseState<List<UserModel>>> {
         return DataSourcePattern.dualPattern(
             networkResult = {
                 apiCaller.invoke {
@@ -75,7 +75,7 @@ class BlogRepository @Inject constructor(
 
     override suspend fun getPostEntriesFromUser(
         userId: Int
-    ): Flow<ActiveResponseState<List<PostEntry>>> {
+    ): Flow<ActiveResponseState<List<PostEntryModel>>> {
         return withContext(Dispatchers.Default) {
             DataSourcePattern.dualPattern(
                 networkResult = {

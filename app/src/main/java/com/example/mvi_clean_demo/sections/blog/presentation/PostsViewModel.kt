@@ -10,7 +10,7 @@ import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponse
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 import com.example.mvi_clean_demo.sections.blog.data.network.repository.IBlogRepository
-import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntry
+import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntryModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,7 +31,7 @@ class PostsViewModel @Inject constructor(
 
     data class Model(
         val isLoading: Boolean,
-        val postEntries: ResponseState<List<PostEntry>>
+        val postEntries: ResponseState<List<PostEntryModel>>
     )
 
     sealed interface Event {

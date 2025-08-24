@@ -6,7 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.mvi_clean_demo.common.api.DomainModel
-import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntry
+import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntryModel
 
 @Entity(
     tableName = "posts_table",
@@ -34,10 +34,10 @@ data class PostEntity(
 
     @ColumnInfo(name = "body")
     val body: String
-): DomainModel<PostEntry> {
+): DomainModel<PostEntryModel> {
 
-    override fun toDomainModel(): PostEntry {
-        return PostEntry(
+    override fun toDomainModel(): PostEntryModel {
+        return PostEntryModel(
             id = id,
             userId = userId,
             title = title,
