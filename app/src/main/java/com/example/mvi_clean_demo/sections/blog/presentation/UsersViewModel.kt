@@ -11,6 +11,7 @@ import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponse
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 import com.example.mvi_clean_demo.common.repository.activeResponseStateWrapper
+import com.example.mvi_clean_demo.common.repository.responseStateWrapper
 import com.example.mvi_clean_demo.sections.blog.domain.useCase.IGetUsersUseCase
 import com.example.mvi_clean_demo.sections.blog.presentation.model.UserCardModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +28,7 @@ class UsersViewModel @Inject constructor(
 ) : BaseViewModel<UsersViewModel.Model, UsersViewModel.Event>(
     model = Model(
         isLoading = false,
-        users = Idle
+        userCardModelsResponseState = Idle
     )
 ) {
 
@@ -35,11 +36,12 @@ class UsersViewModel @Inject constructor(
 
     data class Model(
         val isLoading: Boolean,
-        val users: ResponseState<List<UserCardModel>>
+        val userCardModelsResponseState: ResponseState<MutableList<UserCardModel>>
     )
 
     sealed interface Event {
         data object GetUsers: Event
+        data class UpdateUserCardModel(val isExpanded: Boolean, val id: Int): Event
     }
 
     override fun sendEvent(event: Event) {
@@ -47,9 +49,11 @@ class UsersViewModel @Inject constructor(
             is Event.GetUsers -> {
                 getUsers()
             }
+            is Event.UpdateUserCardModel -> {
+                updateUserCardModel(event.isExpanded, event.id)
+            }
         }
     }
-
     private fun getUsers() {
         viewModelScope.launch {
             getUsersUseCase
@@ -79,20 +83,37 @@ class UsersViewModel @Inject constructor(
                         is Success -> {
                             val stateUIModel = withContext(Dispatchers.Default) {
                                 state.activeResponseStateWrapper { users ->
-                                    users.map { user ->
-                                        user.toUserInterfaceModel()
-                                    }
+                                    users
+                                        .map { user ->
+                                            user.toUserInterfaceModel()
+                                        }
+                                        .toMutableList()
                                 }
                             }
                             updateModelState { model ->
                                 model.copy(
                                     isLoading = false,
-                                    users = stateUIModel
+                                    userCardModelsResponseState = stateUIModel
                                 )
                             }
                         }
                     }
                 }
+        }
+    }
+    private fun updateUserCardModel(expanded: Boolean, id: Int) {
+        viewModelScope.launch {
+            updateModelStateSuspend { model ->
+                model.copy(
+                    userCardModelsResponseState = withContext(Dispatchers.Default) {
+                        model.userCardModelsResponseState.responseStateWrapper { userCardModels ->
+                            userCardModels.apply {
+                                this.find { it.userModel.id == id }?.isExpanded = expanded
+                            }
+                        }
+                    }
+                )
+            }
         }
     }
     companion object {

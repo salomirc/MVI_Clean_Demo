@@ -32,9 +32,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -45,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mvi_clean_demo.R
+import com.example.mvi_clean_demo.sections.blog.presentation.UsersViewModel.Event
 import com.example.mvi_clean_demo.sections.blog.presentation.model.UserCardModel
 import com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data.UsersSampleData
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
@@ -53,21 +51,21 @@ import com.example.mvi_clean_demo.theme.clientTierInitialsSurface
 
 @Composable
 fun UserTierCard(
-    cardModel: UserCardModel,
+    model: UserCardModel,
+    sendEvent: (Event) -> Unit,
     onInfoLinkAction: (url: String) -> Unit,
     onCallButtonAction: (phoneNumber: String) -> Unit,
     onNavigateToUserPosts: (Int) -> Unit,
 ) {
-    var expanded by remember { mutableStateOf(true) }
     val rotation by animateFloatAsState(
-        targetValue = if (expanded) 180f else 0f,
+        targetValue = if (model.isExpanded) 0f else 180f,
         animationSpec = tween(1000),
         label = "UpArrowRotation"
     )
-    val tierTextIconModel = cardModel.tierModel.tierTextIconColor
+    val tierTextIconModel = model.tierModel.tierTextIconColor
 
     Card(
-        onClick = { onNavigateToUserPosts(cardModel.userModel.id) },
+        onClick = { onNavigateToUserPosts(model.userModel.id) },
         modifier = Modifier.padding(bottom = 16.dp),
         shape = RectangleShape,
         colors = CardDefaults.cardColors(
@@ -90,7 +88,7 @@ fun UserTierCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = cardModel.userModel.name,
+                    text = model.userModel.name,
                     maxLines = 1,
                     style = MaterialTheme.typography.titleMedium
                 )
@@ -100,28 +98,33 @@ fun UserTierCard(
                     modifier = Modifier
                         .size(32.dp)
                         .clickable {
-                            expanded = !expanded
+                            sendEvent(
+                                Event.UpdateUserCardModel(
+                                    isExpanded = !model.isExpanded,
+                                    id = model.userModel.id
+                                )
+                            )
                         }
                         .rotate(rotation)
                 )
             }
             Text(
-                text = "Username: ${cardModel.userModel.username}, id: ${cardModel.userModel.id}",
+                text = "Username: ${model.userModel.username}, id: ${model.userModel.id}",
                 style = MaterialTheme.typography.titleSmall
             )
             Text(
-                text = "Email: ${cardModel.userModel.email}",
+                text = "Email: ${model.userModel.email}",
                 style = MaterialTheme.typography.titleSmall
             )
             Spacer(modifier = Modifier.height(12.dp))
-            if (expanded) {
+            if (model.isExpanded) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
                     Surface(
                         shape = RoundedCornerShape(8.dp),
-                        color = cardModel.tierModel.tierSurfaceColor
+                        color = model.tierModel.tierSurfaceColor
                     ) {
                         Column(
                             modifier = Modifier
@@ -133,7 +136,7 @@ fun UserTierCard(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    painter = painterResource(cardModel.tierModel.tierIconRes),
+                                    painter = painterResource(model.tierModel.tierIconRes),
                                     contentDescription = "Tier Icon",
                                     modifier = Modifier
                                         .size(48.dp),
@@ -141,7 +144,7 @@ fun UserTierCard(
                                 )
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Text(
-                                    text = cardModel.tierModel.tierTitle,
+                                    text = model.tierModel.tierTitle,
                                     color = tierTextIconModel,
                                     maxLines = 1,
                                     style = MaterialTheme.typography.titleMedium,
@@ -149,7 +152,7 @@ fun UserTierCard(
                                 )
                             }
                             Image(
-                                painter = painterResource(cardModel.tierModel.tierLineRes),
+                                painter = painterResource(model.tierModel.tierLineRes),
                                 contentDescription = "Separation line",
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -178,7 +181,7 @@ fun UserTierCard(
                                         .size(32.dp)
                                         .rotate(90f)
                                         .clickable {
-                                            onInfoLinkAction(cardModel.userModel.website)
+                                            onInfoLinkAction(model.userModel.website)
                                         },
                                     tint = tierTextIconModel
                                 )
@@ -208,7 +211,7 @@ fun UserTierCard(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = cardModel.userInitials,
+                                    text = model.userInitials,
                                     maxLines = 1,
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.Normal
@@ -218,14 +221,14 @@ fun UserTierCard(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
-                                text = cardModel.userModel.name,
+                                text = model.userModel.name,
                                 maxLines = 1,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = cardModel.userModel.phone,
+                                text = model.userModel.phone,
                                 maxLines = 1,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Normal
@@ -239,7 +242,7 @@ fun UserTierCard(
                         ) {
                             IconButton(
                                 onClick = {
-                                    onCallButtonAction(cardModel.userModel.phone)
+                                    onCallButtonAction(model.userModel.phone)
                                 },
                                 modifier = Modifier
                                     .size(48.dp)
@@ -284,10 +287,11 @@ fun AllUserCardsPreview() {
             ) {
                 for (model in UsersSampleData.models) {
                     UserTierCard(
-                        cardModel = model,
+                        model = model,
                         onInfoLinkAction = {},
                         onCallButtonAction = {},
-                        onNavigateToUserPosts = {}
+                        onNavigateToUserPosts = {},
+                        sendEvent = {}
                     )
                 }
             }

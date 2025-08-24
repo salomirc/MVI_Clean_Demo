@@ -14,7 +14,7 @@ import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponse
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 import com.example.mvi_clean_demo.common.ui_components.LoadingScreen
-import com.example.mvi_clean_demo.sections.blog.presentation.components.UserCard
+import com.example.mvi_clean_demo.sections.blog.presentation.components.UserTierCard
 import com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data.UsersSampleData
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 
@@ -24,7 +24,7 @@ fun ComposeUsers(
     sendEvent: (UsersViewModel.Event) -> Unit,
     onNavigateToUserPosts: (Int) -> Unit
 ) {
-    val usersResponseState = model.users
+    val usersResponseState = model.userCardModelsResponseState
     LaunchedEffect(usersResponseState) {
         val shouldGetUsers = ((usersResponseState is Idle) || (usersResponseState is Failure))
         if (shouldGetUsers) {
@@ -37,16 +37,17 @@ fun ComposeUsers(
         if (usersResponseState is Success) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(usersResponseState.data) { cardModel ->
-//                    UserTierCard(
-//                        cardModel = cardModel,
-//                        onInfoLinkAction = {},
-//                        onCallButtonAction = {},
-//                        onNavigateToUserPosts = onNavigateToUserPosts,
-//                    )
-                    UserCard(
-                        cardModel = cardModel,
-                        onNavigateToUserPosts = onNavigateToUserPosts
+                    UserTierCard(
+                        model = cardModel,
+                        sendEvent = sendEvent,
+                        onInfoLinkAction = {},
+                        onCallButtonAction = {},
+                        onNavigateToUserPosts = onNavigateToUserPosts,
                     )
+//                    UserCard(
+//                        cardModel = cardModel,
+//                        onNavigateToUserPosts = onNavigateToUserPosts
+//                    )
                 }
             }
         }
@@ -71,7 +72,7 @@ fun ComposeUsers(
 fun UsersPreview() {
     val model = UsersViewModel.Model(
         isLoading = false,
-        users = Success(data = UsersSampleData.models)
+        userCardModelsResponseState = Success(data = UsersSampleData.models)
     )
     ComposeUnitConverterTheme {
         Surface {

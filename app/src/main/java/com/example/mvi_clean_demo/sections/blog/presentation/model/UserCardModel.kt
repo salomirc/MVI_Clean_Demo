@@ -14,6 +14,7 @@ import com.example.mvi_clean_demo.theme.SilverSurface
 
 data class UserCardModel(
     val userModel: UserModel,
+    var isExpanded: Boolean = true,
     val userInitials : String,
     val tierModel: TierModel = TierModel.Gold
 )

@@ -2,19 +2,21 @@ package com.example.mvi_clean_demo.common.repository
 
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Failure
+import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Loading
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
+import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 
 sealed interface ResponseState<out T> {
     data object Idle: ResponseState<Nothing>
     sealed interface ActiveResponseState<out T>: ResponseState<T> {
         data object Loading: ActiveResponseState<Nothing>
-        data class Success<T>(val data: T): ActiveResponseState<T>
-        data class Failure(val throwable: Throwable): ActiveResponseState<Nothing>
+        class Success<T>(val data: T): ActiveResponseState<T>
+        class Failure(val throwable: Throwable): ActiveResponseState<Nothing>
     }
 }
 
-suspend inline fun <T, R> ActiveResponseState<T>.activeResponseStateWrapper(
-    crossinline transform: suspend (value: T) -> R
+inline fun <T, R> ActiveResponseState<T>.activeResponseStateWrapper(
+    crossinline transform: (value: T) -> R
 ): ActiveResponseState<R> {
     lateinit var result: ActiveResponseState<R>
     when (this) {
@@ -32,9 +34,22 @@ suspend inline fun <T, R> ActiveResponseState<T>.activeResponseStateWrapper(
         is Failure -> {
             result = Failure(this.throwable)
         }
-        ActiveResponseState.Loading -> {
-            result = ActiveResponseState.Loading
+        Loading -> {
+            result = Loading
         }
+    }
+    return result
+}
+
+inline fun <T, R> ResponseState<T>.responseStateWrapper(
+    crossinline transform: (value: T) -> R
+): ResponseState<R> {
+    lateinit var result: ResponseState<R>
+    when (this) {
+        is ActiveResponseState -> {
+            result = this.activeResponseStateWrapper(transform)
+        }
+        Idle -> Idle
     }
     return result
 }

@@ -28,7 +28,7 @@ object UsersSampleData {
         username = "Bret",
         website = "hildegard.org"
     )
-    val models = listOf(
+    val models = mutableListOf(
         UserCardModel(
             userModel = userModel,
             userInitials = "LG",
