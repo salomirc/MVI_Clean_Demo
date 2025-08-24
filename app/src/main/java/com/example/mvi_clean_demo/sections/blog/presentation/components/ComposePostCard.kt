@@ -23,7 +23,7 @@ import com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 
 @Composable
-fun PostCard(postEntryModel: PostEntryModel) {
+fun ComposePostCard(postEntryModel: PostEntryModel) {
     Card(
         modifier = Modifier.padding(bottom = 16.dp),
         shape = RectangleShape,
@@ -74,11 +74,11 @@ fun PostCard(postEntryModel: PostEntryModel) {
     device = "spec:width=420dp,height=150dp,dpi=240"
 )
 @Composable
-fun UserCardPreview() {
+fun PostCardPreview() {
     ComposeUnitConverterTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
             Box(modifier = Modifier.fillMaxSize()) {
-                PostCard(
+                ComposePostCard(
                     postEntryModel = PostSampleData.models.first()
                 )
             }

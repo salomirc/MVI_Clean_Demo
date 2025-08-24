@@ -207,14 +207,14 @@ fun UserTierCard(
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(48.dp),
+                                    .size(40.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = model.userInitials,
                                     maxLines = 1,
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Normal
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }
@@ -276,7 +276,7 @@ fun UserTierCard(
     device = "spec:width=420dp,height=1650dp,dpi=240"
 )
 @Composable
-fun AllUserCardsPreview() {
+fun UserCardsPreview() {
     ComposeUnitConverterTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
             val scrollState = rememberScrollState()
@@ -294,6 +294,37 @@ fun AllUserCardsPreview() {
                         sendEvent = {}
                     )
                 }
+            }
+        }
+    }
+}
+
+@Preview(
+    name = "Light Mode",
+    group = "Single",
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    showBackground = true,
+    device = "spec:width=420dp,height=320dp,dpi=240"
+)
+@Preview(
+    name = "Dark Mode",
+    group = "Single",
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    showBackground = true,
+    device = "spec:width=420dp,height=320dp,dpi=240"
+)
+@Composable
+fun UserCardPreview() {
+    ComposeUnitConverterTheme {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                UserTierCard(
+                    model = UsersSampleData.models.first(),
+                    onInfoLinkAction = {},
+                    onCallButtonAction = {},
+                    onNavigateToUserPosts = {},
+                    sendEvent = {}
+                )
             }
         }
     }

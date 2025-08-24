@@ -14,7 +14,7 @@ import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponse
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 import com.example.mvi_clean_demo.common.ui_components.LoadingScreen
-import com.example.mvi_clean_demo.sections.blog.presentation.components.PostCard
+import com.example.mvi_clean_demo.sections.blog.presentation.components.ComposePostCard
 import com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data.PostSampleData
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 
@@ -37,7 +37,7 @@ fun ComposePosts(
         if (postResponseState is Success) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(postResponseState.data) { entryModel ->
-                    PostCard(postEntryModel = entryModel)
+                    ComposePostCard(postEntryModel = entryModel)
                 }
             }
         }
