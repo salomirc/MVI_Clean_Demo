@@ -37,8 +37,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mvi_clean_demo.R
@@ -88,13 +91,13 @@ fun UserTierCard(
                 .animateContentSize()
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = model.userModel.name,
+                    overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
                     style = MaterialTheme.typography.titleMedium
                 )
@@ -116,10 +119,14 @@ fun UserTierCard(
             }
             Text(
                 text = "Username: ${model.userModel.username}, id: ${model.userModel.id}",
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 style = MaterialTheme.typography.titleSmall
             )
             Text(
                 text = "Email: ${model.userModel.email}",
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 style = MaterialTheme.typography.titleSmall
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -134,8 +141,7 @@ fun UserTierCard(
                     ) {
                         Column(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(120.dp),
+                                .fillMaxWidth(),
                         ) {
                             Row(
                                 modifier = Modifier.padding(12.dp),
@@ -144,8 +150,7 @@ fun UserTierCard(
                                 Icon(
                                     painter = painterResource(model.tierModel.tierIconRes),
                                     contentDescription = "Tier Icon",
-                                    modifier = Modifier
-                                        .size(48.dp),
+                                    modifier = Modifier.size(48.dp),
                                     tint = Color.Unspecified
                                 )
                                 Spacer(modifier = Modifier.width(12.dp))
@@ -162,7 +167,8 @@ fun UserTierCard(
                                 contentDescription = "Separation line",
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(1.dp)
+                                    .height(1.dp),
+                                contentScale = ContentScale.FillWidth
                             )
                             Row(
                                 modifier = Modifier
@@ -213,7 +219,7 @@ fun UserTierCard(
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(40.dp),
+                                    .size(48.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
@@ -228,6 +234,7 @@ fun UserTierCard(
                         Column {
                             Text(
                                 text = model.userModel.name,
+                                overflow = TextOverflow.Ellipsis,
                                 maxLines = 1,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold
@@ -235,6 +242,7 @@ fun UserTierCard(
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
                                 text = model.userModel.phone,
+                                overflow = TextOverflow.Ellipsis,
                                 maxLines = 1,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Normal
@@ -242,8 +250,7 @@ fun UserTierCard(
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         Box(
-                            modifier = Modifier
-                                .weight(1f),
+                            modifier = Modifier.weight(1f),
                             contentAlignment = Alignment.CenterEnd
                         ) {
                             IconButton(
@@ -310,14 +317,14 @@ fun UserCardsPreview() {
     group = "Single",
     uiMode = Configuration.UI_MODE_NIGHT_NO,
     showBackground = true,
-    device = "spec:width=420dp,height=320dp,dpi=240"
+    device = Devices.PIXEL
 )
 @Preview(
     name = "Dark Mode",
     group = "Single",
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     showBackground = true,
-    device = "spec:width=420dp,height=320dp,dpi=240"
+    device = Devices.PIXEL
 )
 @Composable
 fun UserCardPreview() {
