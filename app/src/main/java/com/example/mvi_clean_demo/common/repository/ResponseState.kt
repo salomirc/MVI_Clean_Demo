@@ -7,9 +7,9 @@ import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponse
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 
 sealed interface ResponseState<out T> {
-    data object Idle: ResponseState<Nothing>
+    object Idle: ResponseState<Nothing>
     sealed interface ActiveResponseState<out T>: ResponseState<T> {
-        data object Loading: ActiveResponseState<Nothing>
+        object Loading: ActiveResponseState<Nothing>
         class Success<T>(val data: T): ActiveResponseState<T>
         class Failure(val throwable: Throwable): ActiveResponseState<Nothing>
     }
