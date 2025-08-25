@@ -65,7 +65,13 @@ fun UserTierCard(
     val tierTextIconModel = model.tierModel.tierTextIconColor
 
     Card(
-        onClick = { onNavigateToUserPosts(model.userModel.id) },
+        onClick = {
+            if (model.isExpanded) {
+                onNavigateToUserPosts(model.userModel.id)
+            } else {
+                sendEvent(Event.UpdateUserCardModel(isExpanded = true, id = model.userModel.id))
+            }
+        },
         modifier = Modifier.padding(bottom = 16.dp),
         shape = RectangleShape,
         colors = CardDefaults.cardColors(

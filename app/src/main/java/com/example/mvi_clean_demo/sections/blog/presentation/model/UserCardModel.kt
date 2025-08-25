@@ -65,4 +65,8 @@ sealed interface TierModel {
             get() = InitialsBgSurfaceLight
         override val tierTitle = "1% Club"
     }
+
+    companion object {
+        val tierModelImplList = listOf(Bronze, Gold, Silver, Platinum, OnePercentClub)
+    }
 }

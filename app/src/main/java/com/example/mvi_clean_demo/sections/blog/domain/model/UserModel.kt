@@ -1,6 +1,7 @@
 package com.example.mvi_clean_demo.sections.blog.domain.model
 
 import com.example.mvi_clean_demo.common.api.UserInterfaceModel
+import com.example.mvi_clean_demo.sections.blog.presentation.model.TierModel
 import com.example.mvi_clean_demo.sections.blog.presentation.model.UserCardModel
 
 data class UserModel(
@@ -34,7 +35,8 @@ data class UserModel(
     override fun toUserInterfaceModel(): UserCardModel {
         return UserCardModel(
             userModel = this,
-            userInitials = name.take(2).uppercase()
+            userInitials = name.take(2).uppercase(),
+            tierModel = TierModel.tierModelImplList.random()
         )
     }
 }
