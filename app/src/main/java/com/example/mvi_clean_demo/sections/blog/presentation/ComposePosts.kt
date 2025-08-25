@@ -1,6 +1,7 @@
 package com.example.mvi_clean_demo.sections.blog.presentation
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Failure
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
-import com.example.mvi_clean_demo.common.ui_components.LoadingScreen
+import com.example.mvi_clean_demo.common.ui_components.LoadingBox
 import com.example.mvi_clean_demo.sections.blog.presentation.components.ComposePostCard
 import com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data.PostSampleData
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
@@ -31,14 +32,17 @@ fun ComposePosts(
             sendEvent(PostsViewModel.Event.GetPostEntriesFromUser(userId))
         }
     }
-    if (model.isLoading) {
-        LoadingScreen()
-    } else {
-        if (postResponseState is Success) {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(postResponseState.data) { entryModel ->
-                    ComposePostCard(postEntryModel = entryModel)
+    Surface {
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (postResponseState is Success) {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(postResponseState.data) { entryModel ->
+                        ComposePostCard(postEntryModel = entryModel)
+                    }
                 }
+            }
+            if (model.isLoading) {
+                LoadingBox()
             }
         }
     }
@@ -67,13 +71,11 @@ fun PostsPreview() {
         postEntries = Success(data = PostSampleData.models)
     )
     ComposeUnitConverterTheme {
-        Surface {
-            ComposePosts(
-                userId = 1,
-                model = model,
-                sendEvent = { }
-            )
-        }
+        ComposePosts(
+            userId = 1,
+            model = model,
+            sendEvent = { }
+        )
     }
 }
 

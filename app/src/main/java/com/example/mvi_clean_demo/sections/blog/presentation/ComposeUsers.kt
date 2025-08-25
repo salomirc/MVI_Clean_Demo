@@ -1,6 +1,7 @@
 package com.example.mvi_clean_demo.sections.blog.presentation
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Failure
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
-import com.example.mvi_clean_demo.common.ui_components.LoadingScreen
+import com.example.mvi_clean_demo.common.ui_components.LoadingBox
 import com.example.mvi_clean_demo.sections.blog.presentation.components.UserTierCard
 import com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data.UsersSampleData
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
@@ -31,24 +32,23 @@ fun ComposeUsers(
             sendEvent(UsersViewModel.Event.GetUsers)
         }
     }
-    if (model.isLoading) {
-        LoadingScreen()
-    } else {
-        if (usersResponseState is Success) {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(usersResponseState.data) { cardModel ->
-                    UserTierCard(
-                        model = cardModel,
-                        sendEvent = sendEvent,
-                        onInfoLinkAction = {},
-                        onCallButtonAction = {},
-                        onNavigateToUserPosts = onNavigateToUserPosts,
-                    )
-//                    UserCard(
-//                        cardModel = cardModel,
-//                        onNavigateToUserPosts = onNavigateToUserPosts
-//                    )
+    Surface {
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (usersResponseState is Success) {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(usersResponseState.data) { cardModel ->
+                        UserTierCard(
+                            model = cardModel,
+                            sendEvent = sendEvent,
+                            onInfoLinkAction = {},
+                            onCallButtonAction = {},
+                            onNavigateToUserPosts = onNavigateToUserPosts,
+                        )
+                    }
                 }
+            }
+            if (model.isLoading) {
+                LoadingBox()
             }
         }
     }
@@ -75,13 +75,11 @@ fun UsersPreview() {
         userCardModelsResponseState = Success(data = UsersSampleData.models)
     )
     ComposeUnitConverterTheme {
-        Surface {
-            ComposeUsers(
-                model = model,
-                sendEvent = { },
-                onNavigateToUserPosts = { }
-            )
-        }
+        ComposeUsers(
+            model = model,
+            sendEvent = { },
+            onNavigateToUserPosts = { }
+        )
     }
 }
 
