@@ -22,8 +22,8 @@ class PostsViewModel @Inject constructor(
     errorHandlerFactory: ErrorHandlerFactory
 ) : BaseViewModel<PostsViewModel.Model, PostsViewModel.Event>(
     model = Model(
-        isLoading = false,
-        postEntries = Idle
+        isLoading = true,
+        postEntriesModelsResponseState = Idle
     )
 ) {
 
@@ -31,7 +31,7 @@ class PostsViewModel @Inject constructor(
 
     data class Model(
         val isLoading: Boolean,
-        val postEntries: ResponseState<List<PostEntryModel>>
+        val postEntriesModelsResponseState: ResponseState<List<PostEntryModel>>
     )
 
     sealed interface Event {
@@ -63,7 +63,7 @@ class PostsViewModel @Inject constructor(
                             updateModelState { model ->
                                 model.copy(
                                     isLoading = false,
-                                    postEntries = state
+                                    postEntriesModelsResponseState = state
                                 )
                             }
                         }

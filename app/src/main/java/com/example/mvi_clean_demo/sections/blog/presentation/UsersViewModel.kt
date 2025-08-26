@@ -27,7 +27,7 @@ class UsersViewModel @Inject constructor(
     errorHandlerFactory: ErrorHandlerFactory
 ) : BaseViewModel<UsersViewModel.Model, UsersViewModel.Event>(
     model = Model(
-        isLoading = false,
+        isLoading = true,
         userCardModelsResponseState = Idle
     )
 ) {
