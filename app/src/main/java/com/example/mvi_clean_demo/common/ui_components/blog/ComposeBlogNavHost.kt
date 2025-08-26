@@ -1,9 +1,14 @@
 package com.example.mvi_clean_demo.common.ui_components.blog
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -35,10 +40,38 @@ fun ComposeBlogNavHost(
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
+    val animationSpec = tween<IntOffset>(
+        durationMillis = 700,
+        easing = LinearEasing
+    )
     NavHost(
         navController = navController,
         startDestination = UsersNavTarget,
-        modifier = modifier
+        modifier = modifier,
+        enterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { fullWidth -> fullWidth }, // from right
+                animationSpec = animationSpec
+            )
+        },
+        exitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { fullWidth -> -fullWidth }, // to left
+                animationSpec = animationSpec
+            )
+        },
+        popEnterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { fullWidth -> -fullWidth }, // from left
+                animationSpec = animationSpec
+            )
+        },
+        popExitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { fullWidth -> fullWidth }, // to right
+                animationSpec = animationSpec
+            )
+        }
     ) {
         composable<UsersNavTarget> { backStackEntry ->
             val viewModel: UsersViewModel = hiltViewModel()
