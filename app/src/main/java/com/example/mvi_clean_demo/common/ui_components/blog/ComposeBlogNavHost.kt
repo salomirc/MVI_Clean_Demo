@@ -50,7 +50,7 @@ fun ComposeBlogNavHost(
         modifier = modifier,
         enterTransition = {
             slideInHorizontally(
-                initialOffsetX = { fullWidth -> fullWidth }, // from right
+                initialOffsetX = { fullWidth -> fullWidth }, // from right to left
                 animationSpec = tween(
                     durationMillis = animationDuration,
                     easing = LinearOutSlowInEasing
@@ -75,7 +75,7 @@ fun ComposeBlogNavHost(
         },
         popExitTransition = {
             slideOutHorizontally(
-                targetOffsetX = { fullWidth -> fullWidth }, // to right
+                targetOffsetX = { fullWidth -> fullWidth }, // from left to right
                 animationSpec = tween(
                     durationMillis = animationDuration,
                     easing = FastOutLinearInEasing

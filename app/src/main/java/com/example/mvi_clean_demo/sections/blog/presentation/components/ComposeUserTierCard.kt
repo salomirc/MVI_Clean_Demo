@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,10 +24,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,7 +46,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.sections.blog.presentation.UsersViewModel.Event
 import com.example.mvi_clean_demo.sections.blog.presentation.model.UserCardModel
 import com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data.UsersSampleData
@@ -214,8 +215,13 @@ fun UserTierCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Surface(
+                            modifier = Modifier.padding(4.dp),
                             shape = CircleShape,
-                            color = MaterialTheme.colorScheme.clientTierInitialsSurface
+                            color = MaterialTheme.colorScheme.clientTierInitialsSurface,
+                            border = BorderStroke(
+                                1.dp,
+                                MaterialTheme.colorScheme.outlineVariant
+                            )
                         ) {
                             Box(
                                 modifier = Modifier
@@ -253,7 +259,7 @@ fun UserTierCard(
                             modifier = Modifier.weight(1f),
                             contentAlignment = Alignment.CenterEnd
                         ) {
-                            IconButton(
+                            FilledIconButton(
                                 onClick = {
                                     onCallButtonAction(model.userModel.phone)
                                 },
@@ -261,9 +267,10 @@ fun UserTierCard(
                                     .size(48.dp)
                             ) {
                                 Icon(
-                                    painter = painterResource(R.drawable.call_button),
+                                    imageVector = Icons.Default.Phone,
                                     contentDescription = "Call Button",
-                                    tint = Color.Unspecified
+                                    modifier = Modifier.size(20.dp),
+                                    tint = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
                         }
