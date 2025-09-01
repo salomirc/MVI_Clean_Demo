@@ -18,7 +18,7 @@ import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 import com.example.mvi_clean_demo.common.ui_components.ComposeRepeatOnLifecycle
 import com.example.mvi_clean_demo.common.ui_components.LoadingBox
 import com.example.mvi_clean_demo.common.ui_components.LogComposeLifecycleEvent
-import com.example.mvi_clean_demo.sections.blog.presentation.components.ComposePostCard
+import com.example.mvi_clean_demo.sections.blog.presentation.components.PostChatBubble
 import com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data.PostSampleData
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 
@@ -46,9 +46,13 @@ fun ComposePosts(
     Surface {
         Box(modifier = Modifier.fillMaxSize()) {
             if (postsResponseState is Success) {
+                val items = postsResponseState.data
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(postsResponseState.data) { entryModel ->
-                        ComposePostCard(postEntryModel = entryModel)
+                    items(items) { entryModel ->
+                        PostChatBubble(
+                            postEntryModel = entryModel,
+                            isUserMe = items.indexOf(entryModel) % 2 == 0
+                        )
                     }
                 }
             }
@@ -66,14 +70,14 @@ fun ComposePosts(
     group = "FullScreen",
     uiMode = Configuration.UI_MODE_NIGHT_NO,
     showBackground = true,
-    device = Devices.PIXEL
+    device = Devices.PIXEL_3A
 )
 @Preview(
     name = "Dark Mode",
     group = "FullScreen",
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     showBackground = true,
-    device = Devices.PIXEL
+    device = Devices.PIXEL_3A
 )
 @Composable
 fun PostsPreview() {
