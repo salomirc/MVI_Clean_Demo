@@ -1,9 +1,12 @@
 package com.example.mvi_clean_demo.sections.blog.domain.model
 
+import androidx.compose.runtime.Immutable
 import com.example.mvi_clean_demo.common.api.UserInterfaceModel
+import com.example.mvi_clean_demo.common.helpers.getUserInitials
 import com.example.mvi_clean_demo.sections.blog.presentation.model.TierModel
 import com.example.mvi_clean_demo.sections.blog.presentation.model.UserCardModel
 
+@Immutable
 data class UserModel(
     val address: Address,
     val company: Company,
@@ -14,6 +17,7 @@ data class UserModel(
     val username: String,
     val website: String
 ): UserInterfaceModel<UserCardModel> {
+    @Immutable
     data class Address(
         val city: String,
         val geo: Geo,
@@ -21,11 +25,13 @@ data class UserModel(
         val suite: String,
         val zipcode: String
     ) {
+        @Immutable
         data class Geo(
             val lat: String,
             val lng: String
         )
     }
+    @Immutable
     data class Company(
         val bs: String,
         val catchPhrase: String,
@@ -35,7 +41,7 @@ data class UserModel(
     override fun toUserInterfaceModel(): UserCardModel {
         return UserCardModel(
             userModel = this,
-            userInitials = name.take(2).uppercase(),
+            userInitials = this.name.getUserInitials(),
             tierModel = TierModel.tierModelImplList.random()
         )
     }

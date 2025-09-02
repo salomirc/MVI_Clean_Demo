@@ -1,5 +1,6 @@
 package com.example.mvi_clean_demo.sections.blog.presentation
 
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.base.BaseViewModel
@@ -39,6 +40,7 @@ class UsersViewModel @Inject constructor(
         val userCardModelsResponseState: ResponseState<MutableList<UserCardModel>>
     )
 
+    @Immutable
     sealed interface Event {
         data object GetUsers: Event
         data class UpdateUserCardModel(val isExpanded: Boolean, val id: Int): Event

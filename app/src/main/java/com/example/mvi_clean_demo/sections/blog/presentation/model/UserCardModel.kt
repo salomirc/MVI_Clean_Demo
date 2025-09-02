@@ -1,6 +1,8 @@
 package com.example.mvi_clean_demo.sections.blog.presentation.model
 
 import androidx.annotation.DrawableRes
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.sections.blog.domain.model.UserModel
@@ -12,6 +14,7 @@ import com.example.mvi_clean_demo.theme.OnePercentClubSurface
 import com.example.mvi_clean_demo.theme.PlatinumSurface
 import com.example.mvi_clean_demo.theme.SilverSurface
 
+@Stable
 data class UserCardModel(
     val userModel: UserModel,
     var isExpanded: Boolean = true,
@@ -19,6 +22,7 @@ data class UserCardModel(
     val tierModel: TierModel = TierModel.Gold
 )
 
+@Immutable
 sealed interface TierModel {
     @get:DrawableRes
     val tierIconRes: Int

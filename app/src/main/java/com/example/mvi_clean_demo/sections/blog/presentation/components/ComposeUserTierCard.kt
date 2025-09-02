@@ -34,6 +34,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -54,7 +57,7 @@ import com.example.mvi_clean_demo.theme.clientTierCardSurface
 import com.example.mvi_clean_demo.theme.clientTierInitialsSurface
 
 @Composable
-fun UserTierCard(
+fun ComposeUserTierCard(
     model: UserCardModel,
     sendEvent: (Event) -> Unit,
     onInfoLinkAction: (url: String) -> Unit,
@@ -306,7 +309,7 @@ fun UserCardsPreview() {
                     .verticalScroll(scrollState)
             ) {
                 for (model in UsersSampleData.models) {
-                    UserTierCard(
+                    ComposeUserTierCard(
                         model = model,
                         onInfoLinkAction = {},
                         onCallButtonAction = {},
@@ -336,14 +339,22 @@ fun UserCardsPreview() {
 @Composable
 fun UserCardPreview() {
     ComposeUnitConverterTheme {
+        var model by remember { mutableStateOf(UsersSampleData.models.first()) }
         Surface(color = MaterialTheme.colorScheme.background) {
             Box(modifier = Modifier.fillMaxSize()) {
-                UserTierCard(
-                    model = UsersSampleData.models.first(),
+                ComposeUserTierCard(
+                    model = model,
                     onInfoLinkAction = {},
                     onCallButtonAction = {},
                     onNavigateToUserPosts = {},
-                    sendEvent = {}
+                    sendEvent = {
+                        when (it) {
+                            is Event.UpdateUserCardModel -> {
+                                model = model.copy(isExpanded = it.isExpanded)
+                            }
+                            else -> {}
+                        }
+                    }
                 )
             }
         }
