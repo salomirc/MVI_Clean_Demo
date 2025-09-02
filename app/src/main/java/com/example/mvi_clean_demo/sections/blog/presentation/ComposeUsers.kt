@@ -19,7 +19,7 @@ import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponse
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 import com.example.mvi_clean_demo.common.ui_components.ComposeRepeatOnLifecycle
 import com.example.mvi_clean_demo.common.ui_components.LoadingBox
-import com.example.mvi_clean_demo.sections.blog.presentation.components.ComposeUserTierCardOptimized
+import com.example.mvi_clean_demo.sections.blog.presentation.components.ComposeUserTierCardConstraintOptimized
 import com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data.UsersSampleData
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 
@@ -52,7 +52,7 @@ fun ComposeUsers(
                         key = { it.userModel.id },          // add stability to recycler
                         contentType = { "UserTierCard" }    // helps the internal recycling
                     ) { cardModel ->
-                        ComposeUserTierCardOptimized(
+                        ComposeUserTierCardConstraintOptimized(
                             model = cardModel,
                             sendEvent = sendEvent,
                             onInfoLinkAction = {},

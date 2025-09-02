@@ -67,6 +67,9 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.material)
 
+    // Constraintlayout Compose
+    implementation(libs.androidx.constraintlayout.compose)
+
     // Hilt
     ksp(libs.androidx.hilt.android.compiler)
     implementation(libs.androidx.hilt)
