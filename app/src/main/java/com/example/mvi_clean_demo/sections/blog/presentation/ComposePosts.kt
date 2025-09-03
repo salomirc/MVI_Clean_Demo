@@ -8,14 +8,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.Lifecycle
-import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Failure
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
-import com.example.mvi_clean_demo.common.ui_components.ComposeRepeatOnLifecycle
+import com.example.mvi_clean_demo.common.ui_components.ComposeLifecycleEvent
 import com.example.mvi_clean_demo.common.ui_components.LoadingBox
 import com.example.mvi_clean_demo.common.ui_components.LogComposeLifecycleEvent
 import com.example.mvi_clean_demo.sections.blog.presentation.components.PostChatBubble
@@ -28,25 +28,24 @@ fun ComposePosts(
     model: PostsViewModel.Model,
     sendEvent: (PostsViewModel.Event) -> Unit
 ) {
-    val postsResponseState = model.postEntriesModelsResponseState
+    val postsResponseStateUpdated by rememberUpdatedState(model.postEntriesModelsResponseState)
 
     LogComposeLifecycleEvent("ComposePosts")
 
-    ComposeRepeatOnLifecycle(Lifecycle.State.RESUMED) { state ->
-        // This block runs only when lifecycle is at least RESUMED
-        Log.d("RepeatOnLifecycle", "ComposePosts RepeatOnLifecycle $state")
-        Log.d("RepeatOnLifecycle", "ComposePosts postResponseState $postsResponseState")
-        val shouldGetUsers = ((postsResponseState is Idle) || (postsResponseState is Failure))
-        if (shouldGetUsers) {
-            sendEvent(PostsViewModel.Event.GetPostEntriesFromUser(userId))
-            Log.d("RepeatOnLifecycle", "ComposePosts RepeatOnLifecycle sendEvent(GetPostEntriesFromUser(userId)) called $state")
+    ComposeLifecycleEvent(
+        onResume = {
+            Log.d("ComposeLifecycleEvent", "ComposePosts ComposeLifecycleEvent onResume() postsResponseStateUpdated $postsResponseStateUpdated")
+            if (postsResponseStateUpdated is Idle) {
+                sendEvent(PostsViewModel.Event.GetPostEntriesFromUser(userId))
+                Log.d("ComposeLifecycleEvent", "ComposePosts ComposeLifecycleEvent onResume() sendEvent(GetPostEntriesFromUser(userId)) called")
+            }
         }
-    }
+    )
 
     Surface {
         Box(modifier = Modifier.fillMaxSize()) {
-            if (postsResponseState is Success) {
-                val items = postsResponseState.data
+            if (model.postEntriesModelsResponseState is Success) {
+                val items = model.postEntriesModelsResponseState.data
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(items) { entryModel ->
                         PostChatBubble(

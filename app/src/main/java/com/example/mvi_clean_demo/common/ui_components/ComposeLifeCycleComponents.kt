@@ -31,12 +31,12 @@ fun ComposeLifecycleEvent(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Event.ON_CREATE -> onCreate.invoke()
-                Event.ON_START -> onStart.invoke()
-                Event.ON_RESUME -> onResume.invoke()
-                Event.ON_PAUSE -> onPause.invoke()
-                Event.ON_STOP -> onStop.invoke()
-                Event.ON_DESTROY -> onDestroy.invoke()
+                Event.ON_CREATE -> onCreate()
+                Event.ON_START -> onStart()
+                Event.ON_RESUME -> onResume()
+                Event.ON_PAUSE -> onPause()
+                Event.ON_STOP -> onStop()
+                Event.ON_DESTROY -> onDestroy()
                 else -> {}
             }
         }
@@ -77,7 +77,7 @@ fun ComposeRepeatOnLifecycle(
     LaunchedEffect(lifecycleOwner) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(state) {
             val currentState = lifecycleOwner.lifecycle.currentState
-            this.block(currentState)
+            block(currentState)
         }
     }
 }
