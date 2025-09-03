@@ -22,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Devices.PIXEL
 import androidx.compose.ui.tooling.preview.Devices.PIXEL_3A
@@ -72,15 +71,15 @@ fun PostChatBubble(
         ) {
             Box(
                 modifier = Modifier
-                    .clip(
-                        RoundedCornerShape(
+                    .background(
+                        color = bubbleColor,
+                        shape = RoundedCornerShape(
                             topStart = if (isUserMe) clipCornerRadius else 0.dp,
                             topEnd = if (isUserMe) 0.dp else clipCornerRadius,
                             bottomStart = clipCornerRadius,
                             bottomEnd = clipCornerRadius
                         )
                     )
-                    .background(bubbleColor)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
@@ -121,15 +120,15 @@ private fun BubbleTriangle(
         modifier = Modifier
             .width(boxCutCornerSize)
             .height(boxCutCornerSize)
-            .clip(
-                CutCornerShape(
+            .background(
+                color = bubbleColor,
+                shape = CutCornerShape(
                     topStart = 0.dp,
                     topEnd = 0.dp,
                     bottomStart = if (isUserMe) 0.dp else boxCutCornerSize,
                     bottomEnd = if (isUserMe) boxCutCornerSize else 0.dp
                 )
             )
-            .background(bubbleColor)
     )
 }
 

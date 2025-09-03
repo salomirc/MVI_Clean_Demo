@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntryModel
 import com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data.PostSampleData
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
+import com.example.mvi_clean_demo.theme.clientTierCardSurface
 
 @Composable
 fun ComposePostCard(postEntryModel: PostEntryModel) {
@@ -28,10 +29,10 @@ fun ComposePostCard(postEntryModel: PostEntryModel) {
         modifier = Modifier.padding(bottom = 16.dp),
         shape = RectangleShape,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = MaterialTheme.colorScheme.clientTierCardSurface
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 3.dp
+            defaultElevation = 4.dp
         )
     ) {
         Column(

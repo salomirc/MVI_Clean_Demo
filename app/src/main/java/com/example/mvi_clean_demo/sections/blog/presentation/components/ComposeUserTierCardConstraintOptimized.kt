@@ -6,11 +6,12 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -91,11 +92,11 @@ fun ComposeUserTierCardConstraintOptimized(
                 model = model,
                 sendEvent = sendEvent
             )
-
-            Spacer(Modifier.height(8.dp))
-
             AnimatedVisibility(visible = model.isExpanded) {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(
+                    modifier = Modifier.padding(top = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     // Tier info (only expanded)
                     TierSection(
                         tierModel = model.tierModel,
@@ -197,75 +198,74 @@ private fun TierSection(
     val tierIcon = painterResource(tierModel.tierIconRes)
     val tierLine = painterResource(tierModel.tierLineRes)
 
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = tierModel.tierSurfaceColor,
-        modifier = Modifier.fillMaxWidth()
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = tierModel.tierSurfaceColor,
+                shape = RoundedCornerShape(8.dp)
+            )
     ) {
-        ConstraintLayout(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            val (icon, title, line, moreText, moreIcon) = createRefs()
+        val (icon, title, line, moreText, moreIcon) = createRefs()
 
-            Icon(
-                painter = tierIcon,
-                contentDescription = "Tier Icon",
-                tint = Color.Unspecified,
-                modifier = Modifier.constrainAs(icon) {
-                    start.linkTo(parent.start, margin = 12.dp)
-                    top.linkTo(parent.top, margin = 12.dp)
+        Icon(
+            painter = tierIcon,
+            contentDescription = "Tier Icon",
+            tint = Color.Unspecified,
+            modifier = Modifier.constrainAs(icon) {
+                start.linkTo(parent.start, margin = 12.dp)
+                top.linkTo(parent.top, margin = 12.dp)
+            }
+        )
+
+        Text(
+            text = tierModel.tierTitle,
+            color = tierModel.tierTextIconColor,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.constrainAs(title) {
+                start.linkTo(icon.end, margin = 12.dp)
+                top.linkTo(icon.top)
+                bottom.linkTo(icon.bottom)
+            }
+        )
+
+        Image(
+            painter = tierLine,
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier
+                .height(1.dp)
+                .fillMaxWidth()
+                .constrainAs(line) {
+                    top.linkTo(icon.bottom, margin = 12.dp)
                 }
-            )
+        )
 
-            Text(
-                text = tierModel.tierTitle,
-                color = tierModel.tierTextIconColor,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.constrainAs(title) {
-                    start.linkTo(icon.end, margin = 12.dp)
-                    top.linkTo(icon.top)
-                    bottom.linkTo(icon.bottom)
+        Text(
+            text = "Find out more about your tier.",
+            color = tierModel.tierTextIconColor,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.constrainAs(moreText) {
+                top.linkTo(line.bottom, margin = 6.dp)
+                start.linkTo(parent.start, margin = 12.dp)
+            }
+        )
+
+        Icon(
+            imageVector = Icons.Default.KeyboardArrowUp,
+            contentDescription = "Info Link",
+            tint = tierModel.tierTextIconColor,
+            modifier = Modifier
+                .size(32.dp)
+                .rotate(90f)
+                .clickable { onInfoLinkAction(website) }
+                .constrainAs(moreIcon) {
+                    top.linkTo(moreText.top)
+                    bottom.linkTo(moreText.bottom)
+                    end.linkTo(parent.end, margin = 12.dp)
                 }
-            )
-
-            Image(
-                painter = tierLine,
-                contentDescription = null,
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier
-                    .height(1.dp)
-                    .fillMaxWidth()
-                    .constrainAs(line) {
-                        top.linkTo(icon.bottom, margin = 12.dp)
-                    }
-            )
-
-            Text(
-                text = "Find out more about your tier.",
-                color = tierModel.tierTextIconColor,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.constrainAs(moreText) {
-                    top.linkTo(line.bottom, margin = 6.dp)
-                    start.linkTo(parent.start, margin = 12.dp)
-                }
-            )
-
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowUp,
-                contentDescription = "Info Link",
-                tint = tierModel.tierTextIconColor,
-                modifier = Modifier
-                    .size(32.dp)
-                    .rotate(90f)
-                    .clickable { onInfoLinkAction(website) }
-                    .constrainAs(moreIcon) {
-                        top.linkTo(moreText.top)
-                        bottom.linkTo(moreText.bottom)
-                        end.linkTo(parent.end, margin = 12.dp)
-                    }
-            )
-        }
+        )
     }
 }
 
@@ -278,7 +278,7 @@ private fun ManagerContact(
     ConstraintLayout(
         modifier = Modifier.fillMaxWidth()
     ) {
-        val (title, initials, info, call) = createRefs()
+        val (title, initials, name, phone, call) = createRefs()
 
         Text(
             text = "Premium manager contact",
@@ -290,49 +290,59 @@ private fun ManagerContact(
             }
         )
 
-        Surface(
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.clientTierInitialsSurface,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        Box(
             modifier = Modifier
                 .size(48.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.clientTierInitialsSurface,
+                    shape = CircleShape
+                )
+                .border(
+                    border = BorderStroke(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    ),
+                    shape = CircleShape
+                )
                 .constrainAs(initials) {
                     top.linkTo(title.bottom, margin = 8.dp)
                     start.linkTo(parent.start)
-                }
+                },
+            contentAlignment = Alignment.Center
         ) {
-            Box(contentAlignment = Alignment.Center) {
-                Text(
-                    text = userInitials,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            Text(
+                text = userInitials,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
         }
 
-        Column(
-            modifier = Modifier.constrainAs(info) {
+        Text(
+            text = userModel.name,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.constrainAs(name) {
                 start.linkTo(initials.end, margin = 12.dp)
-                top.linkTo(initials.top)
-                bottom.linkTo(initials.bottom)
+                top.linkTo(initials.top, margin = 2.dp)
                 end.linkTo(call.start, margin = 8.dp)
                 width = Dimension.fillToConstraints
             }
-        ) {
-            Text(
-                text = userModel.name,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = userModel.phone,
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+        )
+
+        Text(
+            text = userModel.phone,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.constrainAs(phone) {
+                start.linkTo(name.start)
+                top.linkTo(name.bottom, margin = 2.dp)
+                end.linkTo(name.end)
+                width = Dimension.fillToConstraints
+            }
+        )
 
         FilledIconButton(
             onClick = { onCallButtonAction(userModel.phone) },
@@ -352,6 +362,7 @@ private fun ManagerContact(
         }
     }
 }
+
 
 @Preview(
     name = "Light Mode",

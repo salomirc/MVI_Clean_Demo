@@ -6,6 +6,8 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,7 +47,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -113,7 +114,6 @@ private fun UserHeader(
     ) {
         Text(
             text = model.userModel.name,
-            overflow = TextOverflow.Ellipsis,
             maxLines = 1,
             style = MaterialTheme.typography.titleMedium
         )
@@ -144,14 +144,12 @@ private fun UserDetails(model: UserCardModel) {
         Text(
             text = "Username: ${model.userModel.username}, id: ${model.userModel.id}",
             style = MaterialTheme.typography.titleSmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            maxLines = 1
         )
         Text(
             text = "Email: ${model.userModel.email}",
             style = MaterialTheme.typography.titleSmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            maxLines = 1
         )
     }
 }
@@ -163,63 +161,64 @@ private fun TierInfoSection(
 ) {
     val tierTextColor = model.tierModel.tierTextIconColor
 
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = model.tierModel.tierSurfaceColor
-    ) {
-        Column {
-            Row(
-                modifier = Modifier.padding(12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(model.tierModel.tierIconRes),
-                    contentDescription = null, // decorativ
-                    modifier = Modifier.size(48.dp),
-                    tint = Color.Unspecified
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = model.tierModel.tierTitle,
-                    color = tierTextColor,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1
-                )
-            }
-            Image(
-                painter = painterResource(model.tierModel.tierLineRes),
-                contentDescription = null, // decorativ
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp),
-                contentScale = ContentScale.FillWidth
+    Column(
+        modifier = Modifier
+            .background(
+                color = model.tierModel.tierSurfaceColor,
+                shape = RoundedCornerShape(8.dp)
             )
-            Row(
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(model.tierModel.tierIconRes),
+                contentDescription = "Tier icon",
+                modifier = Modifier.size(48.dp),
+                tint = Color.Unspecified
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = model.tierModel.tierTitle,
+                color = tierTextColor,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1
+            )
+        }
+        Image(
+            painter = painterResource(model.tierModel.tierLineRes),
+            contentDescription = "Tier line",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp),
+            contentScale = ContentScale.FillWidth
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 6.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Find out more about your tier.",
+                color = tierTextColor,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1
+            )
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowUp,
+                contentDescription = "Info Link",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 6.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Find out more about your tier.",
-                    color = tierTextColor,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 1
-                )
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowUp,
-                    contentDescription = "Info Link",
-                    modifier = Modifier
-                        .size(32.dp)
-                        .rotate(90f)
-                        .clickable {
-                            onInfoLinkAction(model.userModel.website)
-                        },
-                    tint = tierTextColor
-                )
-            }
+                    .size(32.dp)
+                    .rotate(90f)
+                    .clickable {
+                        onInfoLinkAction(model.userModel.website)
+                    },
+                tint = tierTextColor
+            )
         }
     }
 }
@@ -239,41 +238,45 @@ private fun ManagerContactSection(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Surface(
-                modifier = Modifier.padding(4.dp),
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.clientTierInitialsSurface,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-            ) {
-                Box(
-                    modifier = Modifier.size(48.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = model.userInitials,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.clientTierInitialsSurface,
+                        shape = CircleShape
                     )
-                }
+                    .border(
+                        border = BorderStroke(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.outlineVariant
+                        ),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = model.userInitials,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
             }
-            Spacer(modifier = Modifier.width(12.dp))
             Column(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 Text(
                     text = model.userModel.name,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    maxLines = 1
                 )
                 Text(
                     text = model.userModel.phone,
                     style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    maxLines = 1
                 )
             }
             FilledIconButton(
