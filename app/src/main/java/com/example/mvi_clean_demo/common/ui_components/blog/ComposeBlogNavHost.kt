@@ -1,11 +1,8 @@
 package com.example.mvi_clean_demo.common.ui_components.blog
 
 import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
@@ -58,18 +55,20 @@ fun ComposeBlogNavHost(
             )
         },
         exitTransition = {
-            fadeOut(
+            slideOutHorizontally(
+                targetOffsetX = { fullWidth -> -fullWidth/4 }, // from left to right
                 animationSpec = tween(
                     durationMillis = animationDuration,
-                    easing = LinearEasing
+                    easing = LinearOutSlowInEasing
                 )
             )
         },
         popEnterTransition = {
-            fadeIn(
+            slideInHorizontally(
+                initialOffsetX = { fullWidth -> -fullWidth/4 }, // from right to left
                 animationSpec = tween(
                     durationMillis = animationDuration,
-                    easing = LinearEasing
+                    easing = FastOutLinearInEasing
                 )
             )
         },
