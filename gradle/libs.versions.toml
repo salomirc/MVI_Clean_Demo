@@ -1,5 +1,8 @@
 [versions]
 agp = "8.11.1"
+assertjCore = "3.27.4"
+junitJupiter = "5.13.4"
+junitJupiterParams = "5.13.4"
 kotlin = "2.0.0"
 material = "1.12.0"
 constraintlayoutCompose = "1.0.1"
@@ -19,12 +22,14 @@ espressoCore = "3.5.1"
 lifecycleRuntimeKtx = "2.9.2"
 activityCompose = "1.10.1"
 composeBom = "2024.09.00"
+mockk = "1.14.5"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertjCore" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -38,6 +43,8 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junitJupiter" }
+junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junitJupiterParams" }
 kotlinx-serialization-json= { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "ktxSerializationJson" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 androidx-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroid" }
@@ -49,6 +56,7 @@ androidx-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging
 androidx-room = { group = "androidx.room", name = "room-runtime", version.ref = "room"}
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room"}
 androidx-room-kotlin = { group = "androidx.room", name = "room-ktx", version.ref = "room"}
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 
 
 [plugins]

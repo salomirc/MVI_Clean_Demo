@@ -100,6 +100,17 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
 
+    //added section start
+    //Writing and executing Unit Tests on the JUnit5 Platform
+    testImplementation(libs.junit.jupiter)
+    // (Optional) If you need JUnit5 "Parameterized Tests"
+    testImplementation(libs.junit.jupiter.params)
+    // AssertJ Library
+    testImplementation(libs.assertj.core)
+    // Mockk Library
+    testImplementation(libs.mockk)
+    //added section end
+
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
