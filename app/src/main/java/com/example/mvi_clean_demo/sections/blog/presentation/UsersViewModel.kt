@@ -17,6 +17,7 @@ import com.example.mvi_clean_demo.sections.blog.domain.useCase.IGetUsersUseCase
 import com.example.mvi_clean_demo.sections.blog.presentation.model.UserCardModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -37,7 +38,7 @@ class UsersViewModel @Inject constructor(
 
     data class Model(
         val isLoading: Boolean,
-        val userCardModelsResponseState: ResponseState<MutableList<UserCardModel>>
+        val userCardModelsResponseState: ResponseState<List<UserCardModel>>
     )
 
     @Immutable
@@ -60,6 +61,13 @@ class UsersViewModel @Inject constructor(
         viewModelScope.launch {
             getUsersUseCase
                 .getUsers()
+                .map { state ->
+                    withContext(Dispatchers.Default) {
+                        state.activeResponseStateWrapper { users ->
+                            users.map { user -> user.toUIModel() }
+                        }
+                    }
+                }
                 .collect { state ->
                     when (state) {
                         is Loading -> {
@@ -83,19 +91,10 @@ class UsersViewModel @Inject constructor(
                             }
                         }
                         is Success -> {
-                            val stateUIModel = withContext(Dispatchers.Default) {
-                                state.activeResponseStateWrapper { users ->
-                                    users
-                                        .map { user ->
-                                            user.toUserInterfaceModel()
-                                        }
-                                        .toMutableList()
-                                }
-                            }
                             updateModelState { model ->
                                 model.copy(
                                     isLoading = false,
-                                    userCardModelsResponseState = stateUIModel
+                                    userCardModelsResponseState = state
                                 )
                             }
                         }

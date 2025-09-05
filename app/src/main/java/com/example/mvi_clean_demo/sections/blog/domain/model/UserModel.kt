@@ -1,7 +1,7 @@
 package com.example.mvi_clean_demo.sections.blog.domain.model
 
 import androidx.compose.runtime.Immutable
-import com.example.mvi_clean_demo.common.api.UserInterfaceModel
+import com.example.mvi_clean_demo.common.api.UIModel
 import com.example.mvi_clean_demo.common.helpers.getUserInitials
 import com.example.mvi_clean_demo.sections.blog.presentation.model.TierModel
 import com.example.mvi_clean_demo.sections.blog.presentation.model.UserCardModel
@@ -16,7 +16,7 @@ data class UserModel(
     val phone: String,
     val username: String,
     val website: String
-): UserInterfaceModel<UserCardModel> {
+): UIModel<UserCardModel> {
     @Immutable
     data class Address(
         val city: String,
@@ -38,7 +38,7 @@ data class UserModel(
         val name: String
     )
 
-    override fun toUserInterfaceModel(): UserCardModel {
+    override fun toUIModel(): UserCardModel {
         return UserCardModel(
             userModel = this,
             userInitials = this.name.getUserInitials(),
