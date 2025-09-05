@@ -2,8 +2,8 @@
 agp = "8.11.1"
 assertjCore = "3.27.4"
 junitJupiter = "5.13.4"
-junitJupiterParams = "5.13.4"
 kotlin = "2.0.0"
+kotlinxCoroutinesTest = "1.10.2"
 material = "1.12.0"
 constraintlayoutCompose = "1.0.1"
 materialIconsExtended = "1.5.4"
@@ -43,8 +43,10 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junitJupiter" }
-junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junitJupiterParams" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junitJupiter" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junitJupiter" }
+junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junitJupiter" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 kotlinx-serialization-json= { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "ktxSerializationJson" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 androidx-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroid" }

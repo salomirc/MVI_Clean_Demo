@@ -6,7 +6,7 @@ import com.example.mvi_clean_demo.sections.blog.presentation.model.TierModel
 import com.example.mvi_clean_demo.sections.blog.presentation.model.UserCardModel
 
 object UsersSampleData {
-    private val users = listOf(
+    val users = listOf(
         UserModel(
             id = 1,
             name = "Leanne Graham",
@@ -131,5 +131,5 @@ object UsersSampleData {
             userInitials = user.name.getUserInitials(),
             tierModel = tierModel
         )
-    }.toMutableList()
+    }
 }

@@ -52,6 +52,14 @@ android {
     ksp {
         arg("room.schemaLocation", "$projectDir/schemas")
     }
+
+    // Enable JUnit 5 for unit tests
+//    testOptions {
+//        unitTests.all {
+//            it.useJUnitPlatform()
+//        }
+//    }
+
 }
 
 dependencies {
@@ -102,13 +110,16 @@ dependencies {
 
     //added section start
     //Writing and executing Unit Tests on the JUnit5 Platform
-    testImplementation(libs.junit.jupiter)
+    //testImplementation(libs.junit.jupiter.api)
+    //testRuntimeOnly(libs.junit.jupiter.engine)
     // (Optional) If you need JUnit5 "Parameterized Tests"
-    testImplementation(libs.junit.jupiter.params)
+    //testImplementation(libs.junit.jupiter.params)
     // AssertJ Library
     testImplementation(libs.assertj.core)
     // Mockk Library
     testImplementation(libs.mockk)
+    // Kotlinx coroutines test
+    testImplementation(libs.kotlinx.coroutines.test)
     //added section end
 
     debugImplementation(libs.androidx.ui.tooling)
