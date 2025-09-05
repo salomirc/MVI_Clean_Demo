@@ -11,16 +11,10 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.assertj.core.api.Assertions
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
@@ -33,23 +27,13 @@ class UsersViewModelTest {
     private val sampleUsers = UsersSampleData.users
 
 
-    private val mainThreadSurrogate = newSingleThreadContext("UI thread")
-
-
     @Before
     fun setUp() {
-        Dispatchers.setMain(mainThreadSurrogate)
         clearMocks(getUsersUseCase, errorHandlerFactory)
         coEvery { errorHandlerFactory.create(any()) } returns ErrorHandler(UsersViewModel.TAG,
             ErrorHandlerBroadcastService()
         )
         viewModel =  UsersViewModel(getUsersUseCase, errorHandlerFactory)
-    }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain() // reset the main dispatcher to the original Main dispatcher
-        mainThreadSurrogate.close()
     }
 
     @Test
@@ -59,14 +43,11 @@ class UsersViewModelTest {
         coEvery { getUsersUseCase.getUsers() } returns flow {
             emit(userCardModelsResponseState)
         }
-
         //Act
-        viewModel.sendEvent(UsersViewModel.Event.GetUsers)
         runBlocking {
-            delay(1000)
+            viewModel.getUsers()
         }
         val result = viewModel.modelStateFlow.value.userCardModelsResponseState as? ResponseState.ActiveResponseState.Success
-
         //Assert
         coVerify { getUsersUseCase.getUsers() }
         Assertions.assertThat(result?.data?.map { it.userModel }).isEqualTo(sampleUsers)

@@ -48,73 +48,71 @@ class UsersViewModel @Inject constructor(
     }
 
     override fun sendEvent(event: Event) {
-        when (event) {
-            is Event.GetUsers -> {
-                getUsers()
-            }
-            is Event.UpdateUserCardModel -> {
-                updateUserCardModel(event.isExpanded, event.id)
+        viewModelScope.launch {
+            when (event) {
+                is Event.GetUsers -> {
+                    getUsers()
+                }
+                is Event.UpdateUserCardModel -> {
+                    updateUserCardModel(event.isExpanded, event.id)
+                }
             }
         }
     }
-    private fun getUsers() {
-        viewModelScope.launch {
-            getUsersUseCase
-                .getUsers()
-                .map { state ->
-                    withContext(Dispatchers.Default) {
-                        state.activeResponseStateWrapper { users ->
-                            users.map { user -> user.toUIModel() }
-                        }
+    suspend fun getUsers() {
+        getUsersUseCase
+            .getUsers()
+            .map { state ->
+                withContext(Dispatchers.Default) {
+                    state.activeResponseStateWrapper { users ->
+                        users.map { user -> user.toUIModel() }
                     }
                 }
-                .collect { state ->
-                    when (state) {
-                        is Loading -> {
-                            updateModelState { model -> model.copy(isLoading = true) }
-                        }
-                        is Failure -> {
-                            updateModelState { model -> model.copy(isLoading = false) }
-                            //Custom Error Handler
-                            errorHandler.apply {
-                                defaultErrorHandler(
-                                    onApiException = defaultApiExceptionHandler(
-                                        on401 = {
-                                            broadcastService.setErrorMessage(R.string.error_access_denied)
-                                        },
-                                        on409 = {
-                                            broadcastService.setErrorMessage(R.string.error_invalid_credentials)
-                                        }
+            }
+            .collect { state ->
+                when (state) {
+                    is Loading -> {
+                        updateModelState { model -> model.copy(isLoading = true) }
+                    }
+                    is Failure -> {
+                        updateModelState { model -> model.copy(isLoading = false) }
+                        //Custom Error Handler
+                        errorHandler.apply {
+                            defaultErrorHandler(
+                                onApiException = defaultApiExceptionHandler(
+                                    on401 = {
+                                        broadcastService.setErrorMessage(R.string.error_access_denied)
+                                    },
+                                    on409 = {
+                                        broadcastService.setErrorMessage(R.string.error_invalid_credentials)
+                                    }
 
-                                    )
-                                ).invoke(state.throwable)
-                            }
-                        }
-                        is Success -> {
-                            updateModelState { model ->
-                                model.copy(
-                                    isLoading = false,
-                                    userCardModelsResponseState = state
                                 )
-                            }
+                            ).invoke(state.throwable)
+                        }
+                    }
+                    is Success -> {
+                        updateModelState { model ->
+                            model.copy(
+                                isLoading = false,
+                                userCardModelsResponseState = state
+                            )
                         }
                     }
                 }
-        }
+            }
     }
-    private fun updateUserCardModel(expanded: Boolean, id: Int) {
-        viewModelScope.launch {
-            updateModelStateSuspend { model ->
-                model.copy(
-                    userCardModelsResponseState = withContext(Dispatchers.Default) {
-                        model.userCardModelsResponseState.responseStateWrapper { userCardModels ->
-                            userCardModels.apply {
-                                this.find { it.userModel.id == id }?.isExpanded = expanded
-                            }
+    suspend fun updateUserCardModel(expanded: Boolean, id: Int) {
+        updateModelStateSuspend { model ->
+            model.copy(
+                userCardModelsResponseState = withContext(Dispatchers.Default) {
+                    model.userCardModelsResponseState.responseStateWrapper { userCardModels ->
+                        userCardModels.apply {
+                            this.find { it.userModel.id == id }?.isExpanded = expanded
                         }
                     }
-                )
-            }
+                }
+            )
         }
     }
     companion object {
