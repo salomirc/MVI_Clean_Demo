@@ -1,7 +1,6 @@
 package com.example.mvi_clean_demo.sections.blog.presentation
 
 import androidx.compose.runtime.Immutable
-import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.base.BaseViewModel
 import com.example.mvi_clean_demo.common.error_handling.ErrorHandler
@@ -18,7 +17,6 @@ import com.example.mvi_clean_demo.sections.blog.presentation.model.UserCardModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -47,19 +45,18 @@ class UsersViewModel @Inject constructor(
         data class UpdateUserCardModel(val isExpanded: Boolean, val id: Int): Event
     }
 
-    override fun sendEvent(event: Event) {
-        viewModelScope.launch {
-            when (event) {
-                is Event.GetUsers -> {
-                    getUsers()
-                }
-                is Event.UpdateUserCardModel -> {
-                    updateUserCardModel(event.isExpanded, event.id)
-                }
+    override suspend fun processEvent(event: Event) {
+        when (event) {
+            is Event.GetUsers -> {
+                getUsers()
+            }
+            is Event.UpdateUserCardModel -> {
+                updateUserCardModel(event.isExpanded, event.id)
             }
         }
     }
-    suspend fun getUsers() {
+
+    private suspend fun getUsers() {
         getUsersUseCase
             .getUsers()
             .map { state ->
@@ -102,7 +99,7 @@ class UsersViewModel @Inject constructor(
                 }
             }
     }
-    suspend fun updateUserCardModel(expanded: Boolean, id: Int) {
+    private suspend fun updateUserCardModel(expanded: Boolean, id: Int) {
         updateModelStateSuspend { model ->
             model.copy(
                 userCardModelsResponseState = withContext(Dispatchers.Default) {

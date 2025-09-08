@@ -2,14 +2,13 @@ package com.example.mvi_clean_demo.sections.unit_converter.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.repositories.IDataRepository
 import com.example.mvi_clean_demo.base.BaseViewModel
+import com.example.mvi_clean_demo.repositories.IDataRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -47,7 +46,6 @@ class TemperatureViewModel @AssistedInject constructor(
     interface Factory {
         fun create(initialTempValue: String): TemperatureViewModel
     }
-    private var calculationJob: Job? = null
 
     data class Model(
         val temperature: String,
@@ -63,7 +61,7 @@ class TemperatureViewModel @AssistedInject constructor(
         data class Convert(val temperature: String, val scale: Int): Event
     }
 
-    override fun sendEvent(event: Event) {
+    override suspend fun processEvent(event: Event) {
         when (event) {
             is Event.SetTemperature -> {
                 setTemperature(event.temperature)
@@ -85,18 +83,15 @@ class TemperatureViewModel @AssistedInject constructor(
         updateModelState { model -> model.copy(isButtonEnabled = isEnabled) }
     }
 
-    private fun convert(temperature: String, scale: Int) {
-        calculationJob?.cancel()
-        calculationJob = viewModelScope.launch {
-            // move heavy computation on background thread or at least non blocking operation
-            // on the main thread to avoid UI recomposition performance issues
-            val calculationResult = withContext(Dispatchers.Default) {
-                getTemperatureAsFloat(temperature)?.let {
-                    if (scale == R.string.celsius) (it * 1.8F) + 32F else (it - 32F) / 1.8F
-                }
+    private suspend fun convert(temperature: String, scale: Int) {
+        // move heavy computation on background thread or at least non blocking operation
+        // on the main thread to avoid UI recomposition performance issues
+        val calculationResult = withContext(Dispatchers.Default) {
+            getTemperatureAsFloat(temperature)?.let {
+                if (scale == R.string.celsius) (it * 1.8F) + 32F else (it - 32F) / 1.8F
             }
-            updateModelState { model -> model.copy(convertedValue = calculationResult) }
         }
+        updateModelState { model -> model.copy(convertedValue = calculationResult) }
     }
 
     private fun setTemperature(value: String) {

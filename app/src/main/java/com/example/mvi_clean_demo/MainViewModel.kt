@@ -53,7 +53,7 @@ class MainViewModel @Inject constructor(
         data object LogOut : Event
     }
 
-    override fun sendEvent(event: Event) {
+    override suspend fun processEvent(event: Event) {
         when (event) {
             is Event.SetNavigationTitle -> {
                 setNavigationTitle(event.title)

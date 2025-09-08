@@ -38,6 +38,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.mvi_clean_demo.MainViewModel
 import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.NavigationItemModel.Distance
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.NavigationItemModel.Temperature
@@ -45,10 +46,9 @@ import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConver
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterNavTarget.TemperatureNavTarget
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.ComposeDistances
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.ComposeTemperature
-import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.DistancesViewModel
-import com.example.mvi_clean_demo.MainViewModel
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel
+import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 import kotlinx.coroutines.launch
 
 @Composable
@@ -240,7 +240,8 @@ fun ComposeUnitConverterPreview() {
                         )
                         ComposeTemperature(
                             model = model,
-                            sendEvent = {}
+                            sendEvent = {},
+                            processEvent = {}
                         )
                     }
 
@@ -253,6 +254,7 @@ fun ComposeUnitConverterPreview() {
                         ComposeDistances(
                             model = model,
                             sendEvent = {},
+                            processEvent = {},
                             onNextButton = {
                                 navController.navigate(TemperatureNavTarget("200"))
                             }

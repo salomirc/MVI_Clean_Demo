@@ -1,6 +1,5 @@
 package com.example.mvi_clean_demo.sections.blog.presentation
 
-import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.base.BaseViewModel
 import com.example.mvi_clean_demo.common.error_handling.ErrorHandler
 import com.example.mvi_clean_demo.common.error_handling.ErrorHandlerFactory
@@ -12,7 +11,6 @@ import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 import com.example.mvi_clean_demo.sections.blog.data.network.repository.IBlogRepository
 import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntryModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -38,39 +36,36 @@ class PostsViewModel @Inject constructor(
         data class GetPostEntriesFromUser(val userId: Int): Event
     }
 
-    override fun sendEvent(event: Event) {
+    override suspend fun processEvent(event: Event) {
         when (event) {
             is Event.GetPostEntriesFromUser -> {
                 getPostEntriesFromUser(event.userId)
             }
         }
     }
-    private fun getPostEntriesFromUser(userId: Int) {
-        viewModelScope.launch {
-            repository
-                .getPostEntriesFromUser(userId = userId)
-                .collect { state ->
-                    when (state) {
-                        is Loading -> {
-                            updateModelState { model -> model.copy(isLoading = true) }
-                        }
-                        is Failure -> {
-                            updateModelState { model -> model.copy(isLoading = false)}
-                            //Default Error Handler
-                            errorHandler.handleError(state.throwable)
-                        }
-                        is Success -> {
-                            updateModelState { model ->
-                                model.copy(
-                                    isLoading = false,
-                                    postEntriesModelsResponseState = state
-                                )
-                            }
+    private suspend fun getPostEntriesFromUser(userId: Int) {
+        repository
+            .getPostEntriesFromUser(userId = userId)
+            .collect { state ->
+                when (state) {
+                    is Loading -> {
+                        updateModelState { model -> model.copy(isLoading = true) }
+                    }
+                    is Failure -> {
+                        updateModelState { model -> model.copy(isLoading = false)}
+                        //Default Error Handler
+                        errorHandler.handleError(state.throwable)
+                    }
+                    is Success -> {
+                        updateModelState { model ->
+                            model.copy(
+                                isLoading = false,
+                                postEntriesModelsResponseState = state
+                            )
                         }
                     }
                 }
-
-        }
+            }
     }
     companion object {
         const val TAG = "PostsViewModel"

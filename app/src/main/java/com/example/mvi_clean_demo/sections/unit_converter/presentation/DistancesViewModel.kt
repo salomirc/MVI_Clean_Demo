@@ -2,11 +2,10 @@ package com.example.mvi_clean_demo.sections.unit_converter.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.repositories.IDataRepository
 import com.example.mvi_clean_demo.base.BaseViewModel
+import com.example.mvi_clean_demo.repositories.IDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -38,7 +37,6 @@ class DistancesViewModel @Inject constructor(
             }
         }
     }
-    private var calculationJob: Job? = null
 
     data class Model(
         val distance: String,
@@ -54,7 +52,7 @@ class DistancesViewModel @Inject constructor(
         data class Convert(val distance: String, val unit: Int): Event
     }
 
-    override fun sendEvent(event: Event) {
+    override suspend fun processEvent(event: Event) {
         when (event) {
             is Event.SetDistance -> {
                 setDistance(event.distance)
@@ -76,16 +74,15 @@ class DistancesViewModel @Inject constructor(
         updateModelState { model -> model.copy(isButtonEnabled = isEnabled) }
     }
 
-    private fun convert(distance: String, unit: Int) {
-        calculationJob?.cancel()
-        calculationJob = viewModelScope.launch {
-            val calculationResult = withContext(Dispatchers.Default) {
-                getDistanceAsFloat(distance)?.let {
-                    if (unit == R.string.meter) (it * 0.00062137F) else (it / 0.00062137F)
-                }
+    private suspend fun convert(distance: String, unit: Int) {
+        // move heavy computation on background thread or at least non blocking operation
+        // on the main thread to avoid UI recomposition performance issues
+        val calculationResult = withContext(Dispatchers.Default) {
+            getDistanceAsFloat(distance)?.let {
+                if (unit == R.string.meter) (it * 0.00062137F) else (it / 0.00062137F)
             }
-            updateModelState { model -> model.copy(convertedValue = calculationResult) }
         }
+        updateModelState { model -> model.copy(convertedValue = calculationResult) }
     }
 
     private fun setDistance(value: String) {

@@ -14,6 +14,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.mvi_clean_demo.MainViewModel.Event
+import com.example.mvi_clean_demo.MainViewModel.Event.SetNavigationTitle
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.NavigationItemModel.Distance
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.NavigationItemModel.Temperature
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConverterNavTarget.DistancesNavTarget
@@ -21,8 +23,6 @@ import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConver
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.ComposeDistances
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.ComposeTemperature
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.DistancesViewModel
-import com.example.mvi_clean_demo.MainViewModel.Event
-import com.example.mvi_clean_demo.MainViewModel.Event.SetNavigationTitle
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel
 import kotlinx.serialization.Serializable
 
@@ -57,6 +57,9 @@ fun ComposeUnitConverterNavHost(
                 model = model,
                 sendEvent = { event ->
                     viewModel.sendEvent(event)
+                },
+                processEvent = { event ->
+                    viewModel.processEvent(event)
                 }
             )
             LogNavigation(backStackEntry, viewModel)
@@ -70,6 +73,9 @@ fun ComposeUnitConverterNavHost(
                 model = model,
                 sendEvent = { event ->
                     viewModel.sendEvent(event)
+                },
+                processEvent = { event ->
+                    viewModel.processEvent(event)
                 },
                 onNextButton = onNextButton
             )

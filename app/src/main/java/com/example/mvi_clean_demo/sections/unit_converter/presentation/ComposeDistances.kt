@@ -17,7 +17,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -41,15 +40,16 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
-import com.example.mvi_clean_demo.theme.disabled
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.DistancesViewModel.Event.Convert
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.DistancesViewModel.Event.ValidateButtonEnabled
+import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
+import com.example.mvi_clean_demo.theme.disabled
 
 @Composable
 fun ComposeDistances(
     model: DistancesViewModel.Model,
     sendEvent: (DistancesViewModel.Event) -> Unit,
+    processEvent: suspend (DistancesViewModel.Event) -> Unit,
     onNextButton: () -> Unit
 ) {
     val strMeter = stringResource(id = R.string.meter)
@@ -71,6 +71,9 @@ fun ComposeDistances(
     LaunchedEffect(model.distance) {
         sendEvent(ValidateButtonEnabled(model.distance))
     }
+    LaunchedEffect(model.distance, model.unit) {
+        processEvent(Convert(model.distance, model.unit))
+    }
     // Remember the scroll state
     val scrollState = rememberScrollState()
 
@@ -91,7 +94,7 @@ fun ComposeDistances(
                     sendEvent(DistancesViewModel.Event.SetDistance(distance = text))
                 },
                 onDone = {
-                    sendEvent(Convert(model.distance, model.unit))
+//                    sendEvent(Convert(model.distance, model.unit))
                 },
             )
             Text(
@@ -108,15 +111,15 @@ fun ComposeDistances(
                 sendEvent(DistancesViewModel.Event.SetUnit(unit = stringResId))
             }
         )
-        Button(
-            onClick = { sendEvent(Convert(model.distance, model.unit)) },
-            enabled = model.isButtonEnabled,
-            elevation = ButtonDefaults.buttonElevation(
-                defaultElevation = 3.0.dp
-            ),
-        ) {
-            Text(text = stringResource(id = R.string.convert))
-        }
+//        Button(
+//            onClick = { sendEvent(Convert(model.distance, model.unit)) },
+//            enabled = model.isButtonEnabled,
+//            elevation = ButtonDefaults.buttonElevation(
+//                defaultElevation = 3.0.dp
+//            ),
+//        ) {
+//            Text(text = stringResource(id = R.string.convert))
+//        }
         result?.let { s ->
             Text(
                 text = s,
@@ -257,6 +260,7 @@ fun DistanceConverterPreview() {
             ComposeDistances(
                 model = model,
                 sendEvent = { },
+                processEvent = { },
                 onNextButton = { }
             )
         }

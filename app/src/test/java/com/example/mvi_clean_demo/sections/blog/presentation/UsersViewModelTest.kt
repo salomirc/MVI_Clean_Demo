@@ -45,7 +45,7 @@ class UsersViewModelTest {
         }
         //Act
         runBlocking {
-            viewModel.getUsers()
+            viewModel.processEvent(UsersViewModel.Event.GetUsers)
         }
         val result = viewModel.modelStateFlow.value.userCardModelsResponseState as? ResponseState.ActiveResponseState.Success
         //Assert

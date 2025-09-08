@@ -11,8 +11,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -36,17 +34,18 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mvi_clean_demo.R
-import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
-import com.example.mvi_clean_demo.theme.disabled
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel.Event.Convert
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel.Event.SetScale
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel.Event.SetTemperature
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel.Event.ValidateButtonEnabled
+import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
+import com.example.mvi_clean_demo.theme.disabled
 
 @Composable
 fun ComposeTemperature(
     model: TemperatureViewModel.Model,
-    sendEvent: (TemperatureViewModel.Event) -> Unit
+    sendEvent: (TemperatureViewModel.Event) -> Unit,
+    processEvent: suspend (TemperatureViewModel.Event) -> Unit
 ) {
     val strCelsius = stringResource(id = R.string.celsius)
     val strFahrenheit = stringResource(id = R.string.fahrenheit)
@@ -66,6 +65,9 @@ fun ComposeTemperature(
     }
     LaunchedEffect(model.temperature) {
         sendEvent(ValidateButtonEnabled(model.temperature))
+    }
+    LaunchedEffect(model.temperature, model.scale) {
+        processEvent(Convert(model.temperature, model.scale))
     }
     // Remember the scroll state
     val scrollState = rememberScrollState()
@@ -87,7 +89,7 @@ fun ComposeTemperature(
                     sendEvent(SetTemperature(temperature = text))
                 },
                 onDone = {
-                    sendEvent(Convert(model.temperature, model.scale))
+//                    sendEvent(Convert(model.temperature, model.scale))
                 },
             )
             Text(
@@ -104,15 +106,15 @@ fun ComposeTemperature(
                 sendEvent(SetScale(scale = stringResId))
             }
         )
-        Button(
-            onClick = { sendEvent(Convert(model.temperature, model.scale)) },
-            enabled = model.isButtonEnabled,
-            elevation = ButtonDefaults.buttonElevation(
-                defaultElevation = 3.0.dp
-            ),
-        ) {
-            Text(text = stringResource(id = R.string.convert))
-        }
+//        Button(
+//            onClick = { sendEvent(Convert(model.temperature, model.scale)) },
+//            enabled = model.isButtonEnabled,
+//            elevation = ButtonDefaults.buttonElevation(
+//                defaultElevation = 3.0.dp
+//            ),
+//        ) {
+//            Text(text = stringResource(id = R.string.convert))
+//        }
         result?.let { s ->
             Text(
                 text = s,
@@ -235,7 +237,8 @@ fun TemperatureConverterPreview() {
         Surface {
             ComposeTemperature(
                 model = model,
-                sendEvent = { }
+                sendEvent = {},
+                processEvent = {}
             )
         }
     }
