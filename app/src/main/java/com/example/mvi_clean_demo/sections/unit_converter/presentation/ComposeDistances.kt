@@ -2,17 +2,20 @@ package com.example.mvi_clean_demo.sections.unit_converter.presentation
 
 import android.content.res.Configuration
 import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -41,8 +44,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.DistancesViewModel.Event.Convert
+import com.example.mvi_clean_demo.sections.unit_converter.presentation.DistancesViewModel.Event.SetDistance
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.DistancesViewModel.Event.ValidateButtonEnabled
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
+import com.example.mvi_clean_demo.theme.clientTierInitialsSurface
 import com.example.mvi_clean_demo.theme.disabled
 
 @Composable
@@ -52,18 +57,18 @@ fun ComposeDistances(
     processEvent: suspend (DistancesViewModel.Event) -> Unit,
     onNextButton: () -> Unit
 ) {
-    val strMeter = stringResource(id = R.string.meter)
+    val strMeter = stringResource(id = R.string.km)
     val strMile = stringResource(id = R.string.mile)
     val inputUnit by remember(model.unit) {
         mutableIntStateOf(
             when (model.unit) {
-                R.string.meter -> R.string.mile
-                else -> R.string.meter
+                R.string.km -> R.string.mile
+                else -> R.string.km
             }
         )
     }
     val result by remember(model.convertedValue) {
-        val scaleString = if (model.unit == R.string.meter) strMeter else strMile
+        val scaleString = if (model.unit == R.string.km) strMeter else strMile
         mutableStateOf(model.convertedValue?.let { value ->
             "$value $scaleString"
         })
@@ -82,56 +87,59 @@ fun ComposeDistances(
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(scrollState),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
-            modifier = Modifier.padding(bottom = 16.dp)
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             DistanceTextField(
                 temperature = model.distance,
-                modifier = Modifier.padding(start = 28.dp),
+                modifier = Modifier
+                    .padding(start = 40.dp)
+                    .fillMaxWidth(0.8f),
                 onValueChange = { text ->
-                    sendEvent(DistancesViewModel.Event.SetDistance(distance = text))
+                    sendEvent(SetDistance(distance = text))
                 },
-                onDone = {
-//                    sendEvent(Convert(model.distance, model.unit))
-                },
+                onDone = { }
             )
             Text(
                 text = stringResource(inputUnit),
                 modifier = Modifier
                     .padding(start = 8.dp)
-                    .width(20.dp)
+                    .width(32.dp)
             )
         }
         DistanceUnitButtonGroup(
             unit = model.unit,
-            modifier = Modifier.padding(bottom = 16.dp),
+            modifier = Modifier
+                .background(
+                    color = MaterialTheme.colorScheme.clientTierInitialsSurface,
+                    shape = CircleShape
+                )
+                .border(
+                    border = BorderStroke(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    ),
+                    shape = CircleShape
+                ),
             onClick = { stringResId ->
                 sendEvent(DistancesViewModel.Event.SetUnit(unit = stringResId))
             }
         )
-//        Button(
-//            onClick = { sendEvent(Convert(model.distance, model.unit)) },
-//            enabled = model.isButtonEnabled,
-//            elevation = ButtonDefaults.buttonElevation(
-//                defaultElevation = 3.0.dp
-//            ),
-//        ) {
-//            Text(text = stringResource(id = R.string.convert))
-//        }
         result?.let { s ->
             Text(
                 text = s,
                 style = MaterialTheme.typography.headlineSmall
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
-                .padding(16.dp),
+                .padding(bottom = 64.dp)
+                .weight(1F),
             contentAlignment = Alignment.BottomCenter
         ) {
             Button(
@@ -158,11 +166,11 @@ fun DistanceTextField(
         value = temperature,
         onValueChange = onValueChange,
         label = {
-            Text(text = stringResource(R.string.temperature))
+            Text(text = stringResource(R.string.distances))
         },
         placeholder = {
             Text(
-                text = stringResource(id = R.string.placeholder_temperature)
+                text = stringResource(id = R.string.placeholder_distance)
             )
         },
         modifier = modifier,
@@ -193,14 +201,14 @@ fun DistanceUnitButtonGroup(
     Row(modifier = modifier) {
         DistanceRadioButton(
             unit = unit,
-            resId = R.string.meter,
+            resId = R.string.km,
             onClick = onClick
         )
         DistanceRadioButton(
             unit = unit,
             resId = R.string.mile,
             onClick = onClick,
-            modifier = Modifier.padding(start = 16.dp)
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
 }
@@ -228,7 +236,6 @@ fun DistanceRadioButton(
         Text(
             text = stringResource(resId),
             modifier = Modifier
-                .padding(start = 8.dp)
         )
     }
 }
@@ -252,8 +259,9 @@ fun DistanceRadioButton(
 fun DistanceConverterPreview() {
     val model = DistancesViewModel.Model(
         distance = "100",
-        unit = R.string.meter,
-        isButtonEnabled = false
+        unit = R.string.km,
+        isButtonEnabled = false,
+        convertedValue = 62.137F
     )
     ComposeUnitConverterTheme {
         Surface {

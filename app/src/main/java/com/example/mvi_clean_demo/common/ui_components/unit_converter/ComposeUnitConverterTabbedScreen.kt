@@ -248,7 +248,7 @@ fun ComposeUnitConverterPreview() {
                     composable<DistancesNavTarget> { backStackEntry ->
                         val model = DistancesViewModel.Model(
                             distance = "100",
-                            unit = R.string.meter,
+                            unit = R.string.km,
                             isButtonEnabled = false
                         )
                         ComposeDistances(

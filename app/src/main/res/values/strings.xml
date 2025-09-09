@@ -11,12 +11,12 @@
     <string name="temperature">Temperature</string>
 
     <!-- distance -->
-    <string name="placeholder_distance">distance</string>
-    <string name="distances">Distances</string>
-    <string name="meter">m</string>
+    <string name="placeholder_distance">0.0</string>
+    <string name="km">km</string>
     <string name="mile">mi</string>
+    <string name="distances">Distance</string>
 
-    <!-- distance -->
+    <!-- blog -->
     <string name="users_screen_title">Users</string>
     <string name="posts_screen_title">Posts</string>
 

@@ -88,7 +88,7 @@ class TemperatureViewModel @AssistedInject constructor(
         // on the main thread to avoid UI recomposition performance issues
         val calculationResult = withContext(Dispatchers.Default) {
             getTemperatureAsFloat(temperature)?.let {
-                if (scale == R.string.celsius) (it * 1.8F) + 32F else (it - 32F) / 1.8F
+                if (scale == R.string.celsius) ((it - 32F) / 1.8F)  else ((it * 1.8F) + 32F)
             }
         }
         updateModelState { model -> model.copy(convertedValue = calculationResult) }

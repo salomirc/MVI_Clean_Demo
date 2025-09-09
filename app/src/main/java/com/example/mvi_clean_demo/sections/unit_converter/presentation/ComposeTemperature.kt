@@ -2,12 +2,18 @@ package com.example.mvi_clean_demo.sections.unit_converter.presentation
 
 import android.content.res.Configuration
 import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -39,6 +45,7 @@ import com.example.mvi_clean_demo.sections.unit_converter.presentation.Temperatu
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel.Event.SetTemperature
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel.Event.ValidateButtonEnabled
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
+import com.example.mvi_clean_demo.theme.clientTierInitialsSurface
 import com.example.mvi_clean_demo.theme.disabled
 
 @Composable
@@ -77,44 +84,48 @@ fun ComposeTemperature(
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(scrollState),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
-            modifier = Modifier.padding(bottom = 16.dp)
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             TemperatureTextField(
                 temperature = model.temperature,
-                modifier = Modifier.padding(start = 28.dp),
+                modifier = Modifier
+                    .padding(start = 40.dp)
+                    .fillMaxWidth(0.8f),
                 onValueChange = { text ->
                     sendEvent(SetTemperature(temperature = text))
                 },
-                onDone = {
-//                    sendEvent(Convert(model.temperature, model.scale))
-                },
+                onDone = { },
             )
             Text(
                 text = stringResource(inputScale),
                 modifier = Modifier
                     .padding(start = 8.dp)
-                    .width(20.dp)
+                    .width(32.dp)
             )
         }
         TemperatureScaleButtonGroup(
             scale = model.scale,
-            modifier = Modifier.padding(bottom = 16.dp),
+            modifier = Modifier
+                .background(
+                    color = MaterialTheme.colorScheme.clientTierInitialsSurface,
+                    shape = CircleShape
+                )
+                .border(
+                    border = BorderStroke(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    ),
+                    shape = CircleShape
+                ),
             onClick = { stringResId ->
                 sendEvent(SetScale(scale = stringResId))
             }
         )
-//        Button(
-//            onClick = { sendEvent(Convert(model.temperature, model.scale)) },
-//            enabled = model.isButtonEnabled,
-//            elevation = ButtonDefaults.buttonElevation(
-//                defaultElevation = 3.0.dp
-//            ),
-//        ) {
-//            Text(text = stringResource(id = R.string.convert))
-//        }
         result?.let { s ->
             Text(
                 text = s,
@@ -178,7 +189,7 @@ fun TemperatureScaleButtonGroup(
             scale = scale,
             resId = R.string.fahrenheit,
             onClick = onClick,
-            modifier = Modifier.padding(start = 16.dp)
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
 }
@@ -206,7 +217,6 @@ fun TemperatureRadioButton(
         Text(
             text = stringResource(resId),
             modifier = Modifier
-                .padding(start = 8.dp)
         )
     }
 }
@@ -231,7 +241,8 @@ fun TemperatureConverterPreview() {
     val model = TemperatureViewModel.Model(
         temperature = "100",
         scale = R.string.celsius,
-        isButtonEnabled = false
+        isButtonEnabled = false,
+        convertedValue = 123.34F
     )
     ComposeUnitConverterTheme {
         Surface {

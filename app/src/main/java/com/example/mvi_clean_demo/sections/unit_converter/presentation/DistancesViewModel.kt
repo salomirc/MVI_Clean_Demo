@@ -16,7 +16,7 @@ class DistancesViewModel @Inject constructor(
 ) : BaseViewModel<DistancesViewModel.Model, DistancesViewModel.Event>(
     model = Model(
         distance = "",
-        unit = R.string.meter,
+        unit = R.string.km,
         isButtonEnabled = false
     )
 ) {
@@ -28,7 +28,7 @@ class DistancesViewModel @Inject constructor(
     private fun getData() {
         viewModelScope.launch {
             val distance = dataRepository.getString("distance", "")
-            val unit = dataRepository.getInt("unit", R.string.meter)
+            val unit = dataRepository.getInt("unit", R.string.km)
             updateModelState { model ->
                 model.copy(
                     distance = distance,
@@ -79,7 +79,7 @@ class DistancesViewModel @Inject constructor(
         // on the main thread to avoid UI recomposition performance issues
         val calculationResult = withContext(Dispatchers.Default) {
             getDistanceAsFloat(distance)?.let {
-                if (unit == R.string.meter) (it * 0.00062137F) else (it / 0.00062137F)
+                if (unit == R.string.km) (it / 0.62137F) else (it * 0.62137F)
             }
         }
         updateModelState { model -> model.copy(convertedValue = calculationResult) }
