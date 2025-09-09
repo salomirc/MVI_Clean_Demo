@@ -11,13 +11,30 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import java.io.IOException
 
+interface Logger {
+    fun d(tag: String, message: String)
+    fun e(tag: String, message: String, throwable: Throwable? = null)
+}
+
+class AndroidLogger : Logger {
+    override fun d(tag: String, message: String) {
+        Log.d(tag, message)
+    }
+
+    override fun e(tag: String, message: String, throwable: Throwable?) {
+        Log.e(tag, message, throwable)
+    }
+}
+
+
 @AssistedFactory
 interface ErrorHandlerFactory {
-    fun create(viewModelName: String): ErrorHandler
+    fun create(viewModelName: String, logger: Logger = AndroidLogger()): ErrorHandler
 }
 
 open class ErrorHandler @AssistedInject constructor(
     @Assisted private var viewModelName: String,
+    @Assisted private var logger: Logger,
     val broadcastService: IErrorHandlerBroadcastService
 ) {
 
@@ -34,7 +51,7 @@ open class ErrorHandler @AssistedInject constructor(
         onOtherException: (Throwable) -> Unit = defaultOtherExceptionHandler()
     ): (Throwable) -> Unit = { throwable ->
 
-        Log.d(ERROR_HANDLER_TAG, "ErrorHandler $viewModelName exception: $throwable")
+        logger.d(ERROR_HANDLER_TAG, "ErrorHandler $viewModelName exception: $throwable")
 
         // Order is very important! From specific to general.
         when (throwable) {

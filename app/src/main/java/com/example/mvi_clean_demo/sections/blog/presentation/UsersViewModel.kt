@@ -69,10 +69,20 @@ class UsersViewModel @Inject constructor(
             .collect { state ->
                 when (state) {
                     is Loading -> {
-                        updateModelState { model -> model.copy(isLoading = true) }
+                        updateModelState { model ->
+                            model.copy(
+                                isLoading = true,
+                                userCardModelsResponseState = state
+                            )
+                        }
                     }
                     is Failure -> {
-                        updateModelState { model -> model.copy(isLoading = false) }
+                        updateModelState { model ->
+                            model.copy(
+                                isLoading = false,
+                                userCardModelsResponseState = state
+                            )
+                        }
                         //Custom Error Handler
                         errorHandler.apply {
                             defaultErrorHandler(

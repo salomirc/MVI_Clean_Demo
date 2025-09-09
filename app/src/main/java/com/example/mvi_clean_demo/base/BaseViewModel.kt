@@ -25,11 +25,11 @@ abstract class BaseViewModel<Model, Event>(model: Model): ViewModel(), MVI<Model
         }
     }
 
-    protected fun updateModelState(function: (Model) -> Model) {
+    fun updateModelState(function: (Model) -> Model) {
         _modelStateFlow.update(function)
     }
 
-    protected suspend fun updateModelStateSuspend(function: suspend (Model) -> Model) {
+    suspend fun updateModelStateSuspend(function: suspend (Model) -> Model) {
         _modelStateFlow.update { model ->
             function(model)
         }
