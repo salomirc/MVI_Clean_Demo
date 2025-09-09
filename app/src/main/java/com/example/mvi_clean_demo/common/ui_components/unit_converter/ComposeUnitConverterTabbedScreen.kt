@@ -1,6 +1,5 @@
 package com.example.mvi_clean_demo.common.ui_components.unit_converter
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,7 +29,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -47,6 +45,8 @@ import com.example.mvi_clean_demo.common.ui_components.unit_converter.UnitConver
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.ComposeDistances
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.ComposeTemperature
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.DistancesViewModel
+import com.example.mvi_clean_demo.sections.unit_converter.presentation.LightDarkPreview
+import com.example.mvi_clean_demo.sections.unit_converter.presentation.MyDevices
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 import kotlinx.coroutines.launch
@@ -202,21 +202,30 @@ fun ComposeUnitConverterBottomBar(
 }
 
 @Preview(
-    name = "Light Mode",
-    group = "FullScreen",
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    group = "Screen",
+    name = "1-portrait",
     showBackground = true,
     showSystemUi = true,
-    device = Devices.PIXEL
+    device = MyDevices.PHONE_PORTRAIT
 )
 @Preview(
-    name = "Dark Mode",
-    group = "FullScreen",
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    group = "Screen",
+    name = "2-landscape",
     showBackground = true,
     showSystemUi = true,
-    device = Devices.PIXEL
+    device = MyDevices.PHONE_LANDSCAPE
 )
+@Preview(
+    group = "Screen",
+    name = "3-foldable",
+    showBackground = true,
+    showSystemUi = true,
+    device = MyDevices.PHONE_FOLDABLE
+)
+annotation class ScreenPreviewsSystemUI
+
+@LightDarkPreview
+@ScreenPreviewsSystemUI
 @Composable
 fun ComposeUnitConverterPreview() {
     ComposeUnitConverterTheme {
@@ -227,7 +236,7 @@ fun ComposeUnitConverterPreview() {
             content = { innerPadding ->
                 NavHost(
                     navController = navController,
-                    startDestination = Temperature.navTarget,
+                    startDestination = Distance.navTarget,
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable<TemperatureNavTarget> { backStackEntry ->
@@ -264,7 +273,7 @@ fun ComposeUnitConverterPreview() {
             },
             model = MainViewModel.Model(
                 messageResourceIdWrapper = null,
-                navigationTitle = stringResource(Temperature.label)
+                navigationTitle = stringResource(Distance.label)
             )
         )
     }

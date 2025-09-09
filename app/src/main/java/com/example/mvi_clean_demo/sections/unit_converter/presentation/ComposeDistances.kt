@@ -6,9 +6,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -85,7 +85,6 @@ fun ComposeDistances(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -135,21 +134,20 @@ fun ComposeDistances(
                 style = MaterialTheme.typography.headlineSmall
             )
         }
-        Box(
+        Spacer(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 64.dp)
-                .weight(1F),
-            contentAlignment = Alignment.BottomCenter
+                .width(10.dp)
+                .weight(1f)
+        )
+        Button(
+            onClick = onNextButton,
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .defaultMinSize(128.dp)
         ) {
-            Button(
-                onClick = onNextButton,
-                modifier = Modifier.defaultMinSize(128.dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.next)
-                )
-            }
+            Text(
+                text = stringResource(id = R.string.next)
+            )
         }
     }
 }
@@ -242,19 +240,48 @@ fun DistanceRadioButton(
 
 
 @Preview(
+    group = "Screen",
+    name = "1-portrait",
+    showBackground = true,
+    showSystemUi = false,
+    device = MyDevices.PHONE_PORTRAIT
+)
+@Preview(
+    group = "Screen",
+    name = "2-landscape",
+    showBackground = true,
+    showSystemUi = false,
+    device = MyDevices.PHONE_LANDSCAPE
+)
+@Preview(
+    group = "Screen",
+    name = "3-foldable",
+    showBackground = true,
+    showSystemUi = false,
+    device = MyDevices.PHONE_FOLDABLE
+)
+annotation class ScreenPreviewsNoSystemUI
+
+@Preview(
     name = "Light Mode",
-    group = "FullScreen",
+    group = "LightDark",
     uiMode = Configuration.UI_MODE_NIGHT_NO,
     showBackground = true,
     device = Devices.PIXEL
 )
 @Preview(
     name = "Dark Mode",
-    group = "FullScreen",
+    group = "LightDark",
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     showBackground = true,
     device = Devices.PIXEL
 )
+annotation class LightDarkPreview
+
+
+
+@LightDarkPreview
+@ScreenPreviewsNoSystemUI
 @Composable
 fun DistanceConverterPreview() {
     val model = DistancesViewModel.Model(
@@ -273,5 +300,11 @@ fun DistanceConverterPreview() {
             )
         }
     }
+}
+
+object MyDevices {
+    const val PHONE_PORTRAIT = "spec:width=411dp,height=673dp,dpi=320,orientation=portrait"
+    const val PHONE_LANDSCAPE = "spec:width=411dp,height=673dp,dpi=320,orientation=landscape"
+    const val PHONE_FOLDABLE = "spec:width=673dp,height=841dp,dpi=320,orientation=portrait"
 }
 
