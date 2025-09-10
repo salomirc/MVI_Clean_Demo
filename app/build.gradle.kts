@@ -69,6 +69,10 @@ dependencies {
     implementation(libs.androidx.activity.compose)
 
     //added section start
+
+    //Coroutines core library for Kotlin
+    implementation(libs.kotlinx.coroutines.core)
+
     // JSON serialization library, works with the Kotlin serialization plugin.
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.material.icons.extended)

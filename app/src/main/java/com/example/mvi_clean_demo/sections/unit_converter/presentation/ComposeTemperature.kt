@@ -1,6 +1,5 @@
 package com.example.mvi_clean_demo.sections.unit_converter.presentation
 
-import android.content.res.Configuration
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -26,9 +25,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,14 +32,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mvi_clean_demo.R
+import com.example.mvi_clean_demo.common.ui_components.ComposeLifecycleEvent
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel.Event.Convert
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel.Event.SetScale
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel.Event.SetTemperature
-import com.example.mvi_clean_demo.sections.unit_converter.presentation.TemperatureViewModel.Event.ValidateButtonEnabled
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 import com.example.mvi_clean_demo.theme.clientTierInitialsSurface
 import com.example.mvi_clean_demo.theme.disabled
@@ -54,24 +48,14 @@ fun ComposeTemperature(
     sendEvent: (TemperatureViewModel.Event) -> Unit,
     processEvent: suspend (TemperatureViewModel.Event) -> Unit
 ) {
-    val strCelsius = stringResource(id = R.string.celsius)
-    val strFahrenheit = stringResource(id = R.string.fahrenheit)
-    val inputScale by remember(model.scale) {
-        mutableIntStateOf(
-            when (model.scale) {
-                R.string.celsius -> R.string.fahrenheit
-                else -> R.string.celsius
-            }
-        )
+    val celsiusString = stringResource(id = R.string.celsius)
+    val fahrenheitString = stringResource(id = R.string.fahrenheit)
+    val inputScaleString = remember(model.scale) {
+        if (model.scale == R.string.celsius) fahrenheitString else celsiusString
     }
-    val result by remember(model.convertedValue) {
-        val scaleString = if (model.scale == R.string.celsius) strCelsius else strFahrenheit
-        mutableStateOf(model.convertedValue?.let { value ->
-            "$value $scaleString"
-        })
-    }
-    LaunchedEffect(model.temperature) {
-        sendEvent(ValidateButtonEnabled(model.temperature))
+    val resultString = remember(model.convertedValue) {
+        val scaleString = if (model.scale == R.string.celsius) celsiusString else fahrenheitString
+        model.convertedValue?.let {"$it $scaleString" }
     }
     LaunchedEffect(model.temperature, model.scale) {
         processEvent(Convert(model.temperature, model.scale))
@@ -79,58 +63,69 @@ fun ComposeTemperature(
     // Remember the scroll state
     val scrollState = rememberScrollState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(scrollState),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TemperatureTextField(
-                temperature = model.temperature,
-                modifier = Modifier
-                    .padding(start = 40.dp)
-                    .fillMaxWidth(0.8f),
-                onValueChange = { text ->
-                    sendEvent(SetTemperature(temperature = text))
-                },
-                onDone = { },
-            )
-            Text(
-                text = stringResource(inputScale),
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .width(32.dp)
-            )
+    ComposeLifecycleEvent(
+        onResume = {
+            sendEvent(TemperatureViewModel.Event.GetData)
         }
-        TemperatureScaleButtonGroup(
-            scale = model.scale,
-            modifier = Modifier
-                .background(
-                    color = MaterialTheme.colorScheme.clientTierInitialsSurface,
-                    shape = CircleShape
+    )
+
+    Surface {
+        if (model.isLoading) {
+            TemperaturePlaceholder()
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TemperatureTextField(
+                        temperature = model.temperature,
+                        modifier = Modifier
+                            .padding(start = 40.dp)
+                            .fillMaxWidth(0.8f),
+                        onValueChange = { text ->
+                            sendEvent(SetTemperature(temperature = text))
+                        },
+                        onDone = { },
+                    )
+                    Text(
+                        text = inputScaleString,
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .width(32.dp)
+                    )
+                }
+                TemperatureScaleButtonGroup(
+                    scale = model.scale,
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.clientTierInitialsSurface,
+                            shape = CircleShape
+                        )
+                        .border(
+                            border = BorderStroke(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.outlineVariant
+                            ),
+                            shape = CircleShape
+                        ),
+                    onClick = { stringResId ->
+                        sendEvent(SetScale(scale = stringResId))
+                    }
                 )
-                .border(
-                    border = BorderStroke(
-                        width = 2.dp,
-                        color = MaterialTheme.colorScheme.outlineVariant
-                    ),
-                    shape = CircleShape
-                ),
-            onClick = { stringResId ->
-                sendEvent(SetScale(scale = stringResId))
+                resultString?.let { text ->
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                }
             }
-        )
-        result?.let { s ->
-            Text(
-                text = s,
-                style = MaterialTheme.typography.headlineSmall
-            )
         }
     }
 }
@@ -221,27 +216,33 @@ fun TemperatureRadioButton(
     }
 }
 
-
-@Preview(
-    name = "Light Mode",
-    group = "FullScreen",
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    showBackground = true,
-    device = Devices.PIXEL
-)
-@Preview(
-    name = "Dark Mode",
-    group = "FullScreen",
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    showBackground = true,
-    device = Devices.PIXEL
-)
+@LightDarkPreview
 @Composable
 fun TemperatureConverterPreview() {
     val model = TemperatureViewModel.Model(
+        isLoading = false,
         temperature = "100",
         scale = R.string.celsius,
-        isButtonEnabled = false,
+        convertedValue = 123.34F
+    )
+    ComposeUnitConverterTheme {
+        Surface {
+            ComposeTemperature(
+                model = model,
+                sendEvent = {},
+                processEvent = {}
+            )
+        }
+    }
+}
+
+@LightDarkPreview
+@Composable
+fun TemperatureConverterLoadingPreview() {
+    val model = TemperatureViewModel.Model(
+        isLoading = true,
+        temperature = "100",
+        scale = R.string.celsius,
         convertedValue = 123.34F
     )
     ComposeUnitConverterTheme {

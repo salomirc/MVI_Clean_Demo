@@ -1,6 +1,5 @@
 package com.example.mvi_clean_demo.sections.unit_converter.presentation
 
-import androidx.lifecycle.viewModelScope
 import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.base.BaseViewModel
 import com.example.mvi_clean_demo.repositories.IDataRepository
@@ -9,7 +8,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 
 
@@ -19,50 +18,35 @@ class TemperatureViewModel @AssistedInject constructor(
     private val dataRepository: IDataRepository
 ) : BaseViewModel<TemperatureViewModel.Model, TemperatureViewModel.Event>(
     model = Model(
+        isLoading = true,
         temperature = "",
-        scale = R.string.celsius,
-        isButtonEnabled = false
+        scale = R.string.celsius
     )
 ) {
-
-    init {
-        getData()
-    }
-
-    private fun getData() {
-        viewModelScope.launch {
-            val temperature = dataRepository.getString("temperature", initialTempValue)
-            val scale = dataRepository.getInt("scale", R.string.celsius)
-            updateModelState { model ->
-                model.copy(
-                    temperature = temperature,
-                    scale = scale
-                )
-            }
-        }
-    }
-
     @AssistedFactory
     interface Factory {
         fun create(initialTempValue: String): TemperatureViewModel
     }
 
     data class Model(
+        val isLoading: Boolean,
         val temperature: String,
         val scale: Int,
-        val isButtonEnabled: Boolean,
         val convertedValue: Float? = null
     )
 
     sealed interface Event {
+        data object GetData: Event
         data class SetTemperature(val temperature: String): Event
         data class SetScale(val scale: Int): Event
-        data class ValidateButtonEnabled(val temperature: String): Event
         data class Convert(val temperature: String, val scale: Int): Event
     }
 
     override suspend fun processEvent(event: Event) {
         when (event) {
+            is Event.GetData -> {
+                getData()
+            }
             is Event.SetTemperature -> {
                 setTemperature(event.temperature)
             }
@@ -72,27 +56,40 @@ class TemperatureViewModel @AssistedInject constructor(
             is Event.Convert -> {
                 convert(temperature = event.temperature, scale = event.scale)
             }
-            is Event.ValidateButtonEnabled -> {
-                isButtonEnabled(event.temperature)
-            }
         }
     }
-
-    private fun isButtonEnabled(temperature: String) {
-        val isEnabled = getTemperatureAsFloat(temperature) != null
-        updateModelState { model -> model.copy(isButtonEnabled = isEnabled) }
+    private suspend fun getData() {
+        updateModelStateSuspend { model ->
+            withContext(Dispatchers.IO) {
+                val temperature = async { dataRepository.getString("temperature", initialTempValue) }
+                val scale = async { dataRepository.getInt("scale", R.string.celsius) }
+                val convertedValue = calculateConversion(temperature = temperature.await(), scale = scale.await())
+                model.copy(
+                    isLoading = false,
+                    temperature = temperature.await(),
+                    scale = scale.await(),
+                    convertedValue = convertedValue
+                )
+            }
+        }
     }
 
     private suspend fun convert(temperature: String, scale: Int) {
         // move heavy computation on background thread or at least non blocking operation
         // on the main thread to avoid UI recomposition performance issues
-        val calculationResult = withContext(Dispatchers.Default) {
-            getTemperatureAsFloat(temperature)?.let {
-                if (scale == R.string.celsius) ((it - 32F) / 1.8F)  else ((it * 1.8F) + 32F)
-            }
+        updateModelStateSuspend { model ->
+            model.copy(
+                convertedValue = withContext(Dispatchers.Default) {
+                    calculateConversion(temperature, scale)
+                }
+            )
         }
-        updateModelState { model -> model.copy(convertedValue = calculationResult) }
     }
+
+    private fun calculateConversion(temperature: String, scale: Int): Float? =
+        getTemperatureAsFloat(temperature)?.let {
+            if (scale == R.string.celsius) ((it - 32F) / 1.8F) else ((it * 1.8F) + 32F)
+        }
 
     private fun setTemperature(value: String) {
         updateModelState { model -> model.copy(temperature = value) }

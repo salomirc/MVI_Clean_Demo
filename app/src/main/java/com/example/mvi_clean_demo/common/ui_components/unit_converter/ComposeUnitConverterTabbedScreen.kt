@@ -236,16 +236,17 @@ fun ComposeUnitConverterPreview() {
             content = { innerPadding ->
                 NavHost(
                     navController = navController,
-                    startDestination = Distance.navTarget,
+                    startDestination = Temperature.navTarget,
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable<TemperatureNavTarget> { backStackEntry ->
                         val initialTempValue =
                             backStackEntry.toRoute<TemperatureNavTarget>().initialTempValue
                         val model = TemperatureViewModel.Model(
+                            isLoading = false,
                             temperature = initialTempValue,
                             scale = R.string.celsius,
-                            isButtonEnabled = true
+                            convertedValue = 33.8F
                         )
                         ComposeTemperature(
                             model = model,
@@ -256,9 +257,10 @@ fun ComposeUnitConverterPreview() {
 
                     composable<DistancesNavTarget> { backStackEntry ->
                         val model = DistancesViewModel.Model(
+                            isLoading = false,
                             distance = "100",
                             unit = R.string.km,
-                            isButtonEnabled = false
+                            convertedValue = 62.137F
                         )
                         ComposeDistances(
                             model = model,
@@ -273,7 +275,7 @@ fun ComposeUnitConverterPreview() {
             },
             model = MainViewModel.Model(
                 messageResourceIdWrapper = null,
-                navigationTitle = stringResource(Distance.label)
+                navigationTitle = stringResource(Temperature.label)
             )
         )
     }

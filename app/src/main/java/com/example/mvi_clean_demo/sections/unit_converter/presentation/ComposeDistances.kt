@@ -43,9 +43,9 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mvi_clean_demo.R
+import com.example.mvi_clean_demo.common.ui_components.ComposeLifecycleEvent
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.DistancesViewModel.Event.Convert
 import com.example.mvi_clean_demo.sections.unit_converter.presentation.DistancesViewModel.Event.SetDistance
-import com.example.mvi_clean_demo.sections.unit_converter.presentation.DistancesViewModel.Event.ValidateButtonEnabled
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 import com.example.mvi_clean_demo.theme.clientTierInitialsSurface
 import com.example.mvi_clean_demo.theme.disabled
@@ -73,81 +73,90 @@ fun ComposeDistances(
             "$value $scaleString"
         })
     }
-    LaunchedEffect(model.distance) {
-        sendEvent(ValidateButtonEnabled(model.distance))
-    }
     LaunchedEffect(model.distance, model.unit) {
         processEvent(Convert(model.distance, model.unit))
     }
     // Remember the scroll state
     val scrollState = rememberScrollState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            DistanceTextField(
-                temperature = model.distance,
-                modifier = Modifier
-                    .padding(start = 40.dp)
-                    .fillMaxWidth(0.8f),
-                onValueChange = { text ->
-                    sendEvent(SetDistance(distance = text))
-                },
-                onDone = { }
-            )
-            Text(
-                text = stringResource(inputUnit),
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .width(32.dp)
-            )
+    ComposeLifecycleEvent(
+        onResume = {
+            sendEvent(DistancesViewModel.Event.GetData)
         }
-        DistanceUnitButtonGroup(
-            unit = model.unit,
-            modifier = Modifier
-                .background(
-                    color = MaterialTheme.colorScheme.clientTierInitialsSurface,
-                    shape = CircleShape
+    )
+
+    Surface {
+        if (model.isLoading) {
+            TemperaturePlaceholder(hasButton = true)
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    DistanceTextField(
+                        temperature = model.distance,
+                        modifier = Modifier
+                            .padding(start = 40.dp)
+                            .fillMaxWidth(0.8f),
+                        onValueChange = { text ->
+                            sendEvent(SetDistance(distance = text))
+                        },
+                        onDone = { }
+                    )
+                    Text(
+                        text = stringResource(inputUnit),
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .width(32.dp)
+                    )
+                }
+                DistanceUnitButtonGroup(
+                    unit = model.unit,
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.clientTierInitialsSurface,
+                            shape = CircleShape
+                        )
+                        .border(
+                            border = BorderStroke(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.outlineVariant
+                            ),
+                            shape = CircleShape
+                        ),
+                    onClick = { stringResId ->
+                        sendEvent(DistancesViewModel.Event.SetUnit(unit = stringResId))
+                    }
                 )
-                .border(
-                    border = BorderStroke(
-                        width = 2.dp,
-                        color = MaterialTheme.colorScheme.outlineVariant
-                    ),
-                    shape = CircleShape
-                ),
-            onClick = { stringResId ->
-                sendEvent(DistancesViewModel.Event.SetUnit(unit = stringResId))
+                result?.let { s ->
+                    Text(
+                        text = s,
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                }
+                Spacer(
+                    modifier = Modifier
+                        .width(10.dp)
+                        .weight(1f)
+                )
+                Button(
+                    onClick = onNextButton,
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .defaultMinSize(128.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.next)
+                    )
+                }
             }
-        )
-        result?.let { s ->
-            Text(
-                text = s,
-                style = MaterialTheme.typography.headlineSmall
-            )
-        }
-        Spacer(
-            modifier = Modifier
-                .width(10.dp)
-                .weight(1f)
-        )
-        Button(
-            onClick = onNextButton,
-            modifier = Modifier
-                .padding(bottom = 16.dp)
-                .defaultMinSize(128.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.next)
-            )
         }
     }
 }
@@ -285,9 +294,30 @@ annotation class LightDarkPreview
 @Composable
 fun DistanceConverterPreview() {
     val model = DistancesViewModel.Model(
+        isLoading = false,
         distance = "100",
         unit = R.string.km,
-        isButtonEnabled = false,
+        convertedValue = 62.137F
+    )
+    ComposeUnitConverterTheme {
+        Surface {
+            ComposeDistances(
+                model = model,
+                sendEvent = { },
+                processEvent = { },
+                onNextButton = { }
+            )
+        }
+    }
+}
+
+@LightDarkPreview
+@Composable
+fun DistanceConverterLoadingPreview() {
+    val model = DistancesViewModel.Model(
+        isLoading = true,
+        distance = "100",
+        unit = R.string.km,
         convertedValue = 62.137F
     )
     ComposeUnitConverterTheme {
