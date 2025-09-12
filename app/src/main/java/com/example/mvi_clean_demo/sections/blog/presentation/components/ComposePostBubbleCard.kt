@@ -33,7 +33,7 @@ import com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 
 @Composable
-fun PostChatBubble(
+fun PostChatBubbleCard(
     postEntryModel: PostEntryModel,
     modifier: Modifier = Modifier,
     isUserMe: Boolean = true,
@@ -151,7 +151,7 @@ fun PostChatBubblePreview() {
     ComposeUnitConverterTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
             Box(modifier = Modifier.fillMaxSize()) {
-                PostChatBubble(
+                PostChatBubbleCard(
                     postEntryModel = PostSampleData.models.first()
                 )
             }
@@ -184,7 +184,7 @@ fun PostChatBubblesPreview() {
                     .verticalScroll(scrollState)
             ) {
                 PostSampleData.models.forEachIndexed { index, model ->
-                    PostChatBubble(
+                    PostChatBubbleCard(
                         postEntryModel = model,
                         isUserMe = index % 2 == 0
                     )

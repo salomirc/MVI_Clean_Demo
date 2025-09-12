@@ -80,7 +80,7 @@ fun ComposeDistances(
     val scrollState = rememberScrollState()
 
     ComposeLifecycleEvent(
-        onResume = {
+        onCreate = {
             sendEvent(DistancesViewModel.Event.GetData)
         }
     )

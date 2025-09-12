@@ -56,7 +56,7 @@ fun ComposeBlogNavHost(
         },
         exitTransition = {
             slideOutHorizontally(
-                targetOffsetX = { fullWidth -> -fullWidth/4 }, // from left to right
+                targetOffsetX = { fullWidth -> -fullWidth/4 }, // from right to left
                 animationSpec = tween(
                     durationMillis = animationDuration,
                     easing = LinearOutSlowInEasing
@@ -65,7 +65,7 @@ fun ComposeBlogNavHost(
         },
         popEnterTransition = {
             slideInHorizontally(
-                initialOffsetX = { fullWidth -> -fullWidth/4 }, // from right to left
+                initialOffsetX = { fullWidth -> -fullWidth/4 }, // from left to right
                 animationSpec = tween(
                     durationMillis = animationDuration,
                     easing = FastOutLinearInEasing
@@ -104,6 +104,8 @@ fun ComposeBlogNavHost(
             val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
             sendEvent(SetNavigationTitle(title = stringResource(id = R.string.posts_screen_title)))
             ComposePosts(
+                navController = navController,
+                animationDuration = animationDuration,
                 userId = userId,
                 model = model,
                 sendEvent = { event ->

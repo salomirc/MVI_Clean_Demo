@@ -64,7 +64,7 @@ fun ComposeTemperature(
     val scrollState = rememberScrollState()
 
     ComposeLifecycleEvent(
-        onResume = {
+        onCreate = {
             sendEvent(TemperatureViewModel.Event.GetData)
         }
     )

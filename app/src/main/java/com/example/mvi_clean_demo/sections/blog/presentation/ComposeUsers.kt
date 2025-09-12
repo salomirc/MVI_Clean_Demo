@@ -32,7 +32,7 @@ fun ComposeUsers(
     val usersResponseStateUpdated by rememberUpdatedState(model.userCardModelsResponseState)
 
     ComposeLifecycleEvent(
-        onResume = {
+        onCreate = {
             if (usersResponseStateUpdated is Idle) {
                 sendEvent(UsersViewModel.Event.GetUsers)
             }
