@@ -69,7 +69,7 @@ private fun PostChatBubbleCardsPlaceholder() {
         modifier = Modifier.fillMaxSize()
     ) {
         repeat(5) { index ->
-            PostChatBubbleCardPlaceholder(
+            PostChatBubblePlaceholder(
                 isUserMe = index % 2 == 0
             )
         }
