@@ -104,8 +104,6 @@ fun ComposeBlogNavHost(
             val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
             sendEvent(SetNavigationTitle(title = stringResource(id = R.string.posts_screen_title)))
             ComposePosts(
-                navController = navController,
-                animationDuration = animationDuration,
                 userId = userId,
                 model = model,
                 sendEvent = { event ->

@@ -25,7 +25,7 @@ import com.example.mvi_clean_demo.common.ui_components.ShimmerPlaceholder
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 
 @Composable
-fun PostChatBubbleCardPlaceholder(
+fun PostChatBubblePlaceholder(
     modifier: Modifier = Modifier,
     isUserMe: Boolean = true,
 ) {
@@ -98,7 +98,7 @@ fun PostChatBubblesPlaceholderPreview() {
                     .verticalScroll(scrollState)
             ) {
                 repeat(5) { index ->
-                    PostChatBubbleCardPlaceholder(
+                    PostChatBubblePlaceholder(
                         isUserMe = index % 2 == 0
                     )
                 }
@@ -126,7 +126,7 @@ fun PostChatBubblePlaceholderPreview() {
     ComposeUnitConverterTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
             Box(modifier = Modifier.fillMaxSize()) {
-                PostChatBubbleCardPlaceholder()
+                PostChatBubblePlaceholder()
             }
         }
     }
