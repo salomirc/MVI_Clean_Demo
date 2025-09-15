@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 import com.example.mvi_clean_demo.common.ui_components.ComposeLifecycleEvent
-import com.example.mvi_clean_demo.common.ui_components.LogComposeLifecycleEvent
+import com.example.mvi_clean_demo.common.ui_components.navigationCompletionSafe
 import com.example.mvi_clean_demo.sections.blog.presentation.components.PostChatBubble
 import com.example.mvi_clean_demo.sections.blog.presentation.components.PostChatBubblePlaceholder
 import com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data.PostSampleData
@@ -30,8 +30,9 @@ fun ComposePosts(
     sendEvent: (PostsViewModel.Event) -> Unit
 ) {
     val postsResponseStateUpdated by rememberUpdatedState(model.postEntriesModelsResponseState)
+    val isNavigationAnimationCompleted by navigationCompletionSafe()
 
-    LogComposeLifecycleEvent("ComposePosts")
+//    LogComposeLifecycleEvent("ComposePosts")
 
     ComposeLifecycleEvent(
         onCreate = {
@@ -45,7 +46,7 @@ fun ComposePosts(
 
     Surface {
         Box(modifier = Modifier.fillMaxSize()) {
-            if (model.postEntriesModelsResponseState is Success) {
+            if (model.postEntriesModelsResponseState is Success && isNavigationAnimationCompleted) {
                 val items = model.postEntriesModelsResponseState.data
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(items) { entryModel ->
@@ -56,7 +57,7 @@ fun ComposePosts(
                     }
                 }
             }
-            if (model.isLoading) {
+            if (model.isLoading || !isNavigationAnimationCompleted) {
                 PostChatBubbleCardsPlaceholder()
             }
         }

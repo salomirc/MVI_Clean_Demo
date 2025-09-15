@@ -18,6 +18,7 @@ import androidx.navigation.toRoute
 import com.example.mvi_clean_demo.MainViewModel
 import com.example.mvi_clean_demo.MainViewModel.Event.SetNavigationTitle
 import com.example.mvi_clean_demo.R
+import com.example.mvi_clean_demo.common.ui_components.NavigationHelper
 import com.example.mvi_clean_demo.common.ui_components.blog.BlogNavTarget.PostsNavTarget
 import com.example.mvi_clean_demo.common.ui_components.blog.BlogNavTarget.UsersNavTarget
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.LogNavigation
@@ -40,7 +41,7 @@ fun ComposeBlogNavHost(
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
-    val animationDuration = 500
+    val animationDuration = NavigationHelper.ANIMATION_DURATION
     NavHost(
         navController = navController,
         startDestination = UsersNavTarget,
