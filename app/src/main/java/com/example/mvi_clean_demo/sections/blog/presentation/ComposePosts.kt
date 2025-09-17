@@ -14,23 +14,45 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.toRoute
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 import com.example.mvi_clean_demo.common.ui_components.ComposeLifecycleEvent
+import com.example.mvi_clean_demo.common.ui_components.blog.BlogNavTarget.PostsNavTarget
 import com.example.mvi_clean_demo.common.ui_components.navigationCompletionSafe
+import com.example.mvi_clean_demo.common.ui_components.unit_converter.LogNavigation
 import com.example.mvi_clean_demo.sections.blog.presentation.components.PostChatBubble
 import com.example.mvi_clean_demo.sections.blog.presentation.components.PostChatBubblePlaceholder
 import com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data.PostSampleData
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
 
 @Composable
+fun ComposePostsScreen(
+    backStackEntry: NavBackStackEntry
+) {
+    val userId = backStackEntry.toRoute<PostsNavTarget>().userId
+    val viewModel: PostsViewModel = hiltViewModel()
+    val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
+    ComposePosts(
+        userId = userId,
+        model = model,
+        sendEvent = viewModel::sendEvent
+    )
+    LogNavigation(backStackEntry, viewModel)
+}
+
+@Composable
 fun ComposePosts(
     userId: Int,
     model: PostsViewModel.Model,
-    sendEvent: (PostsViewModel.Event) -> Unit
+    sendEvent: (PostsViewModel.Event) -> Unit,
+    isNavAnimCompleted: Boolean? = null
 ) {
     val postsResponseStateUpdated by rememberUpdatedState(model.postEntriesModelsResponseState)
-    val isNavigationAnimationCompleted by navigationCompletionSafe()
+    val isNavigationAnimationCompleted: Boolean = isNavAnimCompleted ?: navigationCompletionSafe().value
 
 //    LogComposeLifecycleEvent("ComposePosts")
 
@@ -102,7 +124,8 @@ fun PostsPreview() {
         ComposePosts(
             userId = 1,
             model = model,
-            sendEvent = { }
+            sendEvent = { },
+            isNavAnimCompleted = true
         )
     }
 }

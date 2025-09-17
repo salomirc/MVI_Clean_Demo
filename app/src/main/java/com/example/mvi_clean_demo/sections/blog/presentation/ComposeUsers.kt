@@ -15,13 +15,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 import com.example.mvi_clean_demo.common.ui_components.ComposeLifecycleEvent
 import com.example.mvi_clean_demo.common.ui_components.LoadingBox
+import com.example.mvi_clean_demo.common.ui_components.unit_converter.LogNavigation
 import com.example.mvi_clean_demo.sections.blog.presentation.components.ComposeUserTierCardOptimized
 import com.example.mvi_clean_demo.sections.blog.presentation.preview_sample_data.UsersSampleData
 import com.example.mvi_clean_demo.theme.ComposeUnitConverterTheme
+
+@Composable
+fun ComposeUsersScreen(
+    backStackEntry: NavBackStackEntry,
+    onNavigateToUserPosts: (Int) -> Unit
+) {
+    val viewModel: UsersViewModel = hiltViewModel()
+    val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
+    ComposeUsers(
+        model = model,
+        sendEvent = viewModel::sendEvent,
+        onNavigateToUserPosts = onNavigateToUserPosts,
+    )
+    LogNavigation(backStackEntry, viewModel)
+}
 
 @Composable
 fun ComposeUsers(
