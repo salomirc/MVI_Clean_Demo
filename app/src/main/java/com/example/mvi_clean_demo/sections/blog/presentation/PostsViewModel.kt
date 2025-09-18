@@ -1,6 +1,7 @@
 package com.example.mvi_clean_demo.sections.blog.presentation
 
-import com.example.mvi_clean_demo.base.BaseViewModel
+import android.util.Log
+import com.example.mvi_clean_demo.base.BaseViewModelRepeatOnStart
 import com.example.mvi_clean_demo.common.error_handling.ErrorHandler
 import com.example.mvi_clean_demo.common.error_handling.ErrorHandlerFactory
 import com.example.mvi_clean_demo.common.repository.ResponseState
@@ -10,15 +11,18 @@ import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponse
 import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
 import com.example.mvi_clean_demo.sections.blog.data.network.repository.IBlogRepository
 import com.example.mvi_clean_demo.sections.blog.domain.model.PostEntryModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 
 
-@HiltViewModel
-class PostsViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = PostsViewModel.Factory::class)
+class PostsViewModel @AssistedInject constructor(
+    @Assisted private val userId: Int,
     private val repository: IBlogRepository,
     errorHandlerFactory: ErrorHandlerFactory
-) : BaseViewModel<PostsViewModel.Model, PostsViewModel.Event>(
+) : BaseViewModelRepeatOnStart<PostsViewModel.Model, PostsViewModel.Event>(
     model = Model(
         isLoading = true,
         postEntriesModelsResponseState = Idle
@@ -26,6 +30,11 @@ class PostsViewModel @Inject constructor(
 ) {
 
     private val errorHandler: ErrorHandler = errorHandlerFactory.create(TAG)
+
+    @AssistedFactory
+    interface Factory {
+        fun create(userId: Int): PostsViewModel
+    }
 
     data class Model(
         val isLoading: Boolean,
@@ -43,6 +52,13 @@ class PostsViewModel @Inject constructor(
             }
         }
     }
+
+    override fun repeatOnStartCollectingModelStateFlow(model: Model) {
+        Log.d("RepeatOnStart", "ComposePosts postEntriesModelsResponseState ${model.postEntriesModelsResponseState}")
+        sendEvent(Event.GetPostEntriesFromUser(userId))
+        Log.d("RepeatOnStart", "ComposePosts sendEvent(GetPostEntriesFromUser(userId)) called")
+    }
+
     private suspend fun getPostEntriesFromUser(userId: Int) {
         repository
             .getPostEntriesFromUser(userId = userId)

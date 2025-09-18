@@ -3,7 +3,11 @@ package com.example.mvi_clean_demo.base
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -16,8 +20,7 @@ interface MVI<Model, Event> {
 
 abstract class BaseViewModel<Model, Event>(model: Model): ViewModel(), MVI<Model, Event> {
     private val _modelStateFlow: MutableStateFlow<Model> = MutableStateFlow(model)
-    override val modelStateFlow: StateFlow<Model>
-        get() = _modelStateFlow
+    override val modelStateFlow: StateFlow<Model> = _modelStateFlow
 
     override fun sendEvent(event: Event) {
         viewModelScope.launch {
@@ -34,4 +37,20 @@ abstract class BaseViewModel<Model, Event>(model: Model): ViewModel(), MVI<Model
             function(model)
         }
     }
+}
+
+abstract class BaseViewModelRepeatOnStart<Model, Event>(model: Model):
+    BaseViewModel<Model, Event>(model) {
+
+    val modelStateFlowOnStart: StateFlow<Model> =
+        modelStateFlow
+            .onStart {
+                repeatOnStartCollectingModelStateFlow(modelStateFlow.value)
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000L),
+                initialValue = modelStateFlow.value
+            )
+     protected abstract fun repeatOnStartCollectingModelStateFlow(model: Model)
 }

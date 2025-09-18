@@ -31,7 +31,6 @@ class UsersViewModel @Inject constructor(
         userCardModelsResponseState = Idle
     )
 ) {
-
     private val errorHandler: ErrorHandler = errorHandlerFactory.create(TAG)
 
     data class Model(

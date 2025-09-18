@@ -1,7 +1,6 @@
 package com.example.mvi_clean_demo.sections.blog.presentation
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +9,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,8 +17,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.toRoute
 import com.example.mvi_clean_demo.common.repository.ResponseState.ActiveResponseState.Success
-import com.example.mvi_clean_demo.common.repository.ResponseState.Idle
-import com.example.mvi_clean_demo.common.ui_components.ComposeLifecycleEvent
 import com.example.mvi_clean_demo.common.ui_components.blog.BlogNavTarget.PostsNavTarget
 import com.example.mvi_clean_demo.common.ui_components.navigationCompletionSafe
 import com.example.mvi_clean_demo.common.ui_components.unit_converter.LogNavigation
@@ -34,10 +30,13 @@ fun ComposePostsScreen(
     backStackEntry: NavBackStackEntry
 ) {
     val userId = backStackEntry.toRoute<PostsNavTarget>().userId
-    val viewModel: PostsViewModel = hiltViewModel()
-    val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
+    val viewModel: PostsViewModel = hiltViewModel(
+        creationCallback = { factory: PostsViewModel.Factory ->
+            factory.create(userId)
+        }
+    )
+    val model by viewModel.modelStateFlowOnStart.collectAsStateWithLifecycle()
     ComposePosts(
-        userId = userId,
         model = model,
         sendEvent = viewModel::sendEvent
     )
@@ -46,25 +45,13 @@ fun ComposePostsScreen(
 
 @Composable
 fun ComposePosts(
-    userId: Int,
     model: PostsViewModel.Model,
     sendEvent: (PostsViewModel.Event) -> Unit,
     isNavAnimCompleted: Boolean? = null
 ) {
-    val postsResponseStateUpdated by rememberUpdatedState(model.postEntriesModelsResponseState)
     val isNavigationAnimationCompleted: Boolean = isNavAnimCompleted ?: navigationCompletionSafe().value
 
 //    LogComposeLifecycleEvent("ComposePosts")
-
-    ComposeLifecycleEvent(
-        onCreate = {
-            Log.d("ComposeLifecycleEvent", "ComposePosts ComposeLifecycleEvent onResume() postsResponseStateUpdated $postsResponseStateUpdated")
-            if (postsResponseStateUpdated is Idle) {
-                sendEvent(PostsViewModel.Event.GetPostEntriesFromUser(userId))
-                Log.d("ComposeLifecycleEvent", "ComposePosts ComposeLifecycleEvent onResume() sendEvent(GetPostEntriesFromUser(userId)) called")
-            }
-        }
-    )
 
     Surface {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -122,7 +109,6 @@ fun PostsPreview() {
     )
     ComposeUnitConverterTheme {
         ComposePosts(
-            userId = 1,
             model = model,
             sendEvent = { },
             isNavAnimCompleted = true
