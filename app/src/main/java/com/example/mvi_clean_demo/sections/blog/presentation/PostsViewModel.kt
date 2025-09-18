@@ -26,7 +26,12 @@ class PostsViewModel @AssistedInject constructor(
     model = Model(
         isLoading = true,
         postEntriesModelsResponseState = Idle
-    )
+    ),
+    repeatOnStartCollectingModelStateFlow = { baseViewModel ->
+        Log.d("RepeatOnStart", "ComposePosts postEntriesModelsResponseState ${baseViewModel.modelStateFlow.value.postEntriesModelsResponseState}")
+        baseViewModel.sendEvent(Event.GetPostEntriesFromUser(userId))
+        Log.d("RepeatOnStart", "ComposePosts sendEvent(GetPostEntriesFromUser(userId)) called")
+    }
 ) {
 
     private val errorHandler: ErrorHandler = errorHandlerFactory.create(TAG)
@@ -51,12 +56,6 @@ class PostsViewModel @AssistedInject constructor(
                 getPostEntriesFromUser(event.userId)
             }
         }
-    }
-
-    override fun repeatOnStartCollectingModelStateFlow(model: Model) {
-        Log.d("RepeatOnStart", "ComposePosts postEntriesModelsResponseState ${model.postEntriesModelsResponseState}")
-        sendEvent(Event.GetPostEntriesFromUser(userId))
-        Log.d("RepeatOnStart", "ComposePosts sendEvent(GetPostEntriesFromUser(userId)) called")
     }
 
     private suspend fun getPostEntriesFromUser(userId: Int) {

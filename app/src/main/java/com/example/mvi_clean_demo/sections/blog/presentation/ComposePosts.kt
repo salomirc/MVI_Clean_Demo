@@ -35,7 +35,7 @@ fun ComposePostsScreen(
             factory.create(userId)
         }
     )
-    val model by viewModel.modelStateFlowOnStart.collectAsStateWithLifecycle()
+    val model by viewModel.modelStateFlow.collectAsStateWithLifecycle()
     ComposePosts(
         model = model,
         sendEvent = viewModel::sendEvent

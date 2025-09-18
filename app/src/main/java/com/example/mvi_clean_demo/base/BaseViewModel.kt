@@ -39,18 +39,19 @@ abstract class BaseViewModel<Model, Event>(model: Model): ViewModel(), MVI<Model
     }
 }
 
-abstract class BaseViewModelRepeatOnStart<Model, Event>(model: Model):
-    BaseViewModel<Model, Event>(model) {
+abstract class BaseViewModelRepeatOnStart<Model, Event>(
+    model: Model,
+    repeatOnStartCollectingModelStateFlow: (BaseViewModel<Model, Event>) -> Unit
+): BaseViewModel<Model, Event>(model) {
 
-    val modelStateFlowOnStart: StateFlow<Model> =
-        modelStateFlow
+    override val modelStateFlow: StateFlow<Model> =
+        super.modelStateFlow
             .onStart {
-                repeatOnStartCollectingModelStateFlow(modelStateFlow.value)
+                repeatOnStartCollectingModelStateFlow(this@BaseViewModelRepeatOnStart)
             }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000L),
-                initialValue = modelStateFlow.value
+                initialValue = super.modelStateFlow.value
             )
-     protected abstract fun repeatOnStartCollectingModelStateFlow(model: Model)
 }
