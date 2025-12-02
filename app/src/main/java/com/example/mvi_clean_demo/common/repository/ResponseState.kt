@@ -44,10 +44,9 @@ inline fun <T, R> ActiveResponseState<T>.activeResponseStateWrapper(
 inline fun <T, R> ResponseState<T>.responseStateWrapper(
     crossinline transform: (value: T) -> R
 ): ResponseState<R> {
-    lateinit var result: ResponseState<R>
-    when (this) {
+    val result: ResponseState<R> = when (this) {
         is ActiveResponseState -> {
-            result = this.activeResponseStateWrapper(transform)
+            this.activeResponseStateWrapper(transform)
         }
         Idle -> Idle
     }
