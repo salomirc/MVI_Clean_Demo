@@ -35,7 +35,7 @@ fun ComposeMainNavHost(
                 sendEvent = sendEvent,
                 onNavigateBack = onNavigateBack,
                 onNextButton = {
-                    navController.navigate(BlogHostNavTarget)
+                    navController.navigate(route = BlogHostNavTarget)
                 }
             )
         }

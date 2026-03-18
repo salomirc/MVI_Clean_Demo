@@ -6,26 +6,19 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.example.mvi_clean_demo.MainViewModel
 import com.example.mvi_clean_demo.MainViewModel.Event.SetNavigationTitle
 import com.example.mvi_clean_demo.R
 import com.example.mvi_clean_demo.common.ui_components.NavigationHelper
 import com.example.mvi_clean_demo.common.ui_components.blog.BlogNavTarget.PostsNavTarget
 import com.example.mvi_clean_demo.common.ui_components.blog.BlogNavTarget.UsersNavTarget
-import com.example.mvi_clean_demo.common.ui_components.unit_converter.LogNavigation
-import com.example.mvi_clean_demo.sections.blog.presentation.ComposePosts
 import com.example.mvi_clean_demo.sections.blog.presentation.ComposePostsScreen
 import com.example.mvi_clean_demo.sections.blog.presentation.ComposeUsersScreen
-import com.example.mvi_clean_demo.sections.blog.presentation.PostsViewModel
 import kotlinx.serialization.Serializable
 
 sealed interface BlogNavTarget {
