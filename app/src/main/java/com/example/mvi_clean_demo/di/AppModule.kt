@@ -23,20 +23,16 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 interface AppModule {
 
-    @Singleton
     @Binds
     fun bindIRepository(impl: DataRepository): IDataRepository
 
-    @Singleton
     @Binds
     fun bindRetrofitApiCaller(impl: RetrofitApiCaller): IRetrofitApiCaller
 
-    @Singleton
     @Binds
     fun bindIErrorHandlerBroadcastService(impl: ErrorHandlerBroadcastService):
             IErrorHandlerBroadcastService
 
-    @Singleton
     @Binds
     fun bindIConnectivityChecker(impl: ConnectivityChecker): IConnectivityChecker
 

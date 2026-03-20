@@ -20,7 +20,6 @@ import retrofit2.Retrofit
 @InstallIn(ViewModelComponent::class)
 interface BlogModule {
 
-    @ViewModelScoped
     @Binds
     fun bindIBlogRepository(impl: BlogRepository): IBlogRepository
 
