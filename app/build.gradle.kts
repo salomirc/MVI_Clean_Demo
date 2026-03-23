@@ -112,6 +112,9 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
 
+    // Instrumented test
+    implementation(libs.androidx.junit.ktx)
+
     //added section start
     //Writing and executing Unit Tests on the JUnit5 Platform
     //testImplementation(libs.junit.jupiter.api)
