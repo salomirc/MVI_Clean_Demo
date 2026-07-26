@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -38,7 +39,7 @@ class MainViewModel @Inject constructor(
             while (true) {
                 broadcastService.processNextMessage()
                 Log.d("ToastMessage", "MainViewModel processNextMessage() called")
-                delay(3000L)
+                delay(3000.milliseconds)
             }
         }
     }

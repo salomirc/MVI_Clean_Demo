@@ -14,7 +14,7 @@ interface IConnectivityChecker {
 
 @Singleton
 class ConnectivityChecker @Inject constructor (
-    @ApplicationContext private val applicationContext: Context
+    @param:ApplicationContext private val applicationContext: Context
 ): IConnectivityChecker {
     private val connectivityManager by lazy { applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager }
 

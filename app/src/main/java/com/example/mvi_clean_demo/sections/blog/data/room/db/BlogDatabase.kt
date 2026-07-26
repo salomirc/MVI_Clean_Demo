@@ -34,7 +34,7 @@ abstract class BlogDatabase: RoomDatabase() {
             return Room.databaseBuilder(
                 context,
                 BlogDatabase::class.java,
-                BlogDatabase.DATABASE_NAME
+                DATABASE_NAME
             )
                 .fallbackToDestructiveMigration()
                 .build()
