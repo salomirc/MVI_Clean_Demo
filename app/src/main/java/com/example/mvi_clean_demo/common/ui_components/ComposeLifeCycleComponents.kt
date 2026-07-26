@@ -73,6 +73,9 @@ fun ComposeRepeatOnLifecycle(
     state: Lifecycle.State,
     block: suspend CoroutineScope.(Lifecycle.State) -> Unit
 ) {
+    require(state != INITIALIZED) {
+        "Lifecycle.State.INITIALIZED is not allowed in repeatOnLifecycle"
+    }
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(lifecycleOwner) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(state) {
