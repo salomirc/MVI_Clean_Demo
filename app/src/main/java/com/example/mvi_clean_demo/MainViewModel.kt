@@ -13,7 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val broadcastService: IErrorHandlerBroadcastService
-) : BaseViewModel<MainViewModel.Model, MainViewModel.Event>(
+) : BaseViewModel<MainViewModel.Model, MainViewModel.Event, MainViewModel.Effect>(
     model = Model(
         messageResourceIdWrapper = null,
         navigationTitle = ""
@@ -47,6 +47,8 @@ class MainViewModel @Inject constructor(
         val messageResourceIdWrapper: MessageResourceIdWrapper?,
         val navigationTitle: String
     )
+
+    data object Effect
 
     sealed interface Event {
         data class SetNavigationTitle(val title: String) : Event

@@ -22,7 +22,7 @@ class PostsViewModel @AssistedInject constructor(
     @Assisted private val userId: Int,
     private val repository: IBlogRepository,
     errorHandlerFactory: ErrorHandlerFactory
-) : BaseViewModelRepeatOnStart<PostsViewModel.Model, PostsViewModel.Event>(
+) : BaseViewModelRepeatOnStart<PostsViewModel.Model, PostsViewModel.Event, PostsViewModel.Effect>(
     model = Model(
         isLoading = true,
         postEntriesModelsResponseState = Idle
@@ -45,6 +45,8 @@ class PostsViewModel @AssistedInject constructor(
         val isLoading: Boolean,
         val postEntriesModelsResponseState: ResponseState<List<PostEntryModel>>
     )
+
+    data object Effect
 
     sealed interface Event {
         data class GetPostEntriesFromUser(val userId: Int): Event

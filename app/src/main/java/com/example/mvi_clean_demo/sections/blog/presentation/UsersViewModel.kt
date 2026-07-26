@@ -25,7 +25,7 @@ import javax.inject.Inject
 class UsersViewModel @Inject constructor(
     private val getUsersUseCase: IGetUsersUseCase,
     errorHandlerFactory: ErrorHandlerFactory
-) : BaseViewModel<UsersViewModel.Model, UsersViewModel.Event>(
+) : BaseViewModel<UsersViewModel.Model, UsersViewModel.Event, UsersViewModel.Effect>(
     model = Model(
         isLoading = true,
         userCardModelsResponseState = Idle
@@ -37,6 +37,8 @@ class UsersViewModel @Inject constructor(
         val isLoading: Boolean,
         val userCardModelsResponseState: ResponseState<List<UserCardModel>>
     )
+
+    data object Effect
 
     @Immutable
     sealed interface Event {

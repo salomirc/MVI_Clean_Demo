@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 class TemperatureViewModel @AssistedInject constructor(
     @Assisted private val initialTempValue: String,
     private val dataRepository: IDataRepository
-) : BaseViewModel<TemperatureViewModel.Model, TemperatureViewModel.Event>(
+) : BaseViewModel<TemperatureViewModel.Model, TemperatureViewModel.Event, TemperatureViewModel.Effect>(
     model = Model(
         isLoading = true,
         temperature = "",
@@ -34,6 +34,8 @@ class TemperatureViewModel @AssistedInject constructor(
         val scale: Int,
         val convertedValue: Float? = null
     )
+
+    data object Effect
 
     sealed interface Event {
         data object GetData: Event

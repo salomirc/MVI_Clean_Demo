@@ -12,7 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DistancesViewModel @Inject constructor(
     private val dataRepository: IDataRepository
-) : BaseViewModel<DistancesViewModel.Model, DistancesViewModel.Event>(
+) : BaseViewModel<DistancesViewModel.Model, DistancesViewModel.Event, DistancesViewModel.Effect>(
     model = Model(
         isLoading = true,
         distance = "",
@@ -26,6 +26,8 @@ class DistancesViewModel @Inject constructor(
         val unit: Int,
         val convertedValue: Float? = null
     )
+
+    data object Effect
 
     sealed interface Event {
         data object GetData: Event
