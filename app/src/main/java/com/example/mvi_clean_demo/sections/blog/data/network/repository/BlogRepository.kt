@@ -20,9 +20,7 @@ import javax.inject.Inject
 
 interface IBlogRepository {
     suspend fun getUsers(): Flow<ActiveResponseState<List<UserModel>>>
-    suspend fun getPostEntriesFromUser(
-        userId: Int
-    ): Flow<ActiveResponseState<List<PostEntryModel>>>
+    suspend fun getPostEntriesFromUser(userId: Int): Flow<ActiveResponseState<List<PostEntryModel>>>
 
 }
 
