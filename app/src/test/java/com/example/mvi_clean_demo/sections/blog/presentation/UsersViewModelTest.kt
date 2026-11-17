@@ -22,9 +22,8 @@ class UsersViewModelTest {
     private val getUsersUseCase = mockk<IGetUsersUseCase>()
     private val errorHandlerFactory = mockk<ErrorHandlerFactory>()
 
-    // relaxed = true, allows creation with no specific behaviour. Unstubbed methods will not throw.
-    private val logger = mockk<Logger>(relaxed = true)
-    private val errorHandlerBroadcastService = mockk<IErrorHandlerBroadcastService>(relaxed = true)
+    // relaxed = true, allows creation with no specific behavior. Unstubbed methods will not throw.
+    private val errorHandler = mockk<ErrorHandler>(relaxed = true)
     private lateinit var viewModel: UsersViewModel
 
     private val sampleUsers = UsersSampleData.users
@@ -33,12 +32,8 @@ class UsersViewModelTest {
 
     @Before
     fun setUp() {
-        clearMocks(getUsersUseCase, errorHandlerFactory, logger, errorHandlerBroadcastService)
-        every { errorHandlerFactory.create(any(), any()) } returns ErrorHandler(
-            viewModelName = UsersViewModel.TAG,
-            logger = logger,
-            broadcastService = errorHandlerBroadcastService,
-        )
+        clearMocks(getUsersUseCase, errorHandlerFactory)
+        every { errorHandlerFactory.create(any(), any()) } returns errorHandler
         viewModel =  UsersViewModel(getUsersUseCase, errorHandlerFactory)
     }
 
